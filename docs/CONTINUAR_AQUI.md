@@ -12,9 +12,11 @@
 | Vitrine (Next.js) | **Testada contra o banco em 03/11/2026**: todos os itens do Passo 2 passaram |
 | Login do painel | **Parcialmente testado contra o banco** (falta entrar com a senha real): `/admin/entrar`, proteção de `/admin`, "acesso não autorizado", botão Sair |
 | Painel `/admin` — Estoque | **Ligado ao banco** (aba Estoque e "Estoque baixo" da visão geral). Falta testar entrando com a conta real |
-| Painel `/admin` — Produtos | **Cadastro ligado ao banco** (sem fotos). Falta testar entrando com a conta real |
+| Painel `/admin` — Produtos | **Cadastro e fotos ligados ao banco**. Falta testar entrando com a conta real |
 | Painel `/admin` — Pedidos | Ainda demonstração com dados fixos de `src/admin/seed.ts`; não salva nada |
-| Pagamento, frete, pedidos | Fora da fase atual |
+| CI (GitHub Actions) | `.github/workflows/ci.yml`: build e tipos; banco local com migrações, carga e os testes (`scripts/testar-banco.sh`) |
+| Fases | Fase 1 e Fase 2 autorizadas em 03/11/2026 (ver `AGENTS.md`) |
+| Pagamento, frete, pedidos | Fase 3, não autorizada |
 
 ## Passo 1 — Preparar a sessão (5 min)
 

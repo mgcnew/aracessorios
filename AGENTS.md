@@ -20,7 +20,9 @@ Projeto: loja virtual **própria** da AR Acessórios (semijoias, B2C, estoque pr
 - Nunca: migração destrutiva, deploy de produção, segredos no repositório, chave `service_role` no cliente.
 
 ## Fase atual
-**Fase 1 — Fundação** (autorizada em 03/11/2026). Autorizado: site em Next.js com dados fictícios; projeto Supabase com banco, login do painel e schema de catálogo e estoque (Módulo 01). **Não autorizado:** pagamento real, deploy de produção.
+**Fase 1 — Fundação** (autorizada em 03/11/2026): site em Next.js, projeto Supabase com banco, login do painel, schema de catálogo e estoque (Módulo 01) e CI.
+**Fase 2 — Catálogo e painel** (autorizada em 03/11/2026 pelo responsável): painel de estoque, cadastro de produtos, variações, kits e fotos, vitrine lendo do banco. Pendentes da cliente: Q-CAT-01 (atributos por tipo) e fotos reais; até lá, catálogo de demonstração.
+**Não autorizado:** pagamento real (Fase 3), deploy de produção.
 
 ## Estado atual (03/11/2026)
 - Banco `ar-acessorios-dev` (Supabase, São Paulo, ref `pmhipriryqsblhonysay`) montado com as migrações de `supabase/migrations/`, a carga de `supabase/seed.sql` e os 32 testes de `supabase/tests/catalogo_estoque.sql` passando.
