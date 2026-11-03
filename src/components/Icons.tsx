@@ -100,3 +100,46 @@ export const CrossIcon = ({ size = 12, ...p }: IconProps) => (
     <path d="M6 6l12 12M18 6L6 18" />
   </svg>
 );
+
+// Painel: navegação no celular ----------------------------------------------------
+export const PainelIcon = ({ size = 24, ...p }: IconProps) => (
+  <svg {...base(size, p)} strokeLinejoin="round">
+    <rect x="4" y="4" width="7" height="7" rx="1.5" />
+    <rect x="13" y="4" width="7" height="5" rx="1.5" />
+    <rect x="13" y="11" width="7" height="9" rx="1.5" />
+    <rect x="4" y="13" width="7" height="7" rx="1.5" />
+  </svg>
+);
+
+export const CaixaIcon = ({ size = 24, ...p }: IconProps) => (
+  <svg {...base(size, p)} strokeLinejoin="round" strokeLinecap="round">
+    <path d="M4 8l8-4 8 4v8l-8 4-8-4V8z" />
+    <path d="M4 8l8 4 8-4M12 12v8" />
+  </svg>
+);
+
+export const EtiquetaIcon = ({ size = 24, ...p }: IconProps) => (
+  <svg {...base(size, p)} strokeLinejoin="round">
+    <path d="M4 12.5V5a1 1 0 011-1h7.5L20 11.5 12.5 19 4 12.5z" />
+    <circle cx="8.5" cy="8.5" r="1.4" />
+  </svg>
+);
+
+export const PedidoIcon = ({ size = 24, ...p }: IconProps) => (
+  <svg {...base(size, p)} strokeLinejoin="round" strokeLinecap="round">
+    <path d="M6 3.5h12v17l-2-1.3-2 1.3-2-1.3-2 1.3-2-1.3-2 1.3v-17z" />
+    <path d="M9 8h6M9 12h6M9 16h3" />
+  </svg>
+);
+
+export const MaisIcon = ({ size = 24, ...p }: IconProps) => (
+  <svg {...base(size, p)} strokeLinecap="round">
+    <path d="M4 7h16M4 12h16M4 17h16" />
+  </svg>
+);
+
+export const VoltarIcon = ({ size = 20, ...p }: IconProps) => (
+  <svg {...base(size, p)} strokeLinecap="round" strokeLinejoin="round">
+    <path d="M15 5l-7 7 7 7" />
+  </svg>
+);

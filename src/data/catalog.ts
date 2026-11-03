@@ -30,6 +30,8 @@ export interface Variant {
   price: number;
   /** Preço normal quando há promoção valendo; senão, null. */
   compare: number | null;
+  /** Fim da promoção que está valendo (ISO), para o aviso na página; senão, null. */
+  promoEnds?: string | null;
   avail: boolean;
 }
 
@@ -40,6 +42,13 @@ export interface KitComponent {
   unit: Unit;
   qty: number;
   avail: boolean;
+}
+
+/** Foto do produto no Storage: versão grande (página) e pequena (cartões, sacola). */
+export interface Foto {
+  src: string;
+  thumb: string;
+  alt: string;
 }
 
 export interface Product {
@@ -64,6 +73,8 @@ export interface Product {
   tone: Tone;
   bg: number;
   comps: KitComponent[] | null;
+  /** Fotos na ordem de exibição, capa primeiro. Vazio: mostra a ilustração. */
+  photos?: Foto[];
 }
 
 export interface ArtProps {

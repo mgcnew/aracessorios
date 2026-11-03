@@ -1,0 +1,49 @@
+# Verificação automática a cada envio ao GitHub.
+# - app: compila o site e confere os tipos.
+# - banco: sobe um Supabase local com as migrações e a carga de demonstração
+#   e roda os testes de segurança e estoque. Não usa o banco da nuvem.
+name: CI
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  app:
+    name: Site (build e tipos)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      # Só chaves públicas (as mesmas de .env.example). As páginas são geradas
+      # a cada visita, então a build não acessa o banco.
+      - run: cp .env.example .env.local
+      - run: npm run build
+      # Depois da build: o Next.js gera next-env.d.ts, usado pela checagem de tipos.
+      - run: npm run typecheck
+
+  banco:
+    name: Banco (migrações, carga e testes)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: supabase/setup-cli@v1
+        with:
+          version: 3.0.0
+      - name: Subir o banco local (aplica migrações e carga)
+        run: supabase db start
+      - name: Testes de segurança e estoque
+        run: bash scripts/testar-banco.sh

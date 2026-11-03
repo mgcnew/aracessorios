@@ -35,7 +35,7 @@ Atributos possíveis: banho/acabamento, tamanho, material, cor, modelo (D-011). 
 | Na venda | Debita só o kit; **não** debita as peças | Debita/reserva cada peça na quantidade exigida |
 | Preço | Próprio, definido pela loja | Próprio, definido pela loja |
 
-Em aberto (Q-CAT-03): reposição de cada modelo em devoluções; o que acontece com kits já vendidos quando a composição muda.
+Em aberto (Q-CAT-03): reposição de cada modelo em devoluções; o que acontece com kits já vendidos quando a composição muda. Até a resposta, o painel só permite mudar a composição de kit em rascunho.
 
 Exigência para a implementação: reservar as peças do kit composto sem contá-las duas vezes, e nunca deixar estoque vendável negativo.
 

@@ -1,10 +1,17 @@
 'use client';
 
 import Link from 'next/link';
-import { useState, type ReactNode } from 'react';
-import { CheckIcon, CrossIcon, SearchIcon } from '../components/Icons';
+import { useEffect, useRef, useState, type ComponentType, type ReactNode } from 'react';
+import { sair } from '../app/admin/acoes';
+import { Estoque, Situacao } from './Estoque';
+import { descreverVariacao, type LinhaEstoque } from './estoque';
+import { Produtos } from './Produtos';
+import type { CatalogoPainel } from './produtos';
+import { carregarEstoque } from '../app/admin/estoque-acoes';
+import { CaixaIcon, CheckIcon, CrossIcon, EtiquetaIcon, MaisIcon, PainelIcon, PedidoIcon } from '../components/Icons';
+import { useParamUrl } from './url';
 import { LogoMark } from '../components/ui';
-import { fmt, norm } from '../data/catalog';
+import { fmt } from '../data/catalog';
 import { useTheme } from '../store';
 import {
   ASK_LIST,
@@ -13,19 +20,29 @@ import {
   EDITABLE_STATUSES,
   ORDER_STATUSES,
   SEED_ORDERS,
-  SEED_PRODUCTS,
   type AdminOrder,
-  type AdminProduct,
   type OrderStatus,
 } from './seed';
 
-type View = 'overview' | 'products' | 'orders' | 'perms';
+type View = 'overview' | 'stock' | 'products' | 'orders' | 'perms';
 
 const MENU: { label: string; view: View }[] = [
   { label: 'Visão geral', view: 'overview' },
+  { label: 'Estoque', view: 'stock' },
   { label: 'Produtos', view: 'products' },
   { label: 'Pedidos', view: 'orders' },
   { label: 'Permissões', view: 'perms' },
+];
+
+// Abas no endereço (?aba=…): o "voltar" do celular volta para a aba anterior.
+const VIEW_ABA: Record<View, string> = { overview: 'visao', stock: 'estoque', products: 'produtos', orders: 'pedidos', perms: 'permissoes' };
+const ABA_VIEW: Record<string, View> = Object.fromEntries(Object.entries(VIEW_ABA).map(([v, a]) => [a, v as View]));
+
+const NAV_CELULAR: { view: View; label: string; Icone: ComponentType }[] = [
+  { view: 'overview', label: 'Início', Icone: PainelIcon },
+  { view: 'stock', label: 'Estoque', Icone: CaixaIcon },
+  { view: 'products', label: 'Produtos', Icone: EtiquetaIcon },
+  { view: 'orders', label: 'Pedidos', Icone: PedidoIcon },
 ];
 
 const TAG: Record<OrderStatus, string> = {
@@ -40,19 +57,42 @@ const TAG: Record<OrderStatus, string> = {
 const PAID: OrderStatus[] = ['Pago', 'Em separação', 'Enviado', 'Entregue'];
 const isEditable = (s: OrderStatus) => s === 'Pago' || s === 'Em separação' || s === 'Enviado';
 
-export function Admin() {
+export function Admin({
+  email,
+  estoque,
+  erroEstoque,
+  catalogo: catalogoInicial,
+  erroCatalogo,
+}: {
+  email: string;
+  estoque: LinhaEstoque[];
+  erroEstoque: string | null;
+  catalogo: CatalogoPainel;
+  erroCatalogo: string | null;
+}) {
   const { dark, toggleDark } = useTheme();
-  const [view, setView] = useState<View>('overview');
-  const [prods, setProds] = useState<AdminProduct[]>(SEED_PRODUCTS);
+  const [aba, setAba] = useParamUrl('aba', 'visao');
+  const view: View = ABA_VIEW[aba] ?? 'overview';
+  const setView = (v: View) => {
+    setAba(VIEW_ABA[v], { produto: null });
+    window.scrollTo({ top: 0 });
+  };
+  const [mais, setMais] = useState(false);
+  const [linhas, setLinhas] = useState<LinhaEstoque[]>(estoque);
+  const [catalogo, setCatalogo] = useState<CatalogoPainel>(catalogoInicial);
   const [orders, setOrders] = useState<AdminOrder[]>(SEED_ORDERS);
 
-  const setP = (id: number, patch: Partial<AdminProduct>) =>
-    setProds((ps) => ps.map((p) => (p.id === id ? { ...p, ...patch } : p)));
+  // Mudou o cadastro (variação nova, desativada…): o estoque também muda.
+  const aoMudarCatalogo = (c: CatalogoPainel) => {
+    setCatalogo(c);
+    carregarEstoque().then((r) => r.ok && setLinhas(r.dados));
+  };
   const setOrderStatus = (id: number, status: OrderStatus) =>
     setOrders((os) => os.map((o) => (o.id === id ? { ...o, status } : o)));
 
   return (
     <div className={`adm${dark ? ' dark' : ''}`}>
+      {/* Computador: barra lateral. */}
       <aside className="side">
         <div className="brand">
           <LogoMark />
@@ -77,48 +117,137 @@ export function Admin() {
           <button className="sl" onClick={toggleDark} aria-pressed={dark}>
             {dark ? 'Modo claro' : 'Modo noturno'}
           </button>
+          <form action={sair} className="sair">
+            {email && <small className="quem">{email}</small>}
+            <button className="sl" type="submit">
+              Sair
+            </button>
+          </form>
         </div>
       </aside>
+
+      {/* Celular: barra de cima compacta. */}
+      <header className="topo">
+        <LogoMark />
+        <span className="topo-t">Painel</span>
+        <button className="topo-b" onClick={() => setMais(true)} aria-label="Mais opções" aria-haspopup="dialog">
+          <MaisIcon />
+        </button>
+      </header>
+
       <main className="main">
-        <span className="demo" role="note">
-          Demonstração do painel · dados fictícios, nada é salvo de verdade
-        </span>
-        {view === 'overview' && (
-          <Overview prods={prods} orders={orders} goOrders={() => setView('orders')} goProducts={() => setView('products')} />
+        {(view === 'overview' || view === 'orders' || view === 'perms') && (
+          <span className="demo" role="note">
+            {view === 'overview'
+              ? 'Pedidos e vendas são demonstração · o estoque é real'
+              : 'Demonstração · dados fictícios, nada é salvo de verdade'}
+          </span>
         )}
-        {view === 'products' && <Products prods={prods} setP={setP} />}
+        {view === 'overview' && (
+          <Overview linhas={linhas} orders={orders} goOrders={() => setView('orders')} goStock={() => setView('stock')} />
+        )}
+        {view === 'stock' && <Estoque linhas={linhas} setLinhas={setLinhas} erroCarga={erroEstoque} />}
+        {view === 'products' && <Produtos catalogo={catalogo} erroCarga={erroCatalogo} aoMudar={aoMudarCatalogo} />}
         {view === 'orders' && <Orders orders={orders} setStatus={setOrderStatus} />}
         {view === 'perms' && <Permissions />}
       </main>
+
+      {/* Celular: navegação de baixo, como num aplicativo. */}
+      <nav className="anav" aria-label="Seções do painel">
+        {NAV_CELULAR.map(({ view: v, label, Icone }) => (
+          <button key={v} className={`an${view === v ? ' on' : ''}`} aria-current={view === v ? 'page' : undefined} onClick={() => setView(v)}>
+            <Icone />
+            <span>{label}</span>
+          </button>
+        ))}
+      </nav>
+
+      {mais && (
+        <MaisOpcoes
+          fechar={() => setMais(false)}
+          email={email}
+          dark={dark}
+          toggleDark={toggleDark}
+          irPermissoes={() => {
+            setMais(false);
+            setView('perms');
+          }}
+        />
+      )}
     </div>
   );
 }
 
+function MaisOpcoes({
+  fechar,
+  email,
+  dark,
+  toggleDark,
+  irPermissoes,
+}: {
+  fechar: () => void;
+  email: string;
+  dark: boolean;
+  toggleDark: () => void;
+  irPermissoes: () => void;
+}) {
+  const ref = useRef<HTMLDialogElement>(null);
+  useEffect(() => {
+    const d = ref.current;
+    if (d && !d.open) d.showModal();
+  }, []);
+  return (
+    <dialog ref={ref} className="dlg folha" onClose={fechar} aria-label="Mais opções" onClick={(e) => e.target === ref.current && ref.current?.close()}>
+      <div className="folha-alca" aria-hidden="true" />
+      {email && <p className="quem folha-quem">{email}</p>}
+      <div className="folha-lista">
+        <button className="fo" onClick={irPermissoes}>
+          Permissões
+        </button>
+        <Link className="fo" href="/">
+          Ver a loja
+        </Link>
+        <button className="fo" onClick={toggleDark} aria-pressed={dark}>
+          {dark ? 'Modo claro' : 'Modo noturno'}
+        </button>
+        <form action={sair}>
+          <button className="fo fo-sair" type="submit">
+            Sair
+          </button>
+        </form>
+      </div>
+      <button className="btn folha-fechar" onClick={() => ref.current?.close()}>
+        Fechar
+      </button>
+    </dialog>
+  );
+}
+
 function Overview({
-  prods,
+  linhas,
   orders,
   goOrders,
-  goProducts,
+  goStock,
 }: {
-  prods: AdminProduct[];
+  linhas: LinhaEstoque[];
   orders: AdminOrder[];
   goOrders: () => void;
-  goProducts: () => void;
+  goStock: () => void;
 }) {
-  const low = prods.filter((p) => p.stock <= 2 && !p.derived);
+  const low = linhas.filter((l) => l.abaixo_do_minimo);
   const revenue = orders.filter((o) => PAID.includes(o.status)).reduce((s, o) => s + o.total, 0);
   const kpis = [
     { label: 'Aguardando pagamento', value: orders.filter((o) => o.status === 'Aguardando pagamento').length, note: 'pedidos' },
     { label: 'Para separar', value: orders.filter((o) => o.status === 'Pago' || o.status === 'Em separação').length, note: 'pedidos pagos' },
     { label: 'Vendas pagas', value: fmt(revenue), note: 'soma ilustrativa' },
-    { label: 'Estoque baixo', value: low.length, note: 'produtos com 2 ou menos' },
+    { label: 'Estoque baixo', value: low.length, note: 'variações no mínimo ou esgotadas' },
   ];
 
   return (
     <>
       <div className="top">
         <h1 className="h1">Olá! Veja como está a loja</h1>
-        <p className="sub">Resumo dos pedidos e do estoque (valores ilustrativos).</p>
+        <p className="sub">Resumo dos pedidos (ilustrativos) e do estoque (real).</p>
       </div>
       <div className="kpis">
         {kpis.map((k) => (
@@ -133,7 +262,7 @@ function Overview({
         <section className="card">
           <h2>Pedidos recentes</h2>
           <div className="tw">
-            <table>
+            <table className="cartoes">
               <thead>
                 <tr>
                   <th>Pedido</th>
@@ -145,10 +274,10 @@ function Overview({
               <tbody>
                 {orders.slice(0, 5).map((o) => (
                   <tr key={o.id}>
-                    <td>#{o.id}</td>
-                    <td>{o.customer}</td>
-                    <td>{fmt(o.total)}</td>
-                    <td>
+                    <td className="c-tit">#{o.id}</td>
+                    <td className="c-dado" data-label="Cliente">{o.customer}</td>
+                    <td className="c-dado" data-label="Total">{fmt(o.total)}</td>
+                    <td className="c-sit">
                       <span className={`tag ${TAG[o.status]}`}>{o.status}</span>
                     </td>
                   </tr>
@@ -166,24 +295,27 @@ function Overview({
           <h2>Atenção ao estoque</h2>
           {low.length > 0 ? (
             <div className="tw">
-              <table>
+              <table className="cartoes">
                 <thead>
                   <tr>
                     <th>Produto</th>
-                    <th>Estoque</th>
+                    <th className="num">Disponível</th>
+                    <th>Situação</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {low.map((p) => (
-                    <tr key={p.id}>
-                      <td>
-                        {p.name}
-                        <div className="sku">{p.sku}</div>
+                  {low.slice(0, 8).map((l) => (
+                    <tr key={l.variant_id}>
+                      <td className="c-tit">
+                        {l.product_name}
+                        <div className="sku">
+                          {descreverVariacao(l.attributes) && `${descreverVariacao(l.attributes)} · `}
+                          {l.sku}
+                        </div>
                       </td>
-                      <td>
-                        <span className={`tag ${p.stock === 0 ? 't-bad' : 't-warn'}`}>
-                          {p.stock === 0 ? 'Esgotado' : `${p.stock} ${p.stock === 1 ? 'unidade' : 'unidades'}`}
-                        </span>
+                      <td className="num c-dado c-forte" data-label="Disponível">{l.disponivel}</td>
+                      <td className="c-sit">
+                        <Situacao l={l} />
                       </td>
                     </tr>
                   ))}
@@ -191,94 +323,16 @@ function Overview({
               </table>
             </div>
           ) : (
-            <p className="sub">Nenhum produto com estoque baixo.</p>
+            <p className="sub">Nenhuma variação no mínimo.</p>
           )}
+          {low.length > 8 && <p className="note" style={{ marginTop: 8 }}>E mais {low.length - 8}.</p>}
           <div style={{ marginTop: 12 }}>
-            <button className="btn" onClick={goProducts}>
-              Gerenciar produtos
+            <button className="btn" onClick={goStock}>
+              Abrir o estoque
             </button>
           </div>
         </section>
       </div>
-    </>
-  );
-}
-
-function Products({ prods, setP }: { prods: AdminProduct[]; setP: (id: number, patch: Partial<AdminProduct>) => void }) {
-  const [pq, setPq] = useState('');
-  const nq = norm(pq.trim());
-  const rows = prods.filter((p) => !nq || norm(`${p.name} ${p.sku} ${p.cat}`).includes(nq));
-
-  return (
-    <>
-      <div className="top">
-        <h1 className="h1">Produtos</h1>
-        <p className="sub">Ajuste preço, estoque e visibilidade. As alterações valem só nesta demonstração.</p>
-      </div>
-      <div className="bar">
-        <label className="fld">
-          <SearchIcon />
-          <input type="search" placeholder="Buscar produto ou SKU" aria-label="Buscar produto ou SKU" value={pq} onChange={(e) => setPq(e.target.value)} />
-        </label>
-      </div>
-      <section className="card">
-        <div className="tw">
-          <table>
-            <thead>
-              <tr>
-                <th>Produto</th>
-                <th>Categoria</th>
-                <th>Preço (R$)</th>
-                <th>Estoque</th>
-                <th>Visível na loja</th>
-              </tr>
-            </thead>
-            <tbody>
-              {rows.map((p) => (
-                <tr key={p.id}>
-                  <td>
-                    <strong style={{ fontWeight: 500 }}>{p.name}</strong>
-                    <div className="sku">
-                      {p.sku} · {p.kindText}
-                    </div>
-                  </td>
-                  <td>{p.cat}</td>
-                  <td>
-                    <input
-                      className="inp"
-                      inputMode="decimal"
-                      aria-label={`Preço de ${p.name}`}
-                      value={p.price}
-                      onChange={(e) => setP(p.id, { price: e.target.value })}
-                    />
-                  </td>
-                  <td>
-                    <div className="st" role="group" aria-label={`Estoque de ${p.name}`}>
-                      <button onClick={() => !p.derived && setP(p.id, { stock: Math.max(0, p.stock - 1) })} aria-label="Diminuir estoque">
-                        −
-                      </button>
-                      <span>{p.derived ? `${p.stock} (derivado)` : p.stock}</span>
-                      <button onClick={() => !p.derived && setP(p.id, { stock: p.stock + 1 })} aria-label="Aumentar estoque">
-                        +
-                      </button>
-                    </div>
-                  </td>
-                  <td>
-                    <label className="sw">
-                      <input type="checkbox" checked={p.active} onChange={() => setP(p.id, { active: !p.active })} />
-                      <span>{p.active ? 'Visível' : 'Oculto'}</span>
-                    </label>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-        <p className="note" style={{ marginTop: 12 }}>
-          Kits compostos têm disponibilidade derivada dos componentes e não possuem estoque próprio editável. Ajustes manuais de estoque
-          pedem um motivo na versão final.
-        </p>
-      </section>
     </>
   );
 }
@@ -302,7 +356,7 @@ function Orders({ orders, setStatus }: { orders: AdminOrder[]; setStatus: (id: n
       </div>
       <section className="card">
         <div className="tw">
-          <table>
+          <table className="cartoes">
             <thead>
               <tr>
                 <th>Pedido</th>
@@ -316,12 +370,12 @@ function Orders({ orders, setStatus }: { orders: AdminOrder[]; setStatus: (id: n
             <tbody>
               {rows.map((o) => (
                 <tr key={o.id}>
-                  <td>#{o.id}</td>
-                  <td>{o.date}</td>
-                  <td>{o.customer}</td>
-                  <td>{o.items}</td>
-                  <td>{fmt(o.total)}</td>
-                  <td>
+                  <td className="c-tit">#{o.id}</td>
+                  <td className="c-dado" data-label="Data">{o.date}</td>
+                  <td className="c-dado c-largo" data-label="Cliente">{o.customer}</td>
+                  <td className="c-dado" data-label="Itens">{o.items}</td>
+                  <td className="c-dado" data-label="Total">{fmt(o.total)}</td>
+                  <td className="c-sit">
                     {isEditable(o.status) ? (
                       <label>
                         <span className="sr-only">Status do pedido {o.id}</span>

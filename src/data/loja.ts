@@ -2,9 +2,10 @@
 // Só roda no servidor. O visitante recebe disponível sim/não, nunca quantidade (CAT-DEC-024).
 
 import { cache } from 'react';
+import { urlFoto } from '../lib/fotos';
 import { supabasePublico } from '../lib/supabase/public';
 import type { Database } from '../lib/database.types';
-import { toneOf, type Category, type KitComponent, type Product, type ProductKind, type Variant, type VariantGroup } from './catalog';
+import { toneOf, type Category, type Foto, type KitComponent, type Product, type ProductKind, type Variant, type VariantGroup } from './catalog';
 
 export interface Catalogo {
   categories: Category[];
@@ -31,7 +32,9 @@ function precoAgora(v: { price_cents: number; promo_price_cents: number | null; 
     v.promo_ends_at !== null &&
     Date.parse(v.promo_starts_at) <= agora &&
     agora <= Date.parse(v.promo_ends_at);
-  return valendo ? { price: v.promo_price_cents!, compare: v.price_cents } : { price: v.price_cents, compare: null };
+  return valendo
+    ? { price: v.promo_price_cents!, compare: v.price_cents, promoEnds: v.promo_ends_at }
+    : { price: v.price_cents, compare: null, promoEnds: null };
 }
 
 function falha(etapa: string, erro: { message: string } | null): never {
@@ -49,7 +52,8 @@ export const getCatalogo = cache(async (): Promise<Catalogo> => {
       .select(
         `id, slug, name, short_description, description, material, kind, sale_unit, is_new, is_featured,
          product_categories ( categories ( slug, name, position ) ),
-         product_variants ( id, sku, attributes, price_cents, promo_price_cents, promo_starts_at, promo_ends_at, position, active )`,
+         product_variants ( id, sku, attributes, price_cents, promo_price_cents, promo_starts_at, promo_ends_at, position, active ),
+         product_images ( storage_path, alt, position, is_cover )`,
       )
       .order('name'),
     db.from('kit_components').select('kit_variant_id, component_variant_id, quantity'),
@@ -97,6 +101,11 @@ export const getCatalogo = cache(async (): Promise<Catalogo> => {
         });
     }
 
+    // Capa primeiro, depois a ordem cadastrada.
+    const photos: Foto[] = [...p.product_images]
+      .sort((a, b) => Number(b.is_cover) - Number(a.is_cover) || a.position - b.position)
+      .map((f) => ({ src: urlFoto(f.storage_path, 'g'), thumb: urlFoto(f.storage_path, 'p'), alt: f.alt }));
+
     const categorias = p.product_categories
       .flatMap((pc) => (pc.categories ? [pc.categories] : []))
       .sort((a, b) => a.position - b.position);
@@ -123,6 +132,7 @@ export const getCatalogo = cache(async (): Promise<Catalogo> => {
       tone: toneOf(variants[0].vals),
       bg: i % 4,
       comps,
+      photos,
     });
   });
 

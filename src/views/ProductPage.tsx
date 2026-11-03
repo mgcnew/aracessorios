@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { useState } from 'react';
 import { Art } from '../components/Art';
+import { Midia } from '../components/Midia';
 import { HeartIcon } from '../components/Icons';
 import { ProductGrid } from '../components/ProductCard';
 import { SectionHead, Stepper } from '../components/ui';
@@ -24,6 +25,7 @@ const KIND_TEXT: Record<Product['kind'], string> = {
 };
 
 const UNIT_SHORT: Record<Product['unit'], string> = { par: 'par', unidade: 'un.', conjunto: 'conjunto' };
+const FIM_PROMO = new Intl.DateTimeFormat('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric', timeZone: 'America/Sao_Paulo' });
 
 function relatedTo(p: Product, all: Product[]): Product[] {
   const sameCat = all.filter((x) => x.id !== p.id && !x.isKit && x.catIds.some((c) => p.catIds.includes(c))).slice(0, 4);
@@ -44,6 +46,7 @@ export function ProductPage({ productId }: { productId: string }) {
   const isFav = favs.includes(p.id);
   const unitWord = p.unit;
   const art = artOf(p, cur);
+  const fotos = p.photos ?? [];
 
   const details = [
     { k: 'Material', v: p.material },
@@ -70,22 +73,47 @@ export function ProductPage({ productId }: { productId: string }) {
 
       <div className="pdp">
         <div>
-          <div className="gal-main">
-            <Art {...art} bg={GALLERY[gal].bg} rot={GALLERY[gal].rot} ratio="1 / 1.05" />
-          </div>
-          <div className="gal-t">
-            {GALLERY.map((g, i) => (
-              <button
-                key={i}
-                className={gal === i ? 'on' : ''}
-                onClick={() => setGal(i)}
-                aria-label={`Ver imagem ${i + 1} de 4`}
-                aria-pressed={gal === i}
-              >
-                <Art {...art} bg={g.bg} rot={g.rot} />
-              </button>
-            ))}
-          </div>
+          {fotos.length > 0 ? (
+            <>
+              <div className="gal-main">
+                <Midia foto={fotos[Math.min(gal, fotos.length - 1)]} tamanho="g" art={art} ratio="1 / 1.05" prioridade />
+              </div>
+              {fotos.length > 1 && (
+                <div className="gal-t">
+                  {fotos.map((f, i) => (
+                    <button
+                      key={f.src}
+                      className={gal === i ? 'on' : ''}
+                      onClick={() => setGal(i)}
+                      aria-label={`Ver foto ${i + 1} de ${fotos.length}`}
+                      aria-pressed={gal === i}
+                    >
+                      <Midia foto={{ ...f, alt: '' }} art={art} />
+                    </button>
+                  ))}
+                </div>
+              )}
+            </>
+          ) : (
+            <>
+              <div className="gal-main">
+                <Art {...art} bg={GALLERY[gal].bg} rot={GALLERY[gal].rot} ratio="1 / 1.05" />
+              </div>
+              <div className="gal-t">
+                {GALLERY.map((g, i) => (
+                  <button
+                    key={i}
+                    className={gal === i ? 'on' : ''}
+                    onClick={() => setGal(i)}
+                    aria-label={`Ver imagem ${i + 1} de 4`}
+                    aria-pressed={gal === i}
+                  >
+                    <Art {...art} bg={g.bg} rot={g.rot} />
+                  </button>
+                ))}
+              </div>
+            </>
+          )}
         </div>
 
         <div className="pdp-info">
@@ -96,9 +124,9 @@ export function ProductPage({ productId }: { productId: string }) {
             {cur.compare && cur.avail && <s>{fmt(cur.compare)}</s>}
           </div>
           <p className="note">Preço por {unitWord} · Valores ilustrativos</p>
-          {cur.compare && cur.avail && (
+          {cur.compare && cur.avail && cur.promoEnds && (
             <p className="note" style={{ marginTop: 4 }}>
-              Promoção ilustrativa · período fictício: 01/11 a 15/11/2026.
+              Promoção válida até {FIM_PROMO.format(new Date(cur.promoEnds))}.
             </p>
           )}
           <p style={{ marginTop: 18, color: 'var(--ink2)', fontSize: 17 }}>{p.desc}</p>

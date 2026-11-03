@@ -20,14 +20,16 @@ Projeto: loja virtual **própria** da AR Acessórios (semijoias, B2C, estoque pr
 - Nunca: migração destrutiva, deploy de produção, segredos no repositório, chave `service_role` no cliente.
 
 ## Fase atual
-**Fase 1 — Fundação** (autorizada em 03/11/2026). Autorizado: site em Next.js com dados fictícios; projeto Supabase com banco, login do painel e schema de catálogo e estoque (Módulo 01). **Não autorizado:** pagamento real, deploy de produção.
+**Fase 1 — Fundação** (autorizada em 03/11/2026): site em Next.js, projeto Supabase com banco, login do painel, schema de catálogo e estoque (Módulo 01) e CI.
+**Fase 2 — Catálogo e painel** (autorizada em 03/11/2026 pelo responsável): painel de estoque, cadastro de produtos, variações, kits e fotos, vitrine lendo do banco. Pendentes da cliente: Q-CAT-01 (atributos por tipo) e fotos reais; até lá, catálogo de demonstração.
+**Não autorizado:** pagamento real (Fase 3), deploy de produção.
 
 ## Estado atual (03/11/2026)
-- Banco `ar-acessorios-dev` (Supabase, São Paulo, ref `pmhipriryqsblhonysay`) montado com as migrações de `supabase/migrations/`, a carga de `supabase/seed.sql` e os 32 testes de `supabase/tests/catalogo_estoque.sql` passando.
+- Banco `ar-acessorios-dev` (Supabase, São Paulo, ref `pmhipriryqsblhonysay`) montado com as migrações de `supabase/migrations/`, a carga de `supabase/seed.sql` e os 35 testes de `supabase/tests/catalogo_estoque.sql` passando (`bash scripts/testar-banco.sh` no banco local; a CI roda a cada envio).
 - Admin do painel: `acess.ar05@gmail.com` (em `admin_members`).
-- A vitrine lê o catálogo do banco (`src/data/loja.ts` → `CatalogoProvider`), gerada a cada visita. **Ainda não testada no navegador contra o banco**: a rede da sessão bloqueava o Supabase. Próximo passo: testar a vitrine; depois login e painel de estoque usando `painel_estoque()` e `registrar_entrada/ajuste/contagem()`.
-- O painel (`/admin`) ainda é a demonstração com dados fixos de `src/admin/seed.ts`.
-- Ambiente: `cp .env.example .env.local`. A rede da sessão precisa permitir `pmhipriryqsblhonysay.supabase.co`.
+- A vitrine lê o catálogo do banco (`src/data/loja.ts` → `CatalogoProvider`), gerada a cada visita. Testada no navegador contra o banco em 03/11/2026.
+- Login do painel (`/admin/entrar`, `src/proxy.ts`, `src/app/admin/acoes.ts`) e aba Estoque ligada ao banco (`src/admin/Estoque.tsx`, `src/app/admin/estoque-acoes.ts`) cadastro de produtos (`src/admin/Produtos.tsx`, `src/admin/ProdutoEditor.tsx`, `src/app/admin/produtos-acoes.ts`) e fotos (`src/admin/Fotos.tsx`, `src/app/admin/fotos-acoes.ts`; vitrine em `src/components/Midia.tsx`). Falta testar entrando com a conta real. Pedidos do painel ainda são demonstração (`src/admin/seed.ts`).
+- Ambiente: `cp .env.example .env.local`. A rede da sessão precisa permitir `pmhipriryqsblhonysay.supabase.co`, e na nuvem o servidor roda com `NODE_USE_ENV_PROXY=1` (senão o Node não usa o proxy e as páginas dão 500).
 - Regras que a interface deve respeitar: o visitante vê só disponível sim/não, nunca quantidade (CAT-DEC-024); kit composto não tem saldo próprio (CAT-DEC-019).
 
 ## Estrutura

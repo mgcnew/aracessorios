@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { Art } from '../components/Art';
+import { Midia } from '../components/Midia';
 import { ProductGrid } from '../components/ProductCard';
 import { SectionHead } from '../components/ui';
 import { artCatOf, CATEGORY_TONE, cheapestVariant, fmt, isAvailable } from '../data/catalog';
@@ -96,7 +97,7 @@ export function Home({ catalogo: { categories, products } }: { catalogo: Catalog
             return (
               <article key={k.id} className="kit">
                 <Link href={href} aria-label={`Ver ${k.name}`} tabIndex={-1} style={{ display: 'block' }}>
-                  <Art cat="kit" tone={k.tone} gem bg={k.bg} ratio="5 / 4" />
+                  <Midia foto={k.photos?.[0]} art={{ cat: 'kit', tone: k.tone, gem: true, bg: k.bg }} ratio="5 / 4" />
                 </Link>
                 <div className="kit-b">
                   <span className="eyebrow">{k.kind === 'kit_stocked' ? 'Kit com estoque próprio' : 'Kit composto'}</span>
