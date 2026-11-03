@@ -3,6 +3,7 @@ import { redirect } from 'next/navigation';
 import { Admin } from '../../admin/Admin';
 import { SemAcesso } from '../../admin/SemAcesso';
 import { carregarEstoque } from './estoque-acoes';
+import { carregarCatalogoPainel } from './produtos-acoes';
 import { supabaseServidor } from '../../lib/supabase/server';
 
 export const metadata: Metadata = { title: 'Painel' };
@@ -19,12 +20,14 @@ export default async function AdminPage() {
   const { data: admin, error } = await supabase.rpc('is_admin');
   if (error || admin !== true) return <SemAcesso email={auth.user.email ?? null} />;
 
-  const estoque = await carregarEstoque();
+  const [estoque, catalogo] = await Promise.all([carregarEstoque(), carregarCatalogoPainel()]);
   return (
     <Admin
       email={auth.user.email ?? ''}
       estoque={estoque.ok ? estoque.dados : []}
       erroEstoque={estoque.ok ? null : estoque.erro}
+      catalogo={catalogo.ok ? catalogo.dados : { categorias: [], produtos: [] }}
+      erroCatalogo={catalogo.ok ? null : catalogo.erro}
     />
   );
 }

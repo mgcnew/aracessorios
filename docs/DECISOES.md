@@ -112,7 +112,7 @@ Os IDs antigos foram mantidos para rastreabilidade com o pacote anterior (v2.1, 
 |---|---|
 | Q-CAT-01 | Atributos e unidade de venda aplicáveis a cada tipo (tabela no Módulo 01, §4). |
 | Q-CAT-02 | Hierarquia de categorias (só os seis tipos? subcategorias? coleções sazonais?). |
-| Q-CAT-03 | Baixa/reposição de cada modelo de kit; efeito de alterar componentes de um kit já vendido. |
+| Q-CAT-03 | Baixa/reposição de cada modelo de kit; efeito de alterar componentes de um kit já vendido. Até a resposta, o painel só deixa mudar a composição de kit **em rascunho** (escolha do responsável em 03/11/2026; não responde a questão). |
 
 ### 5.4 Experiência do cliente
 

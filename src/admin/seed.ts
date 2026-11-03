@@ -6,16 +6,6 @@ export type OrderStatus = (typeof ORDER_STATUSES)[number];
 /** Status que a dona pode escolher manualmente (fluxo de separação e envio). */
 export const EDITABLE_STATUSES: OrderStatus[] = ['Pago', 'Em separação', 'Enviado', 'Entregue'];
 
-export interface AdminProduct {
-  id: number;
-  name: string;
-  cat: string;
-  sku: string;
-  price: string;
-  active: boolean;
-  kindText: string;
-}
-
 export interface AdminOrder {
   id: number;
   date: string;
@@ -24,32 +14,6 @@ export interface AdminOrder {
   total: number; // centavos
   status: OrderStatus;
 }
-
-export const SEED_PRODUCTS: AdminProduct[] = (
-  [
-    ['Brinco Gota Aurora', 'Brincos', 'AR-BRC001', '89,90', true, 'Simples'],
-    ['Brinco Argola Lunar', 'Brincos', 'AR-BRC002', '69,90', true, 'Simples'],
-    ['Brinco Pérola Clássica', 'Brincos', 'AR-BRC003', '74,90', true, 'Simples'],
-    ['Colar Ponto de Luz', 'Colares', 'AR-COL001', '119,90', true, 'Simples'],
-    ['Colar Gotas de Orvalho', 'Colares', 'AR-COL002', '129,90', true, 'Simples'],
-    ['Pulseira Riviera Delicada', 'Pulseiras', 'AR-PUL001', '139,90', true, 'Simples'],
-    ['Pulseira Pérolas e Ouro', 'Pulseiras', 'AR-PUL003', '94,90', true, 'Simples'],
-    ['Anel Solitário Brilho', 'Anéis', 'AR-ANE001', '89,90', true, 'Simples'],
-    ['Anel Fio de Ouro', 'Anéis', 'AR-ANE003', '59,90', true, 'Simples'],
-    ['Tornozeleira Maré', 'Tornozeleiras', 'AR-TOR001', '74,90', false, 'Simples'],
-    ['Piercing Pontinho de Luz', 'Piercings', 'AR-PIE002', '39,90', true, 'Simples'],
-    ['Kit Presente Luz', 'Kits', 'AR-KIT001', '249,90', true, 'Kit com estoque próprio'],
-    ['Conjunto Aurora', 'Kits', 'AR-KIT002', '199,90', true, 'Kit composto'],
-  ] as const
-).map(([name, cat, sku, price, active, kindText], id) => ({
-  id,
-  name,
-  cat,
-  sku,
-  price,
-  active,
-  kindText,
-}));
 
 export const SEED_ORDERS: AdminOrder[] = (
   [

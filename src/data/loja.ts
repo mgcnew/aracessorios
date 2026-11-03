@@ -31,7 +31,9 @@ function precoAgora(v: { price_cents: number; promo_price_cents: number | null; 
     v.promo_ends_at !== null &&
     Date.parse(v.promo_starts_at) <= agora &&
     agora <= Date.parse(v.promo_ends_at);
-  return valendo ? { price: v.promo_price_cents!, compare: v.price_cents } : { price: v.price_cents, compare: null };
+  return valendo
+    ? { price: v.promo_price_cents!, compare: v.price_cents, promoEnds: v.promo_ends_at }
+    : { price: v.price_cents, compare: null, promoEnds: null };
 }
 
 function falha(etapa: string, erro: { message: string } | null): never {

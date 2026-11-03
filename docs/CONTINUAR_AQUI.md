@@ -12,7 +12,8 @@
 | Vitrine (Next.js) | **Testada contra o banco em 03/11/2026**: todos os itens do Passo 2 passaram |
 | Login do painel | **Parcialmente testado contra o banco** (falta entrar com a senha real): `/admin/entrar`, proteção de `/admin`, "acesso não autorizado", botão Sair |
 | Painel `/admin` — Estoque | **Ligado ao banco** (aba Estoque e "Estoque baixo" da visão geral). Falta testar entrando com a conta real |
-| Painel `/admin` — Produtos, Pedidos | Ainda demonstração com dados fixos de `src/admin/seed.ts`; não salva nada |
+| Painel `/admin` — Produtos | **Cadastro ligado ao banco** (sem fotos). Falta testar entrando com a conta real |
+| Painel `/admin` — Pedidos | Ainda demonstração com dados fixos de `src/admin/seed.ts`; não salva nada |
 | Pagamento, frete, pedidos | Fora da fase atual |
 
 ## Passo 1 — Preparar a sessão (5 min)
@@ -50,7 +51,7 @@ Conferido no navegador (computador e 390 px), sem erros no console:
 - [x] Sacola e favoritos persistem ao recarregar
 - [x] Sem rolagem lateral no celular
 
-Observação: o aviso "Promoção ilustrativa · período fictício: 01/11 a 15/11/2026" em `src/views/ProductPage.tsx` é texto fixo; quando houver promoção real, ele precisa vir das datas do banco.
+A página do produto mostra "Promoção válida até dd/mm/aaaa" com a data de fim cadastrada no banco.
 
 ## Passo 3 — Testar o login do painel
 
@@ -100,7 +101,43 @@ Falta conferir entrando com `acess.ar05@gmail.com` (precisa da senha, então fic
 - [ ] A vitrine reflete a mudança (ex.: entrada na Argola Lunar Ródio G faz ela deixar de aparecer esgotada)
 - [ ] Teste de dois ajustes simultâneos no mesmo SKU (duas abas)
 
-Depois disso, em outra etapa: cadastro e edição de produtos, variações, kits e fotos (bucket `produtos` já criado).
+## Passo 5 — Cadastro de produtos ✅ escrito (03/11/2026), sem fotos
+
+Feito, sem nenhuma mudança no banco (usa as regras de acesso que já existiam):
+
+| O quê | Onde |
+|---|---|
+| Lista de produtos (todos os status), busca, filtro por status | `src/admin/Produtos.tsx` |
+| Novo produto: nome, endereço (slug sugerido), tipo, unidade; nasce **rascunho** | idem |
+| Edição: dados, Novo/Destaque, categorias (só as existentes), variações (atributos, SKU, preço, promoção com datas, mínimo, ativa), status (ativar, tirar da loja, arquivar, apagar rascunho) | `src/admin/ProdutoEditor.tsx` |
+| Peças do kit composto, **só em rascunho** (Q-CAT-03) | idem |
+| Ações de servidor e mensagens do banco em português | `src/app/admin/produtos-acoes.ts`, `src/admin/produtos.ts` |
+
+- Cada bloco salva sozinho (não há "salvar tudo"). Para ativar, o produto precisa de ao menos uma variação ativa e, se for kit composto, peças em toda variação ativa.
+- Variação nova nasce com saldo 0 (o banco cria a linha); a quantidade entra pela aba Estoque.
+- Criar categoria nova ficou de fora (Q-CAT-02 em aberto).
+- A aba Produtos de demonstração e `SEED_PRODUCTS` foram removidos.
+
+Conferido nesta sessão, numa página de teste temporária já apagada (produtos ativos lidos com a chave pública e um rascunho fictício): lista, filtros, slug sugerido, validações (promoção maior que o preço, SKU inválido), pendências para ativar, peças travadas em kit ativo, computador e 390 px sem rolagem lateral, sem erros no console. Criar produto **sem login** foi recusado pelo banco.
+
+Falta conferir entrando com `acess.ar05@gmail.com`:
+
+- [ ] Criar "Produto Teste" (rascunho): não aparece em `/loja`
+- [ ] Marcar uma categoria e salvar; editar descrição e salvar
+- [ ] Criar variação: aparece na aba Estoque com saldo 0
+- [ ] SKU repetido (ex.: `AR-BRC002-OURO-P`) mostra "Esse SKU já está em uso…"
+- [ ] Ativar: aparece na vitrine como esgotado; dar entrada no Estoque: fica disponível
+- [ ] Promoção com datas de hoje: vitrine mostra preço riscado e "Promoção válida até…"
+- [ ] Kit composto em rascunho: escolher peças, salvar, ativar; depois de ativo, peças travadas
+- [ ] Arquivar: some da vitrine
+- [ ] Apagar um rascunho sem movimentação de estoque (variação com entrada registrada não deixa apagar: arquive)
+- [ ] Ao final, arquivar ou apagar os produtos de teste
+
+## Passo 6 — Fotos dos produtos (próximo)
+
+- Envio pelo painel para o bucket `produtos` (já criado, até 5 MB, jpg/png/webp/avif), texto alternativo obrigatório, ordem e capa (`product_images`).
+- A vitrine passa a mostrar as fotos no lugar das ilustrações (`src/data/loja.ts`, cartões e página do produto).
+- Apresentar o plano antes (envio direto do navegador com a sessão, limites, o que fazer com foto órfã).
 
 ## Pendências que não são de código
 
@@ -114,4 +151,4 @@ Depois disso, em outra etapa: cadastro e edição de produtos, variações, kits
 
 ## Como pedir na próxima sessão
 
-> Leia o AGENTS.md e o docs/CONTINUAR_AQUI.md e continue do Passo 1 (depois: testar login e estoque com a conta real, Passos 3 e 4).
+> Leia o AGENTS.md e o docs/CONTINUAR_AQUI.md e continue do Passo 1 (depois: testar login, estoque e cadastro com a conta real, Passos 3 a 5; ou seguir para o Passo 6).

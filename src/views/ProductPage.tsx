@@ -24,6 +24,7 @@ const KIND_TEXT: Record<Product['kind'], string> = {
 };
 
 const UNIT_SHORT: Record<Product['unit'], string> = { par: 'par', unidade: 'un.', conjunto: 'conjunto' };
+const FIM_PROMO = new Intl.DateTimeFormat('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric', timeZone: 'America/Sao_Paulo' });
 
 function relatedTo(p: Product, all: Product[]): Product[] {
   const sameCat = all.filter((x) => x.id !== p.id && !x.isKit && x.catIds.some((c) => p.catIds.includes(c))).slice(0, 4);
@@ -96,9 +97,9 @@ export function ProductPage({ productId }: { productId: string }) {
             {cur.compare && cur.avail && <s>{fmt(cur.compare)}</s>}
           </div>
           <p className="note">Preço por {unitWord} · Valores ilustrativos</p>
-          {cur.compare && cur.avail && (
+          {cur.compare && cur.avail && cur.promoEnds && (
             <p className="note" style={{ marginTop: 4 }}>
-              Promoção ilustrativa · período fictício: 01/11 a 15/11/2026.
+              Promoção válida até {FIM_PROMO.format(new Date(cur.promoEnds))}.
             </p>
           )}
           <p style={{ marginTop: 18, color: 'var(--ink2)', fontSize: 17 }}>{p.desc}</p>

@@ -30,6 +30,8 @@ export interface Variant {
   price: number;
   /** Preço normal quando há promoção valendo; senão, null. */
   compare: number | null;
+  /** Fim da promoção que está valendo (ISO), para o aviso na página; senão, null. */
+  promoEnds?: string | null;
   avail: boolean;
 }
 

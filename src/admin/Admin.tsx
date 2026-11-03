@@ -5,9 +5,12 @@ import { useState, type ReactNode } from 'react';
 import { sair } from '../app/admin/acoes';
 import { Estoque, Situacao } from './Estoque';
 import { descreverVariacao, type LinhaEstoque } from './estoque';
-import { CheckIcon, CrossIcon, SearchIcon } from '../components/Icons';
+import { Produtos } from './Produtos';
+import type { CatalogoPainel } from './produtos';
+import { carregarEstoque } from '../app/admin/estoque-acoes';
+import { CheckIcon, CrossIcon } from '../components/Icons';
 import { LogoMark } from '../components/ui';
-import { fmt, norm } from '../data/catalog';
+import { fmt } from '../data/catalog';
 import { useTheme } from '../store';
 import {
   ASK_LIST,
@@ -16,9 +19,7 @@ import {
   EDITABLE_STATUSES,
   ORDER_STATUSES,
   SEED_ORDERS,
-  SEED_PRODUCTS,
   type AdminOrder,
-  type AdminProduct,
   type OrderStatus,
 } from './seed';
 
@@ -48,19 +49,26 @@ export function Admin({
   email,
   estoque,
   erroEstoque,
+  catalogo: catalogoInicial,
+  erroCatalogo,
 }: {
   email: string;
   estoque: LinhaEstoque[];
   erroEstoque: string | null;
+  catalogo: CatalogoPainel;
+  erroCatalogo: string | null;
 }) {
   const { dark, toggleDark } = useTheme();
   const [view, setView] = useState<View>('overview');
   const [linhas, setLinhas] = useState<LinhaEstoque[]>(estoque);
-  const [prods, setProds] = useState<AdminProduct[]>(SEED_PRODUCTS);
+  const [catalogo, setCatalogo] = useState<CatalogoPainel>(catalogoInicial);
   const [orders, setOrders] = useState<AdminOrder[]>(SEED_ORDERS);
 
-  const setP = (id: number, patch: Partial<AdminProduct>) =>
-    setProds((ps) => ps.map((p) => (p.id === id ? { ...p, ...patch } : p)));
+  // Mudou o cadastro (variação nova, desativada…): o estoque também muda.
+  const aoMudarCatalogo = (c: CatalogoPainel) => {
+    setCatalogo(c);
+    carregarEstoque().then((r) => r.ok && setLinhas(r.dados));
+  };
   const setOrderStatus = (id: number, status: OrderStatus) =>
     setOrders((os) => os.map((o) => (o.id === id ? { ...o, status } : o)));
 
@@ -99,7 +107,7 @@ export function Admin({
         </div>
       </aside>
       <main className="main">
-        {view !== 'stock' && (
+        {(view === 'overview' || view === 'orders' || view === 'perms') && (
           <span className="demo" role="note">
             {view === 'overview'
               ? 'Pedidos e vendas são demonstração · o estoque é real'
@@ -110,7 +118,7 @@ export function Admin({
           <Overview linhas={linhas} orders={orders} goOrders={() => setView('orders')} goStock={() => setView('stock')} />
         )}
         {view === 'stock' && <Estoque linhas={linhas} setLinhas={setLinhas} erroCarga={erroEstoque} />}
-        {view === 'products' && <Products prods={prods} setP={setP} />}
+        {view === 'products' && <Produtos catalogo={catalogo} erroCarga={erroCatalogo} aoMudar={aoMudarCatalogo} />}
         {view === 'orders' && <Orders orders={orders} setStatus={setOrderStatus} />}
         {view === 'perms' && <Permissions />}
       </main>
@@ -228,72 +236,6 @@ function Overview({
           </div>
         </section>
       </div>
-    </>
-  );
-}
-
-function Products({ prods, setP }: { prods: AdminProduct[]; setP: (id: number, patch: Partial<AdminProduct>) => void }) {
-  const [pq, setPq] = useState('');
-  const nq = norm(pq.trim());
-  const rows = prods.filter((p) => !nq || norm(`${p.name} ${p.sku} ${p.cat}`).includes(nq));
-
-  return (
-    <>
-      <div className="top">
-        <h1 className="h1">Produtos</h1>
-        <p className="sub">Ajuste preço e visibilidade. As alterações valem só nesta demonstração; o estoque fica na aba Estoque.</p>
-      </div>
-      <div className="bar">
-        <label className="fld">
-          <SearchIcon />
-          <input type="search" placeholder="Buscar produto ou SKU" aria-label="Buscar produto ou SKU" value={pq} onChange={(e) => setPq(e.target.value)} />
-        </label>
-      </div>
-      <section className="card">
-        <div className="tw">
-          <table>
-            <thead>
-              <tr>
-                <th>Produto</th>
-                <th>Categoria</th>
-                <th>Preço (R$)</th>
-                <th>Visível na loja</th>
-              </tr>
-            </thead>
-            <tbody>
-              {rows.map((p) => (
-                <tr key={p.id}>
-                  <td>
-                    <strong style={{ fontWeight: 500 }}>{p.name}</strong>
-                    <div className="sku">
-                      {p.sku} · {p.kindText}
-                    </div>
-                  </td>
-                  <td>{p.cat}</td>
-                  <td>
-                    <input
-                      className="inp"
-                      inputMode="decimal"
-                      aria-label={`Preço de ${p.name}`}
-                      value={p.price}
-                      onChange={(e) => setP(p.id, { price: e.target.value })}
-                    />
-                  </td>
-                  <td>
-                    <label className="sw">
-                      <input type="checkbox" checked={p.active} onChange={() => setP(p.id, { active: !p.active })} />
-                      <span>{p.active ? 'Visível' : 'Oculto'}</span>
-                    </label>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-        <p className="note" style={{ marginTop: 12 }}>
-          Cadastro e edição de produtos de verdade virão numa próxima etapa.
-        </p>
-      </section>
     </>
   );
 }
