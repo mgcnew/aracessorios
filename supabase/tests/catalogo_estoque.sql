@@ -219,6 +219,24 @@ begin
 end $$;
 reset role;
 
+-- Fotos: o admin lê os arquivos do bucket (necessário para apagar); visitante e cliente não listam.
+insert into storage.objects (bucket_id, name) values ('produtos', 'teste/arquivo-de-teste.webp');
+set local role anon;
+select set_config('request.jwt.claims', '{"role":"anon"}', true);
+insert into resultados (teste, ok, detalhe)
+  select 'visitante não lista arquivos de fotos', count(*) = 0, count(*) || ' arquivos' from storage.objects where bucket_id = 'produtos' and name = 'teste/arquivo-de-teste.webp';
+reset role;
+set local role authenticated;
+select set_config('request.jwt.claims', '{"role":"authenticated","sub":"22222222-2222-2222-2222-222222222222"}', true);
+insert into resultados (teste, ok, detalhe)
+  select 'cliente não lista arquivos de fotos', count(*) = 0, count(*) || ' arquivos' from storage.objects where bucket_id = 'produtos' and name = 'teste/arquivo-de-teste.webp';
+reset role;
+set local role authenticated;
+select set_config('request.jwt.claims', '{"role":"authenticated","sub":"11111111-1111-1111-1111-111111111111"}', true);
+insert into resultados (teste, ok, detalhe)
+  select 'admin lê os arquivos de fotos (para poder apagá-los)', count(*) = 1, count(*) || ' arquivos' from storage.objects where bucket_id = 'produtos' and name = 'teste/arquivo-de-teste.webp';
+reset role;
+
 -- Histórico também é imutável para o dono do banco.
 do $$
 begin

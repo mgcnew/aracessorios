@@ -167,6 +167,7 @@ function Status({ p, aoMudar, voltar }: { p: ProdutoPainel; aoMudar: AoMudar; vo
                   () => apagarProduto(p.id),
                   (c) => {
                     aoMudar(c);
+                    if (c.extra) window.alert(c.extra);
                     voltar();
                   },
                 );

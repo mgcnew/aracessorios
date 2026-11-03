@@ -63,6 +63,8 @@ export interface ProdutoPainel {
 export interface CatalogoPainel {
   categorias: CategoriaPainel[];
   produtos: ProdutoPainel[];
+  /** Algo deu certo só em parte (ex.: arquivo de foto que ficou no armazenamento). */
+  aviso?: string;
 }
 
 // Atributos da variação (D-011, CAT-DEC-022) ----------------------------------

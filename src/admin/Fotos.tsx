@@ -114,7 +114,14 @@ export function Fotos({ p, aoMudar }: { p: ProdutoPainel; aoMudar: (c: CatalogoP
               mover={mover}
               capa={() => acao.rodar(() => definirCapa(f.id), aoMudar)}
               apagar={() => {
-                if (window.confirm('Apagar esta foto? Ela sai da loja e do armazenamento.')) acao.rodar(() => apagarFoto(f.id), aoMudar);
+                if (window.confirm('Apagar esta foto? Ela sai da loja e do armazenamento.'))
+                  acao.rodar(
+                    () => apagarFoto(f.id),
+                    (c) => {
+                      aoMudar(c);
+                      if (c.aviso) acao.setErro(c.aviso);
+                    },
+                  );
               }}
               aoMudar={aoMudar}
             />

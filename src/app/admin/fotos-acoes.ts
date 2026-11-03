@@ -100,7 +100,8 @@ export async function apagarFoto(fotoId: string) {
   const foto = data?.[0];
   if (!foto) return falha('Foto não encontrada.');
 
-  const arquivos = await db.storage.from(BUCKET_FOTOS).remove([foto.storage_path, caminhoPequeno(foto.storage_path)]);
+  const caminhos = [foto.storage_path, caminhoPequeno(foto.storage_path)];
+  const arquivos = await db.storage.from(BUCKET_FOTOS).remove(caminhos);
 
   if (foto.is_cover) {
     const proxima = await db
@@ -112,6 +113,11 @@ export async function apagarFoto(fotoId: string) {
     if (proxima.data?.[0]) await db.from('product_images').update({ is_cover: true }).eq('id', proxima.data[0].id);
   }
   const r = await recarregar();
-  if (r.ok && arquivos.error) return falha(`Foto tirada do produto, mas o arquivo não saiu do armazenamento: ${arquivos.error.message}`);
-  return r;
+  // O registro já saiu: devolve a lista atualizada e, se sobrou arquivo, um aviso (remove() não dá erro quando não acha).
+  const saiu = arquivos.data?.length ?? 0;
+  const aviso =
+    arquivos.error || saiu < caminhos.length
+      ? `Foto tirada do produto, mas ${caminhos.length - saiu} arquivo(s) ficaram no armazenamento${arquivos.error ? `: ${arquivos.error.message}` : ''}.`
+      : undefined;
+  return r.ok ? { ok: true as const, dados: { ...r.dados, aviso } } : r;
 }

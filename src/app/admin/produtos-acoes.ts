@@ -197,8 +197,12 @@ export async function apagarProduto(id: string) {
   if (!data || data.length === 0) return falha('Só produtos em rascunho podem ser apagados. Arquive o produto.');
   // O banco apagou os registros das fotos; os arquivos saem do Storage aqui.
   const caminhos = (fotos.data ?? []).flatMap((f) => [f.storage_path, caminhoPequeno(f.storage_path)]);
-  if (caminhos.length) await db.storage.from(BUCKET_FOTOS).remove(caminhos);
-  return depois(null);
+  let sobrou = 0;
+  if (caminhos.length) {
+    const r = await db.storage.from(BUCKET_FOTOS).remove(caminhos);
+    sobrou = caminhos.length - (r.data?.length ?? 0);
+  }
+  return depois(sobrou ? `Produto apagado, mas ${sobrou} arquivo(s) de foto ficaram no armazenamento.` : null);
 }
 
 // Variações ----------------------------------------------------------------------

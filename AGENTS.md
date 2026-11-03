@@ -25,7 +25,7 @@ Projeto: loja virtual **própria** da AR Acessórios (semijoias, B2C, estoque pr
 **Não autorizado:** pagamento real (Fase 3), deploy de produção.
 
 ## Estado atual (03/11/2026)
-- Banco `ar-acessorios-dev` (Supabase, São Paulo, ref `pmhipriryqsblhonysay`) montado com as migrações de `supabase/migrations/`, a carga de `supabase/seed.sql` e os 32 testes de `supabase/tests/catalogo_estoque.sql` passando.
+- Banco `ar-acessorios-dev` (Supabase, São Paulo, ref `pmhipriryqsblhonysay`) montado com as migrações de `supabase/migrations/`, a carga de `supabase/seed.sql` e os 35 testes de `supabase/tests/catalogo_estoque.sql` passando (`bash scripts/testar-banco.sh` no banco local; a CI roda a cada envio).
 - Admin do painel: `acess.ar05@gmail.com` (em `admin_members`).
 - A vitrine lê o catálogo do banco (`src/data/loja.ts` → `CatalogoProvider`), gerada a cada visita. Testada no navegador contra o banco em 03/11/2026.
 - Login do painel (`/admin/entrar`, `src/proxy.ts`, `src/app/admin/acoes.ts`) e aba Estoque ligada ao banco (`src/admin/Estoque.tsx`, `src/app/admin/estoque-acoes.ts`) cadastro de produtos (`src/admin/Produtos.tsx`, `src/admin/ProdutoEditor.tsx`, `src/app/admin/produtos-acoes.ts`) e fotos (`src/admin/Fotos.tsx`, `src/app/admin/fotos-acoes.ts`; vitrine em `src/components/Midia.tsx`). Falta testar entrando com a conta real. Pedidos do painel ainda são demonstração (`src/admin/seed.ts`).

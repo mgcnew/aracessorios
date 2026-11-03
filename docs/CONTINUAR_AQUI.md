@@ -7,7 +7,7 @@
 | Parte | Situação |
 |---|---|
 | Documentação e decisões | Consolidadas em `docs/DECISOES.md` (fonte única) |
-| Banco `ar-acessorios-dev` (Supabase, São Paulo, ref `pmhipriryqsblhonysay`) | Pronto: 3 migrações, carga de demonstração (19 produtos, 73 variações, 3 kits) e **32 testes passando** |
+| Banco `ar-acessorios-dev` (Supabase, São Paulo, ref `pmhipriryqsblhonysay`) | Pronto: 4 migrações, carga de demonstração (19 produtos, 73 variações, 3 kits) e **35 testes passando** |
 | Admin do painel | `acess.ar05@gmail.com` criado e liberado em `admin_members` |
 | Vitrine (Next.js) | **Testada contra o banco em 03/11/2026**: todos os itens do Passo 2 passaram |
 | Login do painel | **Parcialmente testado contra o banco** (falta entrar com a senha real): `/admin/entrar`, proteção de `/admin`, "acesso não autorizado", botão Sair |
@@ -169,7 +169,7 @@ Supabase local completo (`npx supabase start`), contas de teste só no banco loc
 
 Defeitos encontrados:
 - Confirmação "Variação criada" sumia — corrigido.
-- Apagar foto não apagava os arquivos do Storage: o Storage precisa **ler** o arquivo antes de apagar e não há regra de leitura para o admin — correção em andamento (migração com regra "painel lê fotos").
+- Apagar foto não apagava os arquivos do Storage: o Storage precisa **ler** o arquivo antes de apagar e não havia regra de leitura para o admin — **corrigido** com a migração `20261103090000_fotos_leitura_painel.sql` (aplicada no `ar-acessorios-dev` em 03/11/2026), testes 32–34 e aviso no painel quando sobrar arquivo. Depois disso, o roteiro passou com as verificações de armazenamento (foto apagada e rascunho com foto não deixam arquivo solto).
 
 Como repetir: `npx supabase start`, criar um usuário pelo Auth local e inseri-lo em `admin_members`, rodar o site com `NEXT_PUBLIC_SUPABASE_URL`/`NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` do `npx supabase status`.
 
