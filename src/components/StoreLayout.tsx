@@ -91,25 +91,25 @@ export function StoreLayout({ children }: { children: ReactNode }) {
       <footer className="foot">
         <div className="wrap">
           <div className="foot-g">
-            <div>
-              <Link className="logo-btn" href="/" aria-label="AR Acessórios — início" style={{ marginBottom: 14 }}>
+            <div className="foot-marca">
+              <Link className="logo-btn" href="/" aria-label="AR Acessórios — início">
                 <LogoMark />
               </Link>
               <p>Semijoias delicadas para o dia a dia e para presentear.</p>
             </div>
-            <div>
-              <h4>Loja</h4>
-              <ul>
+            <nav aria-labelledby="foot-loja">
+              <h4 id="foot-loja">Loja</h4>
+              <ul className="foot-cats">
                 {categories.map((c) => (
                   <li key={c.id}>
                     <Link href={catalogHref({ cat: c.id })}>{c.name}</Link>
                   </li>
                 ))}
               </ul>
-            </div>
-            <div>
-              <h4>Institucional</h4>
-              <ul>
+            </nav>
+            <nav aria-labelledby="foot-ar">
+              <h4 id="foot-ar">Institucional</h4>
+              <ul className="foot-inst">
                 <li>
                   <Link href="/sobre">Sobre a AR</Link>
                 </li>
@@ -119,25 +119,18 @@ export function StoreLayout({ children }: { children: ReactNode }) {
                 <li>
                   <Link href="/sacola">Sacola</Link>
                 </li>
-                <li>
-                  <Link href="/admin">Painel da loja (demonstração)</Link>
-                </li>
               </ul>
-            </div>
-            <div>
-              <h4>Aviso de demonstração</h4>
-              <p>
-                Produtos, preços, kits e endereços exibidos são fictícios e servem apenas para apresentação do protótipo. Nenhuma
-                compra ou pagamento é realizado.
-              </p>
-              <button className="lnk" onClick={clearDemo}>
-                Limpar sacola e favoritos de demonstração
-              </button>
-            </div>
+            </nav>
           </div>
+          {/* O aviso completo fica na faixa do topo (brief: visível em todas as páginas); aqui, uma linha. */}
           <div className="foot-b">
-            <span>© AR Acessórios — protótipo visual</span>
-            <span>Valores em R$ · dados demonstrativos</span>
+            <span>© AR Acessórios · Protótipo: produtos e preços fictícios, nenhuma compra é realizada.</span>
+            <span className="foot-acoes">
+              <button className="lnk" onClick={clearDemo}>
+                Limpar dados de demonstração
+              </button>
+              <Link href="/admin">Painel da loja</Link>
+            </span>
           </div>
         </div>
       </footer>
