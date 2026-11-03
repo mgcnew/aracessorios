@@ -10,7 +10,8 @@
 | Banco `ar-acessorios-dev` (Supabase, São Paulo, ref `pmhipriryqsblhonysay`) | Pronto: 3 migrações, carga de demonstração (19 produtos, 73 variações, 3 kits) e **32 testes passando** |
 | Admin do painel | `acess.ar05@gmail.com` criado e liberado em `admin_members` |
 | Vitrine (Next.js) | **Lê do banco, mas não foi testada no navegador**: a rede da sessão anterior bloqueava o Supabase |
-| Painel `/admin` | Ainda é a demonstração, com dados fixos de `src/admin/seed.ts`; não salva nada |
+| Login do painel | **Escrito, não testado contra o banco** (rede bloqueada de novo): `/admin/entrar`, proteção de `/admin`, "acesso não autorizado", botão Sair |
+| Painel `/admin` | Atrás do login, mas o conteúdo ainda é a demonstração com dados fixos de `src/admin/seed.ts`; não salva nada |
 | Pagamento, frete, pedidos | Fora da fase atual |
 
 ## Passo 1 — Preparar a sessão (5 min)
@@ -48,12 +49,26 @@ Conferir em http://localhost:3000, no computador e no celular (390 px):
 
 Se algo falhar, a leitura está em `src/data/loja.ts`.
 
-## Passo 3 — Login do painel
+## Passo 3 — Testar o login do painel
 
-- Usar `@supabase/ssr` (já instalado): cliente no navegador para o login e cliente no servidor com cookies.
-- Tela de login em `/admin/entrar` (e-mail e senha). Sem cadastro: o cadastro público deve estar desligado no Supabase.
-- Proteger `/admin` no servidor: sem sessão vai para o login; com sessão de quem não é admin (`is_admin()` falso), mostrar "acesso não autorizado".
-- Botão "Sair".
+Já feito (sessão de 03/11/2026, sem acesso ao banco):
+
+- `src/lib/supabase/server.ts`: cliente no servidor com cookies (`@supabase/ssr`).
+- `src/proxy.ts`: renova a sessão em `/admin/*`; sem sessão vai para `/admin/entrar`; com sessão, `/admin/entrar` volta para `/admin`.
+- `src/app/admin/acoes.ts`: ações de servidor `entrar` e `sair`.
+- `/admin/entrar` (`src/admin/Entrar.tsx`): e-mail e senha, sem cadastro.
+- `src/app/admin/page.tsx`: confere de novo com `getUser()` e `is_admin()`; quem não é admin vê `src/admin/SemAcesso.tsx`.
+- Botão "Sair" e e-mail de quem entrou na barra lateral do painel.
+
+Conferido sem banco: `/admin` sem sessão redireciona para o login; a tela funciona a 390 px e no computador; build e typecheck passam.
+
+Falta conferir com a rede liberada:
+
+- [ ] Entrar com `acess.ar05@gmail.com` abre o painel; recarregar mantém a sessão
+- [ ] Senha errada mostra "E-mail ou senha incorretos."
+- [ ] Conta que não está em `admin_members` vê "Acesso não autorizado"
+- [ ] "Sair" volta para o login e `/admin` deixa de abrir
+- [ ] No Supabase (Authentication → Sign In / Providers), **cadastro público desligado** ("Allow new users to sign up")
 
 ## Passo 4 — Painel de estoque de verdade
 
@@ -84,4 +99,4 @@ Depois disso, em outra etapa: cadastro e edição de produtos, variações, kits
 
 ## Como pedir na próxima sessão
 
-> Leia o AGENTS.md e o docs/CONTINUAR_AQUI.md e continue do Passo 1.
+> Leia o AGENTS.md e o docs/CONTINUAR_AQUI.md e continue do Passo 1 (depois Passos 2 e 3: testar vitrine e login contra o banco).

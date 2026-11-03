@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { useState, type ReactNode } from 'react';
+import { sair } from '../app/admin/acoes';
 import { CheckIcon, CrossIcon, SearchIcon } from '../components/Icons';
 import { LogoMark } from '../components/ui';
 import { fmt, norm } from '../data/catalog';
@@ -40,7 +41,7 @@ const TAG: Record<OrderStatus, string> = {
 const PAID: OrderStatus[] = ['Pago', 'Em separação', 'Enviado', 'Entregue'];
 const isEditable = (s: OrderStatus) => s === 'Pago' || s === 'Em separação' || s === 'Enviado';
 
-export function Admin() {
+export function Admin({ email }: { email: string }) {
   const { dark, toggleDark } = useTheme();
   const [view, setView] = useState<View>('overview');
   const [prods, setProds] = useState<AdminProduct[]>(SEED_PRODUCTS);
@@ -77,6 +78,12 @@ export function Admin() {
           <button className="sl" onClick={toggleDark} aria-pressed={dark}>
             {dark ? 'Modo claro' : 'Modo noturno'}
           </button>
+          <form action={sair} className="sair">
+            {email && <small className="quem">{email}</small>}
+            <button className="sl" type="submit">
+              Sair
+            </button>
+          </form>
         </div>
       </aside>
       <main className="main">

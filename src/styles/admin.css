@@ -70,3 +70,18 @@
 .adm .note{font-size:13.5px;color:var(--ink2)}
 .adm .btn{display:inline-flex!important;align-items:center;min-height:44px;padding:0 20px!important;border-radius:999px;border:1px solid var(--ink)!important;font-size:14px}
 @media (prefers-reduced-motion:reduce){.adm *{transition:none!important}}
+/* Sair (barra lateral) */
+.adm .sair{display:flex;flex-direction:column;gap:6px}
+@media (max-width:899px){.adm .sair{flex-direction:row;align-items:center;flex-wrap:wrap}}
+.adm .quem{font-size:12.5px;color:var(--ink2);overflow-wrap:anywhere;padding:0 4px}
+/* Tela de login e de acesso não autorizado */
+.adm.auth{display:grid;place-items:center;padding:24px 16px}
+.adm .auth-box{width:100%;max-width:420px;background:var(--surf);border:1px solid var(--line);border-radius:24px;padding:28px 22px;display:flex;flex-direction:column;gap:14px}
+@media (min-width:600px){.adm .auth-box{padding:36px 34px}}
+.adm .auth-form{display:flex;flex-direction:column;gap:14px;margin-top:6px}
+.adm .auth-l{display:flex;flex-direction:column;gap:6px;font-size:14px;color:var(--ink2)}
+.adm .auth-i{height:48px;border-radius:12px;border:1px solid var(--line);background:var(--field);padding:0 14px;font:inherit;font-size:16px;color:var(--ink);width:100%}
+.adm .auth-err{background:var(--bad);color:var(--badt);border-radius:12px;padding:10px 14px;font-size:14px}
+.adm .auth-btn{justify-content:center;background:var(--ink)!important;color:var(--bg)!important;min-height:48px}
+.adm .auth-btn:disabled{opacity:.6;cursor:wait}
+.adm .auth-back{align-self:flex-start}

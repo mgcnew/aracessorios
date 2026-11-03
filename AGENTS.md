@@ -26,7 +26,7 @@ Projeto: loja virtual **própria** da AR Acessórios (semijoias, B2C, estoque pr
 - Banco `ar-acessorios-dev` (Supabase, São Paulo, ref `pmhipriryqsblhonysay`) montado com as migrações de `supabase/migrations/`, a carga de `supabase/seed.sql` e os 32 testes de `supabase/tests/catalogo_estoque.sql` passando.
 - Admin do painel: `acess.ar05@gmail.com` (em `admin_members`).
 - A vitrine lê o catálogo do banco (`src/data/loja.ts` → `CatalogoProvider`), gerada a cada visita. **Ainda não testada no navegador contra o banco**: a rede da sessão bloqueava o Supabase. Próximo passo: testar a vitrine; depois login e painel de estoque usando `painel_estoque()` e `registrar_entrada/ajuste/contagem()`.
-- O painel (`/admin`) ainda é a demonstração com dados fixos de `src/admin/seed.ts`.
+- Login do painel escrito (`/admin/entrar`, `src/proxy.ts`, `src/app/admin/acoes.ts`), ainda não testado contra o banco. O conteúdo de `/admin` ainda é a demonstração com dados fixos de `src/admin/seed.ts`.
 - Ambiente: `cp .env.example .env.local`. A rede da sessão precisa permitir `pmhipriryqsblhonysay.supabase.co`.
 - Regras que a interface deve respeitar: o visitante vê só disponível sim/não, nunca quantidade (CAT-DEC-024); kit composto não tem saldo próprio (CAT-DEC-019).
 
