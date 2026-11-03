@@ -3,6 +3,8 @@
 import Link from 'next/link';
 import { useState, type ReactNode } from 'react';
 import { sair } from '../app/admin/acoes';
+import { Estoque, Situacao } from './Estoque';
+import { descreverVariacao, type LinhaEstoque } from './estoque';
 import { CheckIcon, CrossIcon, SearchIcon } from '../components/Icons';
 import { LogoMark } from '../components/ui';
 import { fmt, norm } from '../data/catalog';
@@ -20,10 +22,11 @@ import {
   type OrderStatus,
 } from './seed';
 
-type View = 'overview' | 'products' | 'orders' | 'perms';
+type View = 'overview' | 'stock' | 'products' | 'orders' | 'perms';
 
 const MENU: { label: string; view: View }[] = [
   { label: 'Visão geral', view: 'overview' },
+  { label: 'Estoque', view: 'stock' },
   { label: 'Produtos', view: 'products' },
   { label: 'Pedidos', view: 'orders' },
   { label: 'Permissões', view: 'perms' },
@@ -41,9 +44,18 @@ const TAG: Record<OrderStatus, string> = {
 const PAID: OrderStatus[] = ['Pago', 'Em separação', 'Enviado', 'Entregue'];
 const isEditable = (s: OrderStatus) => s === 'Pago' || s === 'Em separação' || s === 'Enviado';
 
-export function Admin({ email }: { email: string }) {
+export function Admin({
+  email,
+  estoque,
+  erroEstoque,
+}: {
+  email: string;
+  estoque: LinhaEstoque[];
+  erroEstoque: string | null;
+}) {
   const { dark, toggleDark } = useTheme();
   const [view, setView] = useState<View>('overview');
+  const [linhas, setLinhas] = useState<LinhaEstoque[]>(estoque);
   const [prods, setProds] = useState<AdminProduct[]>(SEED_PRODUCTS);
   const [orders, setOrders] = useState<AdminOrder[]>(SEED_ORDERS);
 
@@ -87,12 +99,17 @@ export function Admin({ email }: { email: string }) {
         </div>
       </aside>
       <main className="main">
-        <span className="demo" role="note">
-          Demonstração do painel · dados fictícios, nada é salvo de verdade
-        </span>
-        {view === 'overview' && (
-          <Overview prods={prods} orders={orders} goOrders={() => setView('orders')} goProducts={() => setView('products')} />
+        {view !== 'stock' && (
+          <span className="demo" role="note">
+            {view === 'overview'
+              ? 'Pedidos e vendas são demonstração · o estoque é real'
+              : 'Demonstração · dados fictícios, nada é salvo de verdade'}
+          </span>
         )}
+        {view === 'overview' && (
+          <Overview linhas={linhas} orders={orders} goOrders={() => setView('orders')} goStock={() => setView('stock')} />
+        )}
+        {view === 'stock' && <Estoque linhas={linhas} setLinhas={setLinhas} erroCarga={erroEstoque} />}
         {view === 'products' && <Products prods={prods} setP={setP} />}
         {view === 'orders' && <Orders orders={orders} setStatus={setOrderStatus} />}
         {view === 'perms' && <Permissions />}
@@ -102,30 +119,30 @@ export function Admin({ email }: { email: string }) {
 }
 
 function Overview({
-  prods,
+  linhas,
   orders,
   goOrders,
-  goProducts,
+  goStock,
 }: {
-  prods: AdminProduct[];
+  linhas: LinhaEstoque[];
   orders: AdminOrder[];
   goOrders: () => void;
-  goProducts: () => void;
+  goStock: () => void;
 }) {
-  const low = prods.filter((p) => p.stock <= 2 && !p.derived);
+  const low = linhas.filter((l) => l.abaixo_do_minimo);
   const revenue = orders.filter((o) => PAID.includes(o.status)).reduce((s, o) => s + o.total, 0);
   const kpis = [
     { label: 'Aguardando pagamento', value: orders.filter((o) => o.status === 'Aguardando pagamento').length, note: 'pedidos' },
     { label: 'Para separar', value: orders.filter((o) => o.status === 'Pago' || o.status === 'Em separação').length, note: 'pedidos pagos' },
     { label: 'Vendas pagas', value: fmt(revenue), note: 'soma ilustrativa' },
-    { label: 'Estoque baixo', value: low.length, note: 'produtos com 2 ou menos' },
+    { label: 'Estoque baixo', value: low.length, note: 'variações no mínimo ou esgotadas' },
   ];
 
   return (
     <>
       <div className="top">
         <h1 className="h1">Olá! Veja como está a loja</h1>
-        <p className="sub">Resumo dos pedidos e do estoque (valores ilustrativos).</p>
+        <p className="sub">Resumo dos pedidos (ilustrativos) e do estoque (real).</p>
       </div>
       <div className="kpis">
         {kpis.map((k) => (
@@ -177,20 +194,23 @@ function Overview({
                 <thead>
                   <tr>
                     <th>Produto</th>
-                    <th>Estoque</th>
+                    <th className="num">Disponível</th>
+                    <th>Situação</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {low.map((p) => (
-                    <tr key={p.id}>
+                  {low.slice(0, 8).map((l) => (
+                    <tr key={l.variant_id}>
                       <td>
-                        {p.name}
-                        <div className="sku">{p.sku}</div>
+                        {l.product_name}
+                        <div className="sku">
+                          {descreverVariacao(l.attributes) && `${descreverVariacao(l.attributes)} · `}
+                          {l.sku}
+                        </div>
                       </td>
+                      <td className="num">{l.disponivel}</td>
                       <td>
-                        <span className={`tag ${p.stock === 0 ? 't-bad' : 't-warn'}`}>
-                          {p.stock === 0 ? 'Esgotado' : `${p.stock} ${p.stock === 1 ? 'unidade' : 'unidades'}`}
-                        </span>
+                        <Situacao l={l} />
                       </td>
                     </tr>
                   ))}
@@ -198,11 +218,12 @@ function Overview({
               </table>
             </div>
           ) : (
-            <p className="sub">Nenhum produto com estoque baixo.</p>
+            <p className="sub">Nenhuma variação no mínimo.</p>
           )}
+          {low.length > 8 && <p className="note" style={{ marginTop: 8 }}>E mais {low.length - 8}.</p>}
           <div style={{ marginTop: 12 }}>
-            <button className="btn" onClick={goProducts}>
-              Gerenciar produtos
+            <button className="btn" onClick={goStock}>
+              Abrir o estoque
             </button>
           </div>
         </section>
@@ -220,7 +241,7 @@ function Products({ prods, setP }: { prods: AdminProduct[]; setP: (id: number, p
     <>
       <div className="top">
         <h1 className="h1">Produtos</h1>
-        <p className="sub">Ajuste preço, estoque e visibilidade. As alterações valem só nesta demonstração.</p>
+        <p className="sub">Ajuste preço e visibilidade. As alterações valem só nesta demonstração; o estoque fica na aba Estoque.</p>
       </div>
       <div className="bar">
         <label className="fld">
@@ -236,7 +257,6 @@ function Products({ prods, setP }: { prods: AdminProduct[]; setP: (id: number, p
                 <th>Produto</th>
                 <th>Categoria</th>
                 <th>Preço (R$)</th>
-                <th>Estoque</th>
                 <th>Visível na loja</th>
               </tr>
             </thead>
@@ -260,17 +280,6 @@ function Products({ prods, setP }: { prods: AdminProduct[]; setP: (id: number, p
                     />
                   </td>
                   <td>
-                    <div className="st" role="group" aria-label={`Estoque de ${p.name}`}>
-                      <button onClick={() => !p.derived && setP(p.id, { stock: Math.max(0, p.stock - 1) })} aria-label="Diminuir estoque">
-                        −
-                      </button>
-                      <span>{p.derived ? `${p.stock} (derivado)` : p.stock}</span>
-                      <button onClick={() => !p.derived && setP(p.id, { stock: p.stock + 1 })} aria-label="Aumentar estoque">
-                        +
-                      </button>
-                    </div>
-                  </td>
-                  <td>
                     <label className="sw">
                       <input type="checkbox" checked={p.active} onChange={() => setP(p.id, { active: !p.active })} />
                       <span>{p.active ? 'Visível' : 'Oculto'}</span>
@@ -282,8 +291,7 @@ function Products({ prods, setP }: { prods: AdminProduct[]; setP: (id: number, p
           </table>
         </div>
         <p className="note" style={{ marginTop: 12 }}>
-          Kits compostos têm disponibilidade derivada dos componentes e não possuem estoque próprio editável. Ajustes manuais de estoque
-          pedem um motivo na versão final.
+          Cadastro e edição de produtos de verdade virão numa próxima etapa.
         </p>
       </section>
     </>

@@ -12,10 +12,8 @@ export interface AdminProduct {
   cat: string;
   sku: string;
   price: string;
-  stock: number;
   active: boolean;
   kindText: string;
-  derived: boolean;
 }
 
 export interface AdminOrder {
@@ -29,30 +27,28 @@ export interface AdminOrder {
 
 export const SEED_PRODUCTS: AdminProduct[] = (
   [
-    ['Brinco Gota Aurora', 'Brincos', 'AR-BRC001', '89,90', 6, true, 'Simples'],
-    ['Brinco Argola Lunar', 'Brincos', 'AR-BRC002', '69,90', 9, true, 'Simples'],
-    ['Brinco Pérola Clássica', 'Brincos', 'AR-BRC003', '74,90', 12, true, 'Simples'],
-    ['Colar Ponto de Luz', 'Colares', 'AR-COL001', '119,90', 3, true, 'Simples'],
-    ['Colar Gotas de Orvalho', 'Colares', 'AR-COL002', '129,90', 5, true, 'Simples'],
-    ['Pulseira Riviera Delicada', 'Pulseiras', 'AR-PUL001', '139,90', 2, true, 'Simples'],
-    ['Pulseira Pérolas e Ouro', 'Pulseiras', 'AR-PUL003', '94,90', 0, true, 'Simples'],
-    ['Anel Solitário Brilho', 'Anéis', 'AR-ANE001', '89,90', 7, true, 'Simples'],
-    ['Anel Fio de Ouro', 'Anéis', 'AR-ANE003', '59,90', 1, true, 'Simples'],
-    ['Tornozeleira Maré', 'Tornozeleiras', 'AR-TOR001', '74,90', 4, false, 'Simples'],
-    ['Piercing Pontinho de Luz', 'Piercings', 'AR-PIE002', '39,90', 0, true, 'Simples'],
-    ['Kit Presente Luz', 'Kits', 'AR-KIT001', '249,90', 8, true, 'Kit com estoque próprio'],
-    ['Conjunto Aurora', 'Kits', 'AR-KIT002', '199,90', 3, true, 'Kit composto · derivado'],
+    ['Brinco Gota Aurora', 'Brincos', 'AR-BRC001', '89,90', true, 'Simples'],
+    ['Brinco Argola Lunar', 'Brincos', 'AR-BRC002', '69,90', true, 'Simples'],
+    ['Brinco Pérola Clássica', 'Brincos', 'AR-BRC003', '74,90', true, 'Simples'],
+    ['Colar Ponto de Luz', 'Colares', 'AR-COL001', '119,90', true, 'Simples'],
+    ['Colar Gotas de Orvalho', 'Colares', 'AR-COL002', '129,90', true, 'Simples'],
+    ['Pulseira Riviera Delicada', 'Pulseiras', 'AR-PUL001', '139,90', true, 'Simples'],
+    ['Pulseira Pérolas e Ouro', 'Pulseiras', 'AR-PUL003', '94,90', true, 'Simples'],
+    ['Anel Solitário Brilho', 'Anéis', 'AR-ANE001', '89,90', true, 'Simples'],
+    ['Anel Fio de Ouro', 'Anéis', 'AR-ANE003', '59,90', true, 'Simples'],
+    ['Tornozeleira Maré', 'Tornozeleiras', 'AR-TOR001', '74,90', false, 'Simples'],
+    ['Piercing Pontinho de Luz', 'Piercings', 'AR-PIE002', '39,90', true, 'Simples'],
+    ['Kit Presente Luz', 'Kits', 'AR-KIT001', '249,90', true, 'Kit com estoque próprio'],
+    ['Conjunto Aurora', 'Kits', 'AR-KIT002', '199,90', true, 'Kit composto'],
   ] as const
-).map(([name, cat, sku, price, stock, active, kindText], id) => ({
+).map(([name, cat, sku, price, active, kindText], id) => ({
   id,
   name,
   cat,
   sku,
   price,
-  stock,
   active,
   kindText,
-  derived: kindText.includes('composto'),
 }));
 
 export const SEED_ORDERS: AdminOrder[] = (

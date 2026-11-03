@@ -85,3 +85,26 @@
 .adm .auth-btn{justify-content:center;background:var(--ink)!important;color:var(--bg)!important;min-height:48px}
 .adm .auth-btn:disabled{opacity:.6;cursor:wait}
 .adm .auth-back{align-self:flex-start}
+/* Estoque */
+.adm .num{text-align:right;font-variant-numeric:tabular-nums}
+.adm .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.adm .ok-msg{background:var(--ok);color:var(--okt);border-radius:12px;padding:10px 14px;font-size:14px;margin-bottom:16px}
+.adm .neg{color:var(--badt)}
+.adm .dlg{width:min(560px,calc(100vw - 24px));max-height:calc(100dvh - 24px);border:1px solid var(--line);border-radius:22px;background:var(--surf);color:var(--ink);padding:22px;font-family:var(--sans)}
+@media (max-width:599px){.adm .dlg{padding:18px 16px}}
+.adm .dlg::backdrop{background:rgba(30,20,14,.45)}
+.adm .dlg .ok-msg{margin-bottom:0}
+.adm .dlg-h{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:12px}
+.adm .dlg-h h2{font-family:var(--serif);font-weight:600;font-size:26px;line-height:1.1}
+.adm .dlg-s{font-family:var(--serif);font-weight:600;font-size:22px;margin:22px 0 8px}
+.adm .saldos{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:0 0 8px}
+.adm .saldos div{background:var(--field);border-radius:14px;padding:10px 12px}
+.adm .saldos dt{font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink2)}
+.adm .saldos dd{margin:0;font-size:26px;font-weight:500;line-height:1.2;font-variant-numeric:tabular-nums}
+.adm .hist{list-style:none;margin:0;padding:0}
+.adm .hist li{padding:10px 0;border-top:1px solid var(--line);font-size:15px}
+.adm .hist small{display:block;color:var(--ink2);font-size:13px;overflow-wrap:anywhere}
+/* Celular: a barra lateral não pode passar da largura da tela */
+@media (max-width:899px){.adm .side{min-width:0;max-width:100%}.adm .menu{max-width:100%}}
+.adm .bar .pill{white-space:normal;text-align:left}
+.adm .tw{position:relative}

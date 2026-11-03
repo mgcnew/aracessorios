@@ -25,8 +25,8 @@ Projeto: loja virtual **própria** da AR Acessórios (semijoias, B2C, estoque pr
 ## Estado atual (03/11/2026)
 - Banco `ar-acessorios-dev` (Supabase, São Paulo, ref `pmhipriryqsblhonysay`) montado com as migrações de `supabase/migrations/`, a carga de `supabase/seed.sql` e os 32 testes de `supabase/tests/catalogo_estoque.sql` passando.
 - Admin do painel: `acess.ar05@gmail.com` (em `admin_members`).
-- A vitrine lê o catálogo do banco (`src/data/loja.ts` → `CatalogoProvider`), gerada a cada visita. Testada no navegador contra o banco em 03/11/2026. Próximo passo: painel de estoque usando `painel_estoque()` e `registrar_entrada/ajuste/contagem()`.
-- Login do painel escrito (`/admin/entrar`, `src/proxy.ts`, `src/app/admin/acoes.ts`), ainda não testado contra o banco. O conteúdo de `/admin` ainda é a demonstração com dados fixos de `src/admin/seed.ts`.
+- A vitrine lê o catálogo do banco (`src/data/loja.ts` → `CatalogoProvider`), gerada a cada visita. Testada no navegador contra o banco em 03/11/2026.
+- Login do painel (`/admin/entrar`, `src/proxy.ts`, `src/app/admin/acoes.ts`) e aba Estoque ligada ao banco (`src/admin/Estoque.tsx`, `src/app/admin/estoque-acoes.ts`). Falta testar entrando com a conta real. Produtos e Pedidos do painel ainda são demonstração (`src/admin/seed.ts`).
 - Ambiente: `cp .env.example .env.local`. A rede da sessão precisa permitir `pmhipriryqsblhonysay.supabase.co`, e na nuvem o servidor roda com `NODE_USE_ENV_PROXY=1` (senão o Node não usa o proxy e as páginas dão 500).
 - Regras que a interface deve respeitar: o visitante vê só disponível sim/não, nunca quantidade (CAT-DEC-024); kit composto não tem saldo próprio (CAT-DEC-019).
 

@@ -11,7 +11,8 @@
 | Admin do painel | `acess.ar05@gmail.com` criado e liberado em `admin_members` |
 | Vitrine (Next.js) | **Testada contra o banco em 03/11/2026**: todos os itens do Passo 2 passaram |
 | Login do painel | **Parcialmente testado contra o banco** (falta entrar com a senha real): `/admin/entrar`, proteção de `/admin`, "acesso não autorizado", botão Sair |
-| Painel `/admin` | Atrás do login, mas o conteúdo ainda é a demonstração com dados fixos de `src/admin/seed.ts`; não salva nada |
+| Painel `/admin` — Estoque | **Ligado ao banco** (aba Estoque e "Estoque baixo" da visão geral). Falta testar entrando com a conta real |
+| Painel `/admin` — Produtos, Pedidos | Ainda demonstração com dados fixos de `src/admin/seed.ts`; não salva nada |
 | Pagamento, frete, pedidos | Fora da fase atual |
 
 ## Passo 1 — Preparar a sessão (5 min)
@@ -72,19 +73,32 @@ Falta conferir com a rede liberada:
 - [ ] "Sair" volta para o login e `/admin` deixa de abrir
 - [ ] No Supabase (Authentication → Sign In / Providers), **cadastro público desligado** ("Allow new users to sign up")
 
-## Passo 4 — Painel de estoque de verdade
+## Passo 4 — Painel de estoque ✅ escrito (03/11/2026)
 
-Substituir os dados fixos de `src/admin/seed.ts` pelas funções do banco:
+Feito, sem nenhuma mudança no banco:
 
-| Tela | Fonte no banco |
-|---|---|
-| Lista de estoque por variação, com alerta de mínimo | `painel_estoque()` |
-| Entrada de mercadoria | `registrar_entrada(variação, quantidade, motivo)` |
-| Ajuste (avaria, correção) | `registrar_ajuste(variação, diferença, motivo)` |
-| Contagem física | `registrar_contagem(variação, contado, motivo)` |
-| Histórico de uma variação | tabela `inventory_movements` (só leitura) |
+| Tela | Onde | Fonte no banco |
+|---|---|---|
+| Aba **Estoque**: lista por variação (saldo, reservado, disponível, mínimo, situação), busca e filtro "só no mínimo ou esgotado" | `src/admin/Estoque.tsx` | `painel_estoque()` |
+| Janela **Movimentar**: Entrada, Ajuste (aceita −), Contagem; motivo obrigatório; prévia do saldo; mensagem do banco quando ele recusa | `src/admin/Estoque.tsx` → `src/app/admin/estoque-acoes.ts` | `registrar_entrada/ajuste/contagem()` |
+| Histórico das últimas 30 movimentações da variação | idem | `inventory_movements` (só leitura) |
+| Visão geral: indicador e lista "Estoque baixo" reais | `src/admin/Admin.tsx` | `painel_estoque()` |
 
-Regras: motivo obrigatório; mostrar a mensagem de erro do banco quando ele recusar (ex.: "Estoque insuficiente"); kit composto não tem estoque próprio, então o painel mostra a disponibilidade calculada e manda movimentar as peças.
+- Kit composto mostra só a disponibilidade calculada ("—" no saldo) e não tem botão de movimentar (CAT-DEC-019).
+- A aba Produtos perdeu o "+/−" de estoque: o estoque só muda pela aba Estoque.
+- Observação: para kit composto, `painel_estoque()` devolve saldo e reservado **nulos**, mas `database.types.ts` os declara como `number`. A tela trata o caso; ao gerar os tipos de novo, isso continua igual (limitação do gerador).
+
+Conferido nesta sessão (página de teste temporária com dados copiados do banco, já apagada): lista, filtro, busca, prévia, validações, janela no celular (390 px) e no computador, sem rolagem lateral e sem erros no console. Tentativa de ajuste **sem login** foi recusada pelo banco ("Acesso restrito ao painel"), como deve.
+
+Falta conferir entrando com `acess.ar05@gmail.com` (precisa da senha, então fica com o responsável):
+
+- [ ] Aba Estoque lista as 73 variações (as de kit composto com "—" no saldo)
+- [ ] Entrada de 3 em uma variação: saldo sobe 3, aparece no histórico com o motivo
+- [ ] Ajuste −1: saldo desce 1
+- [ ] Ajuste que deixaria o saldo negativo: aparece "Estoque insuficiente…" e nada muda
+- [ ] Contagem: saldo passa a ser o número contado
+- [ ] A vitrine reflete a mudança (ex.: entrada na Argola Lunar Ródio G faz ela deixar de aparecer esgotada)
+- [ ] Teste de dois ajustes simultâneos no mesmo SKU (duas abas)
 
 Depois disso, em outra etapa: cadastro e edição de produtos, variações, kits e fotos (bucket `produtos` já criado).
 
@@ -96,9 +110,8 @@ Depois disso, em outra etapa: cadastro e edição de produtos, variações, kits
 | Prévia publicada do protótipo (versão antiga, igual no visual) | [prévia](https://claude.ai/artifact/KdvjU6JFDRNuDA94YqAcPQ) |
 | Propostas PR-001 e PR-002 (reserva × Pix; pagamento indefinido) | `docs/DECISOES.md` §6, decidir antes da Fase 3 |
 | Ajustar as cores do modo noturno | pedido do responsável, sem urgência |
-| Teste de dois ajustes simultâneos no mesmo SKU | fazer quando o painel estiver ligado ao banco |
 | Projeto Supabase antigo em Oregon (vazio, sem uso) | o responsável pode apagar |
 
 ## Como pedir na próxima sessão
 
-> Leia o AGENTS.md e o docs/CONTINUAR_AQUI.md e continue do Passo 1 (depois Passos 2 e 3: testar vitrine e login contra o banco).
+> Leia o AGENTS.md e o docs/CONTINUAR_AQUI.md e continue do Passo 1 (depois: testar login e estoque com a conta real, Passos 3 e 4).
