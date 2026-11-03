@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useState } from 'react';
-import { Art } from '../components/Art';
+import { Midia } from '../components/Midia';
 import { BagIcon, TrashIcon } from '../components/Icons';
 import { EmptyState, PageHead, Stepper } from '../components/ui';
 import { useCatalogo } from '../data/CatalogoContext';
@@ -53,7 +53,7 @@ export function Cart() {
               return (
                 <div key={line.key} className="line">
                   <Link className="line-i" href={href} aria-label={`Ver ${product.name}`} tabIndex={-1}>
-                    <Art {...art} />
+                    <Midia foto={product.photos?.[0]} art={art} />
                   </Link>
                   <div className="line-b">
                     <Link className="line-n" href={href}>
@@ -184,7 +184,7 @@ export function Checkout() {
               {lines.map(({ line, product, variant, art, total }) => (
                 <div key={line.key} className="mini">
                   <div className="line-i">
-                    <Art {...art} />
+                    <Midia foto={product.photos?.[0]} art={art} />
                   </div>
                   <div>
                     <div style={{ fontWeight: 500 }}>{product.name}</div>

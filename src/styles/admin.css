@@ -140,3 +140,16 @@
 @media (max-width:519px){.adm .peca{grid-template-columns:1fr 64px}.adm .peca .pill{grid-column:1/-1;justify-self:start}}
 .adm .qtd{text-align:center}
 .adm .sub a{color:inherit}
+/* Fotos */
+.adm .fotos{list-style:none;margin:12px 0 0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(min(200px,100%),1fr));gap:14px}
+.adm .foto-i{display:flex;flex-direction:column;gap:10px;border:1px solid var(--line);border-radius:18px;padding:10px;background:var(--bg)}
+.adm .foto-i .art{border-radius:12px}
+.adm .foto-capa{position:absolute;top:8px;left:8px}
+.adm .foto-alt{display:flex;flex-direction:column;gap:8px}
+.adm .foto-alt .auth-l{font-size:13px}
+.adm .foto-alt .auth-i{height:42px;font-size:15px}
+.adm .foto-acoes{display:flex;flex-wrap:wrap;gap:6px}
+.adm .foto-acoes .pill{min-height:40px;padding:0 12px!important;font-size:13.5px}
+.adm .foto-i .auth-err,.adm .foto-i .ok-msg{margin:0;font-size:13px;padding:8px 10px}
+.adm .pill.neg{color:var(--badt)}
+.adm .pill:disabled{opacity:.45;cursor:not-allowed}

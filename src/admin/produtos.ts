@@ -33,6 +33,14 @@ export interface VariacaoPainel {
   pecas: PecaKit[];
 }
 
+export interface FotoPainel {
+  id: string;
+  storage_path: string;
+  alt: string;
+  position: number;
+  is_cover: boolean;
+}
+
 export interface ProdutoPainel {
   id: string;
   slug: string;
@@ -48,6 +56,8 @@ export interface ProdutoPainel {
   is_featured: boolean;
   categorias: string[];
   variacoes: VariacaoPainel[];
+  /** Capa primeiro, depois a ordem cadastrada. */
+  fotos: FotoPainel[];
 }
 
 export interface CatalogoPainel {
@@ -228,6 +238,8 @@ export function mensagemDoBanco(erro: { code?: string; message: string; details?
       return 'Não dá para apagar: esta variação já tem histórico de estoque ou é peça de um kit. Desative-a em vez de apagar.';
     case '42501':
       return 'Acesso restrito ao painel. Entre de novo com a conta da loja.';
+    case 'PGRST116': // nenhuma linha: não existe ou a regra de acesso escondeu
+      return 'Não encontrado, ou sem permissão. Recarregue a página e entre de novo com a conta da loja, se preciso.';
     case 'PGRST301':
       return 'Sua sessão expirou. Entre de novo.';
     default:

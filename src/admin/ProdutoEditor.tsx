@@ -12,6 +12,7 @@ import {
   type DadosProduto,
 } from '../app/admin/produtos-acoes';
 import { fmt } from '../data/catalog';
+import { Fotos } from './Fotos';
 import { useAcao } from './Produtos';
 import {
   ATRIBUTOS,
@@ -89,6 +90,7 @@ export function ProdutoEditor({
         <Status p={p} aoMudar={aoMudar} voltar={voltar} />
         <Dados p={p} aoMudar={aoMudar} />
         <Categorias p={p} catalogo={catalogo} aoMudar={aoMudar} />
+        <Fotos p={p} aoMudar={aoMudar} />
         <Variacoes p={p} abrir={(v) => setVariacao(v ?? 'nova')} />
       </div>
 

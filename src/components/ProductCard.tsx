@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { artOf, categoryLabel, cheapestVariant, fmt, isAvailable, type Product } from '../data/catalog';
 import { useStore } from '../store';
-import { Art } from './Art';
+import { Midia } from './Midia';
 import { HeartIcon } from './Icons';
 
 export function productBadge(p: Product): string {
@@ -28,7 +28,7 @@ export function ProductCard({ product: p }: { product: Product }) {
       <div className="pc-media">
         <Link className="pc-img" href={href} aria-label={`Ver ${p.name}`} tabIndex={-1}>
           <div className="pc-zoom">
-            <Art {...artOf(p)} ratio="4 / 5" />
+            <Midia foto={p.photos?.[0]} art={artOf(p)} ratio="4 / 5" />
           </div>
         </Link>
         {badge && <span className="pc-badge">{badge}</span>}

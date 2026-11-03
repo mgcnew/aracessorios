@@ -133,11 +133,33 @@ Falta conferir entrando com `acess.ar05@gmail.com`:
 - [ ] Apagar um rascunho sem movimentação de estoque (variação com entrada registrada não deixa apagar: arquive)
 - [ ] Ao final, arquivar ou apagar os produtos de teste
 
-## Passo 6 — Fotos dos produtos (próximo)
+## Passo 6 — Fotos dos produtos ✅ escrito (03/11/2026)
 
-- Envio pelo painel para o bucket `produtos` (já criado, até 5 MB, jpg/png/webp/avif), texto alternativo obrigatório, ordem e capa (`product_images`).
-- A vitrine passa a mostrar as fotos no lugar das ilustrações (`src/data/loja.ts`, cartões e página do produto).
-- Apresentar o plano antes (envio direto do navegador com a sessão, limites, o que fazer com foto órfã).
+Sem mudança no banco (tabela `product_images` e bucket `produtos` já existiam).
+
+| O quê | Onde |
+|---|---|
+| Bloco **Fotos** na edição do produto: enviar várias, descrição (texto alternativo), capa, ordem, apagar | `src/admin/Fotos.tsx` |
+| Preparo no navegador: versão grande (até 1600 px) e pequena (600 px), WebP (JPEG se o navegador não gerar WebP), rotação corrigida, **dados escondidos e GPS removidos**; recusa imagem com menos de 400 px | `src/admin/fotos.ts` |
+| Envio direto ao Storage com a sessão de admin (`src/lib/supabase/browser.ts`); registro, capa, ordem e remoção no servidor; foto órfã apagada se o registro falhar | `src/app/admin/fotos-acoes.ts` |
+| Vitrine: capa pequena nos cartões, sacola e kits; galeria grande na página do produto; sem foto, continua a ilustração | `src/components/Midia.tsx`, `src/data/loja.ts`, `src/lib/fotos.ts` |
+
+- Caminho no bucket: `<id do produto>/<código aleatório>.webp`; a versão pequena tem `-p` antes da extensão.
+- A capa fica sempre em primeiro. "Usar como capa" leva a foto para o início; as setas ordenam as demais. Máximo de 12 fotos por produto.
+- Apagar um produto em rascunho também apaga os arquivos das fotos.
+
+Conferido nesta sessão (páginas de teste temporárias, já apagadas; imagens servidas pelo navegador de teste):
+- Foto 4000×3000 com GPS e rotação → 1200×1600 (64 KB) e 450×600 (19 KB), sem EXIF; foto de 300 px recusada.
+- Painel: capa marcada, setas corretas, 390 px sem rolagem lateral. Sem login, envio e troca de capa são recusados com mensagem em português.
+- Vitrine: cartões pedem só a versão pequena; página do produto mostra a grande e troca pelas miniaturas.
+
+Falta conferir entrando com `acess.ar05@gmail.com`:
+
+- [ ] Enviar 2 fotos num produto: aparecem no painel, a primeira vira capa
+- [ ] A vitrine mostra a capa no cartão e as duas na página do produto
+- [ ] Trocar a capa, reordenar, editar a descrição
+- [ ] Apagar uma foto: some da vitrine **e do Storage** (conferir no painel do Supabase → Storage → produtos)
+- [ ] Enviar pelo celular (foto da câmera)
 
 ## Pendências que não são de código
 
@@ -151,4 +173,4 @@ Falta conferir entrando com `acess.ar05@gmail.com`:
 
 ## Como pedir na próxima sessão
 
-> Leia o AGENTS.md e o docs/CONTINUAR_AQUI.md e continue do Passo 1 (depois: testar login, estoque e cadastro com a conta real, Passos 3 a 5; ou seguir para o Passo 6).
+> Leia o AGENTS.md e o docs/CONTINUAR_AQUI.md e continue do Passo 1 (depois: testar login, estoque e cadastro com a conta real, Passos 3 a 5; depois enviar fotos de demonstração).

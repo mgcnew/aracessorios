@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { useState } from 'react';
 import { Art } from '../components/Art';
+import { Midia } from '../components/Midia';
 import { HeartIcon } from '../components/Icons';
 import { ProductGrid } from '../components/ProductCard';
 import { SectionHead, Stepper } from '../components/ui';
@@ -45,6 +46,7 @@ export function ProductPage({ productId }: { productId: string }) {
   const isFav = favs.includes(p.id);
   const unitWord = p.unit;
   const art = artOf(p, cur);
+  const fotos = p.photos ?? [];
 
   const details = [
     { k: 'Material', v: p.material },
@@ -71,22 +73,47 @@ export function ProductPage({ productId }: { productId: string }) {
 
       <div className="pdp">
         <div>
-          <div className="gal-main">
-            <Art {...art} bg={GALLERY[gal].bg} rot={GALLERY[gal].rot} ratio="1 / 1.05" />
-          </div>
-          <div className="gal-t">
-            {GALLERY.map((g, i) => (
-              <button
-                key={i}
-                className={gal === i ? 'on' : ''}
-                onClick={() => setGal(i)}
-                aria-label={`Ver imagem ${i + 1} de 4`}
-                aria-pressed={gal === i}
-              >
-                <Art {...art} bg={g.bg} rot={g.rot} />
-              </button>
-            ))}
-          </div>
+          {fotos.length > 0 ? (
+            <>
+              <div className="gal-main">
+                <Midia foto={fotos[Math.min(gal, fotos.length - 1)]} tamanho="g" art={art} ratio="1 / 1.05" prioridade />
+              </div>
+              {fotos.length > 1 && (
+                <div className="gal-t">
+                  {fotos.map((f, i) => (
+                    <button
+                      key={f.src}
+                      className={gal === i ? 'on' : ''}
+                      onClick={() => setGal(i)}
+                      aria-label={`Ver foto ${i + 1} de ${fotos.length}`}
+                      aria-pressed={gal === i}
+                    >
+                      <Midia foto={{ ...f, alt: '' }} art={art} />
+                    </button>
+                  ))}
+                </div>
+              )}
+            </>
+          ) : (
+            <>
+              <div className="gal-main">
+                <Art {...art} bg={GALLERY[gal].bg} rot={GALLERY[gal].rot} ratio="1 / 1.05" />
+              </div>
+              <div className="gal-t">
+                {GALLERY.map((g, i) => (
+                  <button
+                    key={i}
+                    className={gal === i ? 'on' : ''}
+                    onClick={() => setGal(i)}
+                    aria-label={`Ver imagem ${i + 1} de 4`}
+                    aria-pressed={gal === i}
+                  >
+                    <Art {...art} bg={g.bg} rot={g.rot} />
+                  </button>
+                ))}
+              </div>
+            </>
+          )}
         </div>
 
         <div className="pdp-info">

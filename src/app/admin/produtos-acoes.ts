@@ -14,6 +14,7 @@ import {
   type TipoProduto,
   type UnidadeVenda,
 } from '../../admin/produtos';
+import { BUCKET_FOTOS, caminhoPequeno } from '../../lib/fotos';
 import { supabaseServidor } from '../../lib/supabase/server';
 
 export type Resultado<T> = { ok: true; dados: T } | { ok: false; erro: string };
@@ -29,7 +30,8 @@ export async function carregarCatalogoPainel(): Promise<Resultado<CatalogoPainel
       .select(
         `id, slug, name, short_description, description, material, care_info, status, kind, sale_unit, is_new, is_featured,
          product_categories ( category_id ),
-         product_variants ( id, sku, attributes, price_cents, promo_price_cents, promo_starts_at, promo_ends_at, position, active )`,
+         product_variants ( id, sku, attributes, price_cents, promo_price_cents, promo_starts_at, promo_ends_at, position, active ),
+         product_images ( id, storage_path, alt, position, is_cover )`,
       )
       .order('name'),
     db.from('kit_components').select('kit_variant_id, component_variant_id, quantity'),
@@ -75,6 +77,7 @@ export async function carregarCatalogoPainel(): Promise<Resultado<CatalogoPainel
         pecas: pecasDe.get(v.id) ?? [],
       }))
       .sort((a, b) => a.position - b.position || a.sku.localeCompare(b.sku)),
+    fotos: [...p.product_images].sort((a, b) => Number(b.is_cover) - Number(a.is_cover) || a.position - b.position),
   }));
 
   return { ok: true, dados: { categorias: cats.data ?? [], produtos } };
@@ -184,6 +187,7 @@ export async function mudarStatus(id: string, status: StatusProduto) {
 /** Só rascunho pode ser apagado (regra do banco); o resto é arquivado. */
 export async function apagarProduto(id: string) {
   const db = await supabaseServidor();
+  const fotos = await db.from('product_images').select('storage_path').eq('product_id', id);
   const { data, error } = await db.from('products').delete().eq('id', id).eq('status', 'rascunho').select('id');
   if (error) {
     if (error.code === '23503')
@@ -191,6 +195,9 @@ export async function apagarProduto(id: string) {
     return falha(mensagemDoBanco(error));
   }
   if (!data || data.length === 0) return falha('Só produtos em rascunho podem ser apagados. Arquive o produto.');
+  // O banco apagou os registros das fotos; os arquivos saem do Storage aqui.
+  const caminhos = (fotos.data ?? []).flatMap((f) => [f.storage_path, caminhoPequeno(f.storage_path)]);
+  if (caminhos.length) await db.storage.from(BUCKET_FOTOS).remove(caminhos);
   return depois(null);
 }
 
