@@ -1,0 +1,102 @@
+import type { SVGProps } from 'react';
+
+type IconProps = SVGProps<SVGSVGElement> & { size?: number };
+
+const base = (size: number, rest: SVGProps<SVGSVGElement>): SVGProps<SVGSVGElement> => ({
+  width: size,
+  height: size,
+  viewBox: '0 0 24 24',
+  fill: 'none',
+  stroke: 'currentColor',
+  strokeWidth: 1.6,
+  'aria-hidden': true,
+  ...rest,
+});
+
+export const SearchIcon = ({ size = 18, ...p }: IconProps) => (
+  <svg {...base(size, p)} strokeLinecap="round">
+    <circle cx="11" cy="11" r="6.5" />
+    <path d="M20 20l-4.2-4.2" />
+  </svg>
+);
+
+export const HeartIcon = ({ size = 22, filled = false, ...p }: IconProps & { filled?: boolean }) => (
+  <svg {...base(size, p)} fill={filled ? 'currentColor' : 'none'} strokeLinejoin="round">
+    <path d="M12 20s-7-4.6-7-10a4 4 0 017-2.6A4 4 0 0119 10c0 5.4-7 10-7 10z" />
+  </svg>
+);
+
+export const BagIcon = ({ size = 22, ...p }: IconProps) => (
+  <svg {...base(size, p)} strokeLinejoin="round" strokeLinecap="round">
+    <path d="M5 8h14l-1 12H6L5 8z" />
+    <path d="M9 8V6.5a3 3 0 016 0V8" />
+  </svg>
+);
+
+export const SunIcon = ({ size = 22, ...p }: IconProps) => (
+  <svg {...base(size, p)} strokeLinecap="round">
+    <circle cx="12" cy="12" r="4" />
+    <path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M5.3 18.7l1.4-1.4M17.3 6.7l1.4-1.4" />
+  </svg>
+);
+
+export const MoonIcon = ({ size = 22, ...p }: IconProps) => (
+  <svg {...base(size, p)} strokeLinejoin="round">
+    <path d="M20 14.5A8 8 0 019.5 4a8 8 0 1010.5 10.5z" />
+  </svg>
+);
+
+export const MinusIcon = ({ size = 16, ...p }: IconProps) => (
+  <svg {...base(size, p)} strokeWidth={1.8} strokeLinecap="round">
+    <path d="M5 12h14" />
+  </svg>
+);
+
+export const PlusIcon = ({ size = 16, ...p }: IconProps) => (
+  <svg {...base(size, p)} strokeWidth={1.8} strokeLinecap="round">
+    <path d="M12 5v14M5 12h14" />
+  </svg>
+);
+
+export const FilterIcon = ({ size = 18, ...p }: IconProps) => (
+  <svg {...base(size, p)} strokeLinecap="round">
+    <path d="M4 7h16M7 12h10M10 17h4" />
+  </svg>
+);
+
+export const TrashIcon = ({ size = 16, ...p }: IconProps) => (
+  <svg {...base(size, p)} strokeLinecap="round" strokeLinejoin="round">
+    <path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13" />
+  </svg>
+);
+
+export const HomeIcon = ({ size = 24, ...p }: IconProps) => (
+  <svg {...base(size, p)} strokeLinejoin="round" strokeLinecap="round">
+    <path d="M3.5 11L12 3.5 20.5 11M5.5 9.5V20h4.5v-6h4v6h4.5V9.5" />
+  </svg>
+);
+
+export const GemIcon = ({ size = 24, ...p }: IconProps) => (
+  <svg {...base(size, p)} strokeLinejoin="round" strokeLinecap="round">
+    <path d="M6.5 4h11l4 5.5L12 20.5 2.5 9.5z M2.5 9.5h19 M9 4l3 5.5L15 4 M12 9.5v11" />
+  </svg>
+);
+
+export const InfoIcon = ({ size = 24, ...p }: IconProps) => (
+  <svg {...base(size, p)} strokeLinecap="round">
+    <circle cx="12" cy="12" r="8.5" />
+    <path d="M12 11v5.5M12 7.8v.01" />
+  </svg>
+);
+
+export const CheckIcon = ({ size = 12, ...p }: IconProps) => (
+  <svg {...base(size, p)} strokeWidth={3} strokeLinecap="round" strokeLinejoin="round">
+    <path d="M5 12.5l4.5 4.5L19 7.5" />
+  </svg>
+);
+
+export const CrossIcon = ({ size = 12, ...p }: IconProps) => (
+  <svg {...base(size, p)} strokeWidth={3} strokeLinecap="round">
+    <path d="M6 6l12 12M18 6L6 18" />
+  </svg>
+);
