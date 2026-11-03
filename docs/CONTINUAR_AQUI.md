@@ -163,6 +163,16 @@ Falta conferir entrando com `acess.ar05@gmail.com`:
 - [ ] Apagar uma foto: some da vitrine **e do Storage** (conferir no painel do Supabase → Storage → produtos)
 - [ ] Enviar pelo celular (foto da câmera)
 
+## Teste de ponta a ponta no Supabase local (03/11/2026)
+
+Supabase local completo (`npx supabase start`), contas de teste só no banco local, site compilado apontando para ele. **39 de 39 verificações passaram**: login (senha errada, conta sem permissão, sessão, sair), estoque (entrada, ajuste recusado, contagem, histórico, vitrine sem quantidade), cadastro (rascunho, dados, categoria, SKU repetido, variação com saldo 0, ativar, arquivar, apagar), kit composto (peças, trava depois de ativo) e fotos (envio, capa, descrição, galeria; arquivos em WebP sem EXIF/GPS).
+
+Defeitos encontrados:
+- Confirmação "Variação criada" sumia — corrigido.
+- Apagar foto não apagava os arquivos do Storage: o Storage precisa **ler** o arquivo antes de apagar e não há regra de leitura para o admin — correção em andamento (migração com regra "painel lê fotos").
+
+Como repetir: `npx supabase start`, criar um usuário pelo Auth local e inseri-lo em `admin_members`, rodar o site com `NEXT_PUBLIC_SUPABASE_URL`/`NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` do `npx supabase status`.
+
 ## Pendências que não são de código
 
 | Item | Onde |
