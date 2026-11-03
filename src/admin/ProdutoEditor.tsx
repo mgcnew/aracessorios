@@ -65,6 +65,8 @@ export function ProdutoEditor({
   aoMudar: AoMudar;
 }) {
   const [variacao, setVariacao] = useState<VariacaoPainel | 'nova' | null>(null);
+  // Muda só quando a janela é aberta: criar a variação não recria a janela (a confirmação continua visível).
+  const [janela, setJanela] = useState(0);
   const aberta = variacao === 'nova' ? null : variacao ? (p.variacoes.find((v) => v.id === variacao.id) ?? null) : null;
 
   return (
@@ -91,12 +93,18 @@ export function ProdutoEditor({
         <Dados p={p} aoMudar={aoMudar} />
         <Categorias p={p} catalogo={catalogo} aoMudar={aoMudar} />
         <Fotos p={p} aoMudar={aoMudar} />
-        <Variacoes p={p} abrir={(v) => setVariacao(v ?? 'nova')} />
+        <Variacoes
+          p={p}
+          abrir={(v) => {
+            setJanela((n) => n + 1);
+            setVariacao(v ?? 'nova');
+          }}
+        />
       </div>
 
       {variacao && (
         <VariacaoDialog
-          key={variacao === 'nova' ? 'nova' : variacao.id}
+          key={janela}
           p={p}
           v={aberta}
           catalogo={catalogo}
@@ -411,7 +419,11 @@ function VariacaoDialog({
             () => salvarVariacao(p.id, f),
             (d) => {
               aoMudar(d);
-              if (!v) criada(d.extra);
+              if (!v) {
+                // A mesma janela passa a editar a variação recém-criada.
+                setF((x) => ({ ...x, id: d.extra }));
+                criada(d.extra);
+              }
             },
             v ? 'Variação salva.' : p.kind === 'kit_composto' ? 'Variação criada. Agora informe as peças abaixo.' : 'Variação criada com estoque 0.',
           );
