@@ -173,6 +173,18 @@ Defeitos encontrados:
 
 Como repetir: `npx supabase start`, criar um usuário pelo Auth local e inseri-lo em `admin_members`, rodar o site com `NEXT_PUBLIC_SUPABASE_URL`/`NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` do `npx supabase status`.
 
+## Painel no celular (03/11/2026)
+
+O painel será muito usado no telefone. Até 899 px de largura:
+- Barra de cima compacta (56 px) e **navegação de baixo** (Início, Estoque, Produtos, Pedidos); Permissões, Ver a loja, Modo noturno e Sair ficam em **"Mais"** (folha que abre de baixo).
+- Aba e produto aberto ficam no endereço (`?aba=estoque`, `&produto=…`, `src/admin/url.ts`): o "voltar" do aparelho funciona dentro do painel e recarregar mantém o lugar.
+- Tabelas viram **cartões** (até 699 px); no Estoque, Produtos e Variações o cartão inteiro é tocável.
+- Janelas em **tela cheia** (até 599 px), com cabeçalho e botão de salvar fixos; "Apagar variação" fica fora da barra fixa.
+- Ajuste de estoque com **Tirar/Somar** e campo numérico com − e + (o teclado numérico do celular não tem "−").
+- Campos com 16 px (sem zoom do iPhone) e áreas de toque ≥ 44 px.
+
+Conferido em 360 e 390 px: sem rolagem lateral, nenhuma tabela rolando, sem campo que dá zoom; o roteiro de ponta a ponta (41 verificações) passou no computador e no celular. No computador o painel não mudou.
+
 ## Pendências que não são de código
 
 | Item | Onde |

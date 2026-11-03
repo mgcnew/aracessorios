@@ -30,7 +30,7 @@ export const NOME_TIPO: Record<TipoMovimento, string> = {
 
 export const OPERACOES: { op: Operacao; nome: string; campo: string; ajuda: string }[] = [
   { op: 'entrada', nome: 'Entrada', campo: 'Quantidade recebida', ajuda: 'Mercadoria que chegou. Soma ao saldo.' },
-  { op: 'ajuste', nome: 'Ajuste', campo: 'Diferença (use − para tirar)', ajuda: 'Avaria, perda ou correção. Ex.: −1 para uma peça quebrada.' },
+  { op: 'ajuste', nome: 'Ajuste', campo: 'Quantidade', ajuda: 'Avaria, perda ou correção. Ex.: tirar 1 por uma peça quebrada.' },
   { op: 'contagem', nome: 'Contagem', campo: 'Quantidade contada', ajuda: 'Contou na prateleira? O saldo passa a ser o número contado.' },
 ];
 

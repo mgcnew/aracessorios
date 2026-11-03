@@ -5,6 +5,7 @@ import { criarProduto, type Resultado } from '../app/admin/produtos-acoes';
 import { SearchIcon } from '../components/Icons';
 import { fmt, norm } from '../data/catalog';
 import { ProdutoEditor } from './ProdutoEditor';
+import { useParamUrl } from './url';
 import {
   AJUDA_TIPO,
   NOME_STATUS,
@@ -53,14 +54,27 @@ export function Produtos({
   erroCarga: string | null;
   aoMudar: (c: CatalogoPainel) => void;
 }) {
-  const [aberto, setAberto] = useState<string | null>(null);
+  // Produto aberto fica no endereço (?produto=…): o "voltar" do celular volta para a lista.
+  const [aberto, setAbertoUrl] = useParamUrl('produto', '');
+  const abriuAqui = useRef(false);
+  const abrir = (id: string) => {
+    abriuAqui.current = true;
+    setAbertoUrl(id);
+    window.scrollTo({ top: 0 });
+  };
+  const fecharEditor = () => {
+    // Se foi aberto daqui, volta no histórico (o "voltar" do aparelho não reabre o editor).
+    if (abriuAqui.current) window.history.back();
+    else setAbertoUrl('');
+    abriuAqui.current = false;
+  };
   const [novo, setNovo] = useState(false);
   const [busca, setBusca] = useState('');
   const [filtro, setFiltro] = useState<Filtro>('todos');
 
   const produto = aberto ? catalogo.produtos.find((p) => p.id === aberto) : undefined;
   if (produto) {
-    return <ProdutoEditor produto={produto} catalogo={catalogo} voltar={() => setAberto(null)} aoMudar={aoMudar} />;
+    return <ProdutoEditor produto={produto} catalogo={catalogo} voltar={fecharEditor} aoMudar={aoMudar} />;
   }
 
   const nomeCat = new Map(catalogo.categorias.map((c) => [c.id, c.name]));
@@ -110,7 +124,7 @@ export function Produtos({
 
       <section className="card">
         <div className="tw">
-          <table>
+          <table className="cartoes toque">
             <thead>
               <tr>
                 <th>Produto</th>
@@ -129,7 +143,7 @@ export function Produtos({
                 const menor = ativas.length ? Math.min(...ativas.map((v) => v.price_cents)) : null;
                 return (
                   <tr key={p.id}>
-                    <td>
+                    <td className="c-tit">
                       <strong style={{ fontWeight: 500 }}>{p.name}</strong>
                       <div className="sku">
                         {NOME_TIPO[p.kind]} · /{p.slug}
@@ -137,17 +151,17 @@ export function Produtos({
                         {p.is_featured && ' · Destaque'}
                       </div>
                     </td>
-                    <td>{p.categorias.map((c) => nomeCat.get(c)).filter(Boolean).join(', ') || <span className="note">—</span>}</td>
-                    <td className="num">
+                    <td className="c-dado c-largo" data-label="Categorias">{p.categorias.map((c) => nomeCat.get(c)).filter(Boolean).join(', ') || <span className="note">—</span>}</td>
+                    <td className="num c-dado" data-label="Variações">
                       {ativas.length}
                       {ativas.length !== p.variacoes.length && <span className="note"> de {p.variacoes.length}</span>}
                     </td>
-                    <td className="num">{menor === null ? '—' : fmt(menor)}</td>
-                    <td>
+                    <td className="num c-dado" data-label="A partir de">{menor === null ? '—' : fmt(menor)}</td>
+                    <td className="c-sit">
                       <span className={`tag ${TAG_STATUS[p.status]}`}>{NOME_STATUS[p.status]}</span>
                     </td>
-                    <td>
-                      <button className="pill" onClick={() => setAberto(p.id)} aria-label={`Editar ${p.name}`}>
+                    <td className="c-acao">
+                      <button className="pill" onClick={() => abrir(p.id)} aria-label={`Editar ${p.name}`}>
                         Editar
                       </button>
                     </td>
@@ -172,7 +186,7 @@ export function Produtos({
           criado={(c, id) => {
             aoMudar(c);
             setNovo(false);
-            setAberto(id);
+            abrir(id);
           }}
         />
       )}
@@ -269,9 +283,11 @@ function NovoProdutoDialog({ fechar, criado }: { fechar: () => void; criado: (c:
             {erro}
           </p>
         )}
-        <button className="btn auth-btn" type="submit" disabled={pendente}>
-          {pendente ? 'Criando…' : 'Criar rascunho'}
-        </button>
+        <div className="dlg-acoes">
+          <button className="btn auth-btn" type="submit" disabled={pendente}>
+            {pendente ? 'Criando…' : 'Criar rascunho'}
+          </button>
+        </div>
       </form>
     </dialog>
   );

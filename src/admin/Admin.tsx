@@ -1,14 +1,15 @@
 'use client';
 
 import Link from 'next/link';
-import { useState, type ReactNode } from 'react';
+import { useEffect, useRef, useState, type ComponentType, type ReactNode } from 'react';
 import { sair } from '../app/admin/acoes';
 import { Estoque, Situacao } from './Estoque';
 import { descreverVariacao, type LinhaEstoque } from './estoque';
 import { Produtos } from './Produtos';
 import type { CatalogoPainel } from './produtos';
 import { carregarEstoque } from '../app/admin/estoque-acoes';
-import { CheckIcon, CrossIcon } from '../components/Icons';
+import { CaixaIcon, CheckIcon, CrossIcon, EtiquetaIcon, MaisIcon, PainelIcon, PedidoIcon } from '../components/Icons';
+import { useParamUrl } from './url';
 import { LogoMark } from '../components/ui';
 import { fmt } from '../data/catalog';
 import { useTheme } from '../store';
@@ -31,6 +32,17 @@ const MENU: { label: string; view: View }[] = [
   { label: 'Produtos', view: 'products' },
   { label: 'Pedidos', view: 'orders' },
   { label: 'Permissões', view: 'perms' },
+];
+
+// Abas no endereço (?aba=…): o "voltar" do celular volta para a aba anterior.
+const VIEW_ABA: Record<View, string> = { overview: 'visao', stock: 'estoque', products: 'produtos', orders: 'pedidos', perms: 'permissoes' };
+const ABA_VIEW: Record<string, View> = Object.fromEntries(Object.entries(VIEW_ABA).map(([v, a]) => [a, v as View]));
+
+const NAV_CELULAR: { view: View; label: string; Icone: ComponentType }[] = [
+  { view: 'overview', label: 'Início', Icone: PainelIcon },
+  { view: 'stock', label: 'Estoque', Icone: CaixaIcon },
+  { view: 'products', label: 'Produtos', Icone: EtiquetaIcon },
+  { view: 'orders', label: 'Pedidos', Icone: PedidoIcon },
 ];
 
 const TAG: Record<OrderStatus, string> = {
@@ -59,7 +71,13 @@ export function Admin({
   erroCatalogo: string | null;
 }) {
   const { dark, toggleDark } = useTheme();
-  const [view, setView] = useState<View>('overview');
+  const [aba, setAba] = useParamUrl('aba', 'visao');
+  const view: View = ABA_VIEW[aba] ?? 'overview';
+  const setView = (v: View) => {
+    setAba(VIEW_ABA[v], { produto: null });
+    window.scrollTo({ top: 0 });
+  };
+  const [mais, setMais] = useState(false);
   const [linhas, setLinhas] = useState<LinhaEstoque[]>(estoque);
   const [catalogo, setCatalogo] = useState<CatalogoPainel>(catalogoInicial);
   const [orders, setOrders] = useState<AdminOrder[]>(SEED_ORDERS);
@@ -74,6 +92,7 @@ export function Admin({
 
   return (
     <div className={`adm${dark ? ' dark' : ''}`}>
+      {/* Computador: barra lateral. */}
       <aside className="side">
         <div className="brand">
           <LogoMark />
@@ -106,6 +125,16 @@ export function Admin({
           </form>
         </div>
       </aside>
+
+      {/* Celular: barra de cima compacta. */}
+      <header className="topo">
+        <LogoMark />
+        <span className="topo-t">Painel</span>
+        <button className="topo-b" onClick={() => setMais(true)} aria-label="Mais opções" aria-haspopup="dialog">
+          <MaisIcon />
+        </button>
+      </header>
+
       <main className="main">
         {(view === 'overview' || view === 'orders' || view === 'perms') && (
           <span className="demo" role="note">
@@ -122,7 +151,75 @@ export function Admin({
         {view === 'orders' && <Orders orders={orders} setStatus={setOrderStatus} />}
         {view === 'perms' && <Permissions />}
       </main>
+
+      {/* Celular: navegação de baixo, como num aplicativo. */}
+      <nav className="anav" aria-label="Seções do painel">
+        {NAV_CELULAR.map(({ view: v, label, Icone }) => (
+          <button key={v} className={`an${view === v ? ' on' : ''}`} aria-current={view === v ? 'page' : undefined} onClick={() => setView(v)}>
+            <Icone />
+            <span>{label}</span>
+          </button>
+        ))}
+      </nav>
+
+      {mais && (
+        <MaisOpcoes
+          fechar={() => setMais(false)}
+          email={email}
+          dark={dark}
+          toggleDark={toggleDark}
+          irPermissoes={() => {
+            setMais(false);
+            setView('perms');
+          }}
+        />
+      )}
     </div>
+  );
+}
+
+function MaisOpcoes({
+  fechar,
+  email,
+  dark,
+  toggleDark,
+  irPermissoes,
+}: {
+  fechar: () => void;
+  email: string;
+  dark: boolean;
+  toggleDark: () => void;
+  irPermissoes: () => void;
+}) {
+  const ref = useRef<HTMLDialogElement>(null);
+  useEffect(() => {
+    const d = ref.current;
+    if (d && !d.open) d.showModal();
+  }, []);
+  return (
+    <dialog ref={ref} className="dlg folha" onClose={fechar} aria-label="Mais opções" onClick={(e) => e.target === ref.current && ref.current?.close()}>
+      <div className="folha-alca" aria-hidden="true" />
+      {email && <p className="quem folha-quem">{email}</p>}
+      <div className="folha-lista">
+        <button className="fo" onClick={irPermissoes}>
+          Permissões
+        </button>
+        <Link className="fo" href="/">
+          Ver a loja
+        </Link>
+        <button className="fo" onClick={toggleDark} aria-pressed={dark}>
+          {dark ? 'Modo claro' : 'Modo noturno'}
+        </button>
+        <form action={sair}>
+          <button className="fo fo-sair" type="submit">
+            Sair
+          </button>
+        </form>
+      </div>
+      <button className="btn folha-fechar" onClick={() => ref.current?.close()}>
+        Fechar
+      </button>
+    </dialog>
   );
 }
 
@@ -165,7 +262,7 @@ function Overview({
         <section className="card">
           <h2>Pedidos recentes</h2>
           <div className="tw">
-            <table>
+            <table className="cartoes">
               <thead>
                 <tr>
                   <th>Pedido</th>
@@ -177,10 +274,10 @@ function Overview({
               <tbody>
                 {orders.slice(0, 5).map((o) => (
                   <tr key={o.id}>
-                    <td>#{o.id}</td>
-                    <td>{o.customer}</td>
-                    <td>{fmt(o.total)}</td>
-                    <td>
+                    <td className="c-tit">#{o.id}</td>
+                    <td className="c-dado" data-label="Cliente">{o.customer}</td>
+                    <td className="c-dado" data-label="Total">{fmt(o.total)}</td>
+                    <td className="c-sit">
                       <span className={`tag ${TAG[o.status]}`}>{o.status}</span>
                     </td>
                   </tr>
@@ -198,7 +295,7 @@ function Overview({
           <h2>Atenção ao estoque</h2>
           {low.length > 0 ? (
             <div className="tw">
-              <table>
+              <table className="cartoes">
                 <thead>
                   <tr>
                     <th>Produto</th>
@@ -209,15 +306,15 @@ function Overview({
                 <tbody>
                   {low.slice(0, 8).map((l) => (
                     <tr key={l.variant_id}>
-                      <td>
+                      <td className="c-tit">
                         {l.product_name}
                         <div className="sku">
                           {descreverVariacao(l.attributes) && `${descreverVariacao(l.attributes)} · `}
                           {l.sku}
                         </div>
                       </td>
-                      <td className="num">{l.disponivel}</td>
-                      <td>
+                      <td className="num c-dado c-forte" data-label="Disponível">{l.disponivel}</td>
+                      <td className="c-sit">
                         <Situacao l={l} />
                       </td>
                     </tr>
@@ -259,7 +356,7 @@ function Orders({ orders, setStatus }: { orders: AdminOrder[]; setStatus: (id: n
       </div>
       <section className="card">
         <div className="tw">
-          <table>
+          <table className="cartoes">
             <thead>
               <tr>
                 <th>Pedido</th>
@@ -273,12 +370,12 @@ function Orders({ orders, setStatus }: { orders: AdminOrder[]; setStatus: (id: n
             <tbody>
               {rows.map((o) => (
                 <tr key={o.id}>
-                  <td>#{o.id}</td>
-                  <td>{o.date}</td>
-                  <td>{o.customer}</td>
-                  <td>{o.items}</td>
-                  <td>{fmt(o.total)}</td>
-                  <td>
+                  <td className="c-tit">#{o.id}</td>
+                  <td className="c-dado" data-label="Data">{o.date}</td>
+                  <td className="c-dado c-largo" data-label="Cliente">{o.customer}</td>
+                  <td className="c-dado" data-label="Itens">{o.items}</td>
+                  <td className="c-dado" data-label="Total">{fmt(o.total)}</td>
+                  <td className="c-sit">
                     {isEditable(o.status) ? (
                       <label>
                         <span className="sr-only">Status do pedido {o.id}</span>

@@ -153,3 +153,124 @@
 .adm .foto-i .auth-err,.adm .foto-i .ok-msg{margin:0;font-size:13px;padding:8px 10px}
 .adm .pill.neg{color:var(--badt)}
 .adm .pill:disabled{opacity:.45;cursor:not-allowed}
+
+/* =====================================================================
+   Celular — o painel é muito usado no telefone.
+   Até 899px: barra de cima compacta, navegação de baixo, tabelas em cartões,
+   janelas em tela cheia com o botão de salvar sempre à vista, campos ≥16px
+   (o iPhone não dá zoom) e áreas de toque ≥44px.
+   ===================================================================== */
+.adm .topo,.adm .anav{display:none}
+
+/* Controles que valem em qualquer tela */
+.adm .seg{display:grid;grid-template-columns:1fr 1fr;gap:4px;padding:4px;background:var(--field);border:1px solid var(--line);border-radius:14px}
+.adm .seg button{min-height:44px;border-radius:10px;text-align:center!important;font-size:15px;color:var(--ink2)}
+.adm .seg button.on{background:var(--surf);color:var(--ink);font-weight:500;box-shadow:0 1px 3px rgba(56,41,31,.12)}
+.adm .qtd-l{display:grid;grid-template-columns:52px minmax(0,1fr) 52px;gap:8px}
+.adm .qtd-b{height:48px;border-radius:12px;border:1px solid var(--line)!important;background:var(--surf)!important;display:grid!important;place-items:center;font-size:22px;line-height:1;text-align:center!important;color:var(--ink)}
+.adm .qtd-b:active{background:var(--champ)!important}
+.adm .qtd-i{text-align:center;font-size:20px!important;font-variant-numeric:tabular-nums}
+.adm .sl-mini{min-height:36px;padding:0 12px!important;font-size:13.5px;vertical-align:middle;margin-left:4px}
+.adm .dlg-acoes{display:flex;gap:10px;flex-wrap:wrap}
+.adm .dlg-acoes .auth-btn{flex:1 1 auto}
+
+/* Folha "Mais opções" (abre de baixo) */
+.adm .dlg.folha{margin:auto auto 0;width:100%;max-width:520px;height:fit-content;max-height:85dvh;border-radius:24px 24px 0 0;border-bottom:0;padding:8px 16px calc(16px + env(safe-area-inset-bottom))}
+.adm .folha-alca{width:40px;height:4px;border-radius:2px;background:var(--line);margin:4px auto 12px}
+.adm .folha-quem{padding:0 4px 8px;font-size:13.5px}
+.adm .folha-lista{display:flex;flex-direction:column;border-top:1px solid var(--line);margin-bottom:12px}
+.adm .fo{display:flex!important;align-items:center;width:100%;min-height:56px;padding:0 6px!important;font-size:17px;border-bottom:1px solid var(--line);text-decoration:none}
+.adm .fo:active{background:var(--champ)}
+.adm .fo-sair{color:var(--badt)!important}
+.adm .folha-fechar{width:100%;justify-content:center}
+
+@media (max-width:899px){
+  .adm{display:block;padding-bottom:calc(72px + env(safe-area-inset-bottom))}
+  .adm .side{display:none}
+  .adm .topo{display:flex;align-items:center;gap:10px;position:sticky;top:0;z-index:40;min-height:56px;padding:env(safe-area-inset-top) 6px 0 16px;background:var(--surf);border-bottom:1px solid var(--line)}
+  .adm .topo .logo-img{width:34px;height:34px}
+  .adm .topo-t{flex:1;min-width:0;font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--acc);font-weight:500}
+  .adm .topo-b{width:48px;height:48px;display:grid!important;place-items:center;border-radius:14px;color:var(--ink)}
+  .adm .topo-b:active{background:var(--champ)}
+  .adm .anav{display:grid;grid-template-columns:repeat(4,1fr);position:fixed;left:0;right:0;bottom:0;z-index:40;background:var(--surf);border-top:1px solid var(--line);padding:4px 6px calc(4px + env(safe-area-inset-bottom))}
+  .adm .an{display:flex!important;flex-direction:column;align-items:center;justify-content:center;gap:3px;min-height:56px;font-size:12px;color:var(--ink2);border-radius:14px;position:relative;text-align:center!important}
+  .adm .an.on{color:var(--ink);font-weight:500}
+  .adm .an.on::before{content:"";position:absolute;top:-5px;width:28px;height:3px;background:var(--rose);border-radius:2px}
+  .adm .an:active{background:var(--champ)}
+  .adm .main{padding:16px 16px 24px}
+  .adm .h1{font-size:32px}
+  .adm .top{margin-bottom:16px}
+  .adm .demo{font-size:12.5px;margin-bottom:12px}
+  .adm .kpis{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-bottom:16px}
+  .adm .kpi{padding:14px;border-radius:16px}
+  .adm .kpi span{font-size:11px;letter-spacing:.08em}
+  .adm .kpi strong{font-size:30px}
+  .adm .grid2,.adm .ed{gap:14px}
+  .adm .card{padding:16px 14px;border-radius:18px}
+  .adm .card h2{font-size:23px}
+  .adm .top-acao{align-items:stretch}
+  .adm .top-acao > .auth-btn{width:100%}
+  /* Sem zoom do iPhone ao tocar num campo */
+  .adm .sel,.adm .inp,.adm .fld input,.adm .auth-i{font-size:16px}
+  .adm .sel{max-width:none;height:44px}
+  /* Filtros em uma linha que desliza para o lado */
+  .adm .bar[role=group]{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;margin-right:-16px;padding-right:16px}
+  .adm .bar[role=group]::-webkit-scrollbar{display:none}
+  .adm .bar[role=group] .pill{flex:0 0 auto;white-space:nowrap}
+  /* Fotos: imagem à esquerda, controles à direita */
+  .adm .fotos{grid-template-columns:1fr}
+  .adm .foto-i{display:grid;grid-template-columns:96px minmax(0,1fr);align-items:start;gap:10px 12px}
+  .adm .foto-i > .art{grid-row:span 3}
+}
+
+/* Tabelas viram cartões */
+@media (max-width:699px){
+  .adm .tw:has(> table.cartoes){overflow:visible;margin:0;padding:0}
+  .adm table.cartoes{min-width:0;font-size:15px}
+  .adm table.cartoes thead{display:none}
+  .adm table.cartoes tbody{display:block}
+  .adm table.cartoes tr{display:flex;flex-wrap:wrap;align-items:center;gap:6px 12px;padding:14px 0;border-bottom:1px solid var(--line)}
+  .adm table.cartoes tr:last-child{border-bottom:0}
+  .adm table.cartoes td{display:block;border:0;padding:0;text-align:left}
+  .adm table.cartoes .c-tit{order:1;flex:1 1 calc(100% - 130px);min-width:0}
+  .adm table.cartoes .c-sit{order:2;flex:0 0 auto;margin-left:auto}
+  .adm table.cartoes .c-forte{order:3}
+  .adm table.cartoes .c-dado{order:4;font-size:14px;color:var(--ink)}
+  .adm table.cartoes .c-dado::before{content:attr(data-label) " ";color:var(--ink2)}
+  .adm table.cartoes .c-forte{font-weight:500}
+  .adm table.cartoes .c-largo{flex-basis:100%}
+  .adm table.cartoes .c-acao{order:5;margin-left:auto}
+  .adm table.cartoes .c-acao:empty{display:none}
+  .adm table.cartoes td[colspan]{flex:1 1 100%}
+  .adm table.cartoes .sku{font-size:12.5px;overflow-wrap:anywhere}
+}
+
+/* Janelas em tela cheia, cabeçalho e ações fixos */
+@media (max-width:599px){
+  .adm .dlg:not(.folha){width:100%;max-width:100%;height:100dvh;max-height:100dvh;margin:0;inset:0;border:0;border-radius:0;padding:0 16px 16px}
+  .adm .dlg:not(.folha) .dlg-h{position:sticky;top:0;z-index:3;background:var(--surf);margin:0 -16px 14px;padding:calc(10px + env(safe-area-inset-top)) 16px 10px;border-bottom:1px solid var(--line);align-items:center}
+  .adm .dlg-h h2{font-size:22px}
+  .adm .dlg-acoes{position:sticky;bottom:0;z-index:3;background:var(--surf);margin:4px -16px 0;padding:12px 16px calc(12px + env(safe-area-inset-bottom));border-top:1px solid var(--line)}
+  .adm .dlg-acoes .btn{flex:1 1 140px;justify-content:center}
+  .adm .saldos dd{font-size:24px}
+  .adm .saldos div{padding:8px 10px}
+  .adm .peca{grid-template-columns:minmax(0,1fr) 64px}
+}
+
+/* Ajustes dos cartões e números */
+.adm .kpi strong,.adm .saldos dd{font-variant-numeric:lining-nums tabular-nums}
+@media (max-width:699px){
+  /* Os dados sempre começam na linha de baixo do título */
+  .adm table.cartoes tr::after{content:"";order:3;flex-basis:100%;height:0}
+  .adm table.cartoes .c-forte{order:4}
+  .adm table.cartoes .c-dado{order:5}
+  .adm table.cartoes .c-acao{order:6}
+  /* Cartão inteiro tocável: o botão da linha cobre o cartão, com "›" à direita */
+  .adm table.cartoes.toque tr{position:relative;padding-right:30px}
+  .adm table.cartoes.toque .c-acao .pill{position:absolute;inset:0;width:100%;min-height:0;border:0!important;border-radius:12px;background:transparent!important;color:transparent;font-size:0;padding:0!important}
+  .adm table.cartoes.toque .c-acao .pill:active{background:color-mix(in srgb,var(--champ) 45%,transparent)!important}
+  .adm table.cartoes.toque .c-acao:has(.pill)::after{content:"›";position:absolute;right:6px;top:50%;transform:translateY(-50%);font-size:28px;line-height:1;color:var(--ink2);pointer-events:none}
+  .adm table.cartoes.toque .c-acao:not(:has(.pill)){flex-basis:100%;margin-left:0}
+  .adm table.cartoes .c-sit .tag{font-size:12.5px;padding:2px 10px}
+  .adm .sl-mini{min-height:44px}
+}

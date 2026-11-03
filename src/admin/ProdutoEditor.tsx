@@ -79,8 +79,8 @@ export function ProdutoEditor({
         <p className="sub">
           <span className={`tag ${TAG_STATUS[p.status]}`}>{NOME_STATUS[p.status]}</span> {NOME_TIPO[p.kind]} ·{' '}
           {p.status === 'ativo' ? (
-            <a href={`/produto/${p.slug}`} target="_blank" rel="noreferrer">
-              ver na loja
+            <a className="sl sl-mini" href={`/produto/${p.slug}`} target="_blank" rel="noreferrer">
+              Ver na loja ↗
             </a>
           ) : (
             'fora da vitrine'
@@ -332,7 +332,7 @@ function Variacoes({ p, abrir }: { p: ProdutoPainel; abrir: (v: VariacaoPainel |
           : ' Variação nova começa com estoque 0: dê entrada na aba Estoque.'}
       </p>
       <div className="tw">
-        <table>
+        <table className="cartoes toque">
           <thead>
             <tr>
               <th>Variação</th>
@@ -347,14 +347,14 @@ function Variacoes({ p, abrir }: { p: ProdutoPainel; abrir: (v: VariacaoPainel |
           <tbody>
             {p.variacoes.map((v) => (
               <tr key={v.id}>
-                <td>
+                <td className="c-tit">
                   <strong style={{ fontWeight: 500 }}>{textoAtributos(v.attributes)}</strong>
                   <div className="sku">{v.sku}</div>
                 </td>
-                <td>{precoTexto(v)}</td>
-                <td className="num">{p.kind === 'kit_composto' ? v.pecas.length || <span className="neg">0</span> : v.min_stock}</td>
-                <td>{v.active ? <span className="tag t-ok">Ativa</span> : <span className="tag t-bad">Inativa</span>}</td>
-                <td>
+                <td className="c-dado c-largo" data-label="Preço">{precoTexto(v)}</td>
+                <td className="num c-dado" data-label={p.kind === 'kit_composto' ? 'Peças' : 'Mínimo'}>{p.kind === 'kit_composto' ? v.pecas.length || <span className="neg">0</span> : v.min_stock}</td>
+                <td className="c-sit">{v.active ? <span className="tag t-ok">Ativa</span> : <span className="tag t-bad">Inativa</span>}</td>
+                <td className="c-acao">
                   <button className="pill" onClick={() => abrir(v)} aria-label={`Editar variação ${v.sku}`}>
                     Editar
                   </button>
@@ -496,10 +496,13 @@ function VariacaoDialog({
           </label>
         </div>
         <Avisos erro={erro} feito={feito} />
-        <div className="bar" style={{ marginBottom: 0 }}>
+        <div className="dlg-acoes">
           <button className="btn auth-btn" type="submit" disabled={pendente}>
             {pendente ? 'Salvando…' : v ? 'Salvar variação' : 'Criar variação'}
           </button>
+        </div>
+        {/* Apagar fica fora da barra fixa: ação destrutiva longe do polegar. */}
+        <div className="bar" style={{ marginBottom: 0 }}>
           {v && (
             <button
               type="button"

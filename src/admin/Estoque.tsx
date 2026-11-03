@@ -88,7 +88,7 @@ export function Estoque({
 
       <section className="card">
         <div className="tw">
-          <table>
+          <table className="cartoes toque">
             <thead>
               <tr>
                 <th>Produto</th>
@@ -108,7 +108,7 @@ export function Estoque({
                 const variacao = descreverVariacao(l.attributes);
                 return (
                   <tr key={l.variant_id}>
-                    <td>
+                    <td className="c-tit">
                       <strong style={{ fontWeight: 500 }}>{l.product_name}</strong>
                       <div className="sku">
                         {variacao && `${variacao} · `}
@@ -116,16 +116,16 @@ export function Estoque({
                         {kit && ' · kit composto'}
                       </div>
                     </td>
-                    <td className="num">{kit ? '—' : l.on_hand}</td>
-                    <td className="num">{kit ? '—' : l.reserved}</td>
-                    <td className="num">
+                    <td className="num c-dado" data-label="Saldo">{kit ? '—' : l.on_hand}</td>
+                    <td className="num c-dado" data-label="Reservado">{kit ? '—' : l.reserved}</td>
+                    <td className="num c-dado c-forte" data-label="Disponível">
                       <strong style={{ fontWeight: 500 }}>{l.disponivel}</strong>
                     </td>
-                    <td className="num">{l.min_stock}</td>
-                    <td>
+                    <td className="num c-dado" data-label="Mínimo">{l.min_stock}</td>
+                    <td className="c-sit">
                       <Situacao l={l} />
                     </td>
-                    <td>
+                    <td className="c-acao">
                       {kit ? (
                         <span className="note">Calculado pelas peças</span>
                       ) : (
@@ -187,6 +187,10 @@ function Movimentar({
   const ref = useRef<HTMLDialogElement>(null);
   const [op, setOp] = useState<Operacao>('entrada');
   const [valor, setValor] = useState('');
+  // Ajuste: "Tirar" ou "Somar" + quantidade só com números (o teclado numérico do celular não tem "−").
+  const [sinal, setSinal] = useState<'tirar' | 'somar'>('tirar');
+  const valorFinal = op === 'ajuste' && valor.trim() ? `${sinal === 'tirar' ? '-' : ''}${valor.trim()}` : valor;
+  const passo = (d: number) => setValor((x) => String(Math.max(0, (Number(x) || 0) + d)));
   const [motivo, setMotivo] = useState('');
   const [erro, setErro] = useState<string | null>(null);
   const [feito, setFeito] = useState<string | null>(null);
@@ -196,7 +200,7 @@ function Movimentar({
 
   const variacao = descreverVariacao(linha.attributes);
   const conf = OPERACOES.find((o) => o.op === op)!;
-  const v = valor.trim() ? validarValor(op, valor) : null;
+  const v = valor.trim() ? validarValor(op, valorFinal) : null;
   const previa = v && 'valor' in v ? saldoDepois(op, linha.on_hand, v.valor) : null;
 
   useEffect(() => {
@@ -222,11 +226,11 @@ function Movimentar({
   const salvar = () => {
     setErro(null);
     setFeito(null);
-    const check = validarValor(op, valor);
+    const check = validarValor(op, valorFinal);
     if ('erro' in check) return setErro(check.erro);
     if (!motivo.trim()) return setErro('Informe o motivo.');
     iniciar(async () => {
-      const r = await movimentarEstoque(op, linha.variant_id, valor, motivo);
+      const r = await movimentarEstoque(op, linha.variant_id, valorFinal, motivo);
       if (!r.ok) return setErro(r.erro);
       setValor('');
       setMotivo('');
@@ -292,17 +296,37 @@ function Movimentar({
         </div>
         <p className="note">{conf.ajuda}</p>
 
-        <label className="auth-l">
-          {conf.campo}
-          <input
-            className="auth-i"
-            inputMode={op === 'ajuste' ? 'text' : 'numeric'}
-            autoComplete="off"
-            value={valor}
-            onChange={(e) => setValor(e.target.value)}
-            placeholder={op === 'ajuste' ? 'ex.: -1' : 'ex.: 10'}
-          />
-        </label>
+        <div className="auth-l">
+          <span>{op === 'ajuste' ? 'Quantidade' : conf.campo}</span>
+          {op === 'ajuste' && (
+            <span className="seg" role="group" aria-label="Tirar ou somar">
+              <button type="button" className={sinal === 'tirar' ? 'on' : ''} aria-pressed={sinal === 'tirar'} onClick={() => setSinal('tirar')}>
+                − Tirar
+              </button>
+              <button type="button" className={sinal === 'somar' ? 'on' : ''} aria-pressed={sinal === 'somar'} onClick={() => setSinal('somar')}>
+                + Somar
+              </button>
+            </span>
+          )}
+          <span className="qtd-l">
+            <button type="button" className="qtd-b" onClick={() => passo(-1)} aria-label="Diminuir quantidade">
+              −
+            </button>
+            <input
+              className="auth-i qtd-i"
+              inputMode="numeric"
+              pattern="[0-9]*"
+              autoComplete="off"
+              value={valor}
+              onChange={(e) => setValor(e.target.value.replace(/\D/g, '').slice(0, 6))}
+              placeholder={op === 'contagem' ? 'contado' : '0'}
+              aria-label={op === 'ajuste' ? `Quantidade a ${sinal}` : conf.campo}
+            />
+            <button type="button" className="qtd-b" onClick={() => passo(1)} aria-label="Aumentar quantidade">
+              +
+            </button>
+          </span>
+        </div>
         {previa !== null && (
           <p className={`note${previa < linha.reserved ? ' neg' : ''}`}>
             Saldo vai de {linha.on_hand} para <strong>{previa}</strong>
@@ -331,9 +355,11 @@ function Movimentar({
             {feito}
           </p>
         )}
-        <button className="btn auth-btn" type="submit" disabled={salvando}>
-          {salvando ? 'Salvando…' : `Registrar ${conf.nome.toLowerCase()}`}
-        </button>
+        <div className="dlg-acoes">
+          <button className="btn auth-btn" type="submit" disabled={salvando}>
+            {salvando ? 'Salvando…' : `Registrar ${conf.nome.toLowerCase()}`}
+          </button>
+        </div>
       </form>
 
       <h3 className="dlg-s">Histórico</h3>
