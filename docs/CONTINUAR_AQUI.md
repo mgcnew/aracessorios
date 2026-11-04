@@ -185,6 +185,10 @@ O painel será muito usado no telefone. Até 899 px de largura:
 
 Conferido em 360 e 390 px: sem rolagem lateral, nenhuma tabela rolando, sem campo que dá zoom; o roteiro de ponta a ponta (41 verificações) passou no computador e no celular. No computador o painel não mudou.
 
+## Modo noturno (04/11/2026)
+
+Tokens novos em `.ar.dark` (vitrine) e `.adm.dark` (painel): base carvão quente com degraus visíveis (página `#100E0D`, cartão `#1F1B19`, destaque `#2D2825`, campo `#2A2522`, borda `#4A423C`). O que no claro é cacau invertido vira dourado champagne `#D9B384` com texto `#1A1511` (9,3:1). Todo texto ≥ 5:1. A faixa de aviso deixou de ser creme. A paleta definitiva continua pendente (D-014).
+
 ## Pendências que não são de código
 
 | Item | Onde |
@@ -192,7 +196,6 @@ Conferido em 360 e 390 px: sem rolagem lateral, nenhuma tabela rolando, sem camp
 | Questionário para a cliente (frete, trocas, nota fiscal, painel, cores, domínio) | [documento](https://claude.ai/artifact/CZT1SUykPSyvr9Q34EC2Cf); trocar o marcador do link da prévia |
 | Prévia publicada do protótipo (versão antiga, igual no visual) | [prévia](https://claude.ai/artifact/KdvjU6JFDRNuDA94YqAcPQ) |
 | Propostas PR-001 e PR-002 (reserva × Pix; pagamento indefinido) | `docs/DECISOES.md` §6, decidir antes da Fase 3 |
-| Ajustar as cores do modo noturno | pedido do responsável, sem urgência |
 | Projeto Supabase antigo em Oregon (vazio, sem uso) | o responsável pode apagar |
 
 ## Como pedir na próxima sessão

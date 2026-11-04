@@ -25,7 +25,11 @@ export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
   viewportFit: 'cover',
-  themeColor: '#FDF6F0',
+  // Cor da barra do navegador no celular, conforme o tema do sistema.
+  themeColor: [
+    { media: '(prefers-color-scheme: light)', color: '#FDF6F0' },
+    { media: '(prefers-color-scheme: dark)', color: '#100E0D' },
+  ],
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {

@@ -7,8 +7,8 @@
 :root{--glass:rgba(253,246,240,.94);--glass2:rgba(255,249,244,.97);--hov:#4d3a2c;--off:#7d6757;--field:#F4EBE2;--chk:#fff;--bg:#FDF6F0;--surf:#FFF9F4;--champ:#EAD9C6;--rose:#C89F7A;--ink:#38291F;--ink2:#6B4E3D;--line:#E8DAD0;--acc:#8A5A38;--serif:var(--font-serif),Georgia,serif;--sans:var(--font-sans),system-ui,sans-serif;--h:64px}
 @media (min-width:900px){:root{--h:76px}}
 body{margin:0;background:#FDF6F0}
-.ar.dark{--bg:#1B1511;--surf:#261D17;--champ:#3A2D24;--rose:#C89F7A;--ink:#F5E9DC;--ink2:#CDB8A5;--line:#43342A;--acc:#E0B48C;--glass:rgba(27,21,17,.94);--glass2:rgba(34,26,21,.97);--hov:#FFFFFF;--off:#A89381;--field:#2E231C;--chk:#32261E;--soldbg:rgba(27,21,17,.62);--artA0:#3D2E25;--artB0:#2A1F18;--artA1:#43322A;--artB1:#2F231C;--artA2:#372A20;--artB2:#261B15;--artA3:#40312A;--artB3:#2C2019}
-.ar.dark .logo-img{box-shadow:0 0 0 1px #3a2d24}
+.ar.dark{--bg:#100E0D;--surf:#1F1B19;--champ:#2D2825;--rose:#C9A27E;--ink:#F4ECE3;--ink2:#C9BDB1;--line:#4A423C;--acc:#D9B384;--glass:rgba(16,14,13,.94);--glass2:rgba(31,27,25,.97);--hov:#E8CBA3;--off:#A39589;--field:#2A2522;--chk:#2D2825;--soldbg:rgba(16,14,13,.62);--ouro:#D9B384;--sobre-ouro:#1A1511;--artA0:#2E2925;--artB0:#1F1B19;--artA1:#332D29;--artB1:#221E1B;--artA2:#2B2622;--artB2:#1C1917;--artA3:#312B27;--artB3:#201C1A}
+.ar.dark .logo-img{box-shadow:0 0 0 1px #4a423c}
 .skip{position:absolute;left:-9999px;top:8px}
 .skip:focus{left:12px;z-index:100;background:var(--ink);color:var(--bg);padding:10px 18px;border-radius:999px;font-size:14px}
 .ar{font-family:var(--sans);color:var(--ink);background:var(--bg);min-height:100vh;overflow-x:clip;padding-bottom:calc(72px + env(safe-area-inset-bottom));font-size:16px;line-height:1.5}
@@ -274,3 +274,16 @@ body{margin:0;background:#FDF6F0}
   .foot li a{min-height:34px}
   .foot-b{margin-top:24px}
 }
+
+/* Modo noturno: o que no claro é cacau (cor invertida) vira dourado champagne no escuro,
+   em vez de um creme forte que ofusca. Contraste do texto sobre o dourado: 9,3:1. */
+.ar.dark .demo-banner{background:var(--surf);color:var(--acc);border-bottom:1px solid var(--line)}
+.ar.dark .btn-p,.ar.dark .btn-p[disabled]:hover{background:var(--ouro)!important;color:var(--sobre-ouro)!important}
+.ar.dark .pill.on{border-color:var(--ouro)!important;background:var(--ouro)!important;color:var(--sobre-ouro)!important}
+.ar.dark .cnt{background:var(--ouro);color:var(--sobre-ouro)}
+.ar.dark .demo-strong{background:var(--surf);color:var(--acc);border:1px solid var(--line);border-top:0}
+.ar.dark .toast{background:var(--champ);color:var(--ink);border:1px solid var(--line)}
+.ar.dark .pc-sold span{background:var(--surf);color:var(--ink);border:1px solid var(--line)}
+.ar.dark .skip:focus{background:var(--ouro);color:var(--sobre-ouro)}
+.ar.dark .payo:has(input:checked){border-color:var(--ouro)}
+.ar.dark .btn-p:hover:not([disabled]){background:var(--hov)!important}
