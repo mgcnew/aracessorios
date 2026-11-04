@@ -1,6 +1,7 @@
 // Tipos e textos do painel de estoque. Pode ser usado no navegador e no servidor.
 
 import type { Database } from '../lib/database.types';
+import type { FotoZoom } from './produtos';
 
 export type LinhaEstoque = Database['public']['Functions']['painel_estoque']['Returns'][number];
 export type TipoMovimento = Database['public']['Enums']['movement_type'];
@@ -25,6 +26,8 @@ export interface PaginaEstoque {
   arquivados: string[];
   /** Ids das variações ocultas da loja (inativas); a linha ganha a marca "inativa". */
   inativas: string[];
+  /** Fotos de cada produto da página (capa primeiro), para a miniatura ao lado do nome. */
+  fotos: Record<string, FotoZoom[]>;
 }
 
 /** Movimentações que o painel pode registrar à mão (CAT-DEC-012/021). */

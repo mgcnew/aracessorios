@@ -5,6 +5,7 @@ import { carregarProduto, carregarProdutosPagina, criarProduto, type Resultado }
 import { SearchIcon } from '../components/Icons';
 import { Selecao } from '../components/Selecao';
 import { fmt } from '../data/catalog';
+import { Miniatura } from './Miniatura';
 import { Paginacao } from './Paginacao';
 import { FiltroOpcoes } from './FiltroOpcoes';
 import { ProdutoEditor } from './ProdutoEditor';
@@ -208,11 +209,16 @@ export function Produtos({
                 return (
                   <tr key={p.id}>
                     <td className="c-tit">
-                      <strong style={{ fontWeight: 500 }}>{p.name}</strong>
-                      <div className="sku">
-                        {NOME_TIPO[p.kind]} · /{p.slug}
-                        {p.is_new && ' · Novo'}
-                        {p.is_featured && ' · Destaque'}
+                      <div className="tit-mini">
+                        <Miniatura fotos={p.fotos.map((f) => ({ caminho: f.storage_path, alt: f.alt }))} nome={p.name} />
+                        <div className="tit-txt">
+                          <strong style={{ fontWeight: 500 }}>{p.name}</strong>
+                          <div className="sku">
+                            {NOME_TIPO[p.kind]} · /{p.slug}
+                            {p.is_new && ' · Novo'}
+                            {p.is_featured && ' · Destaque'}
+                          </div>
+                        </div>
                       </div>
                     </td>
                     <td className="c-dado c-largo" data-label="Categorias">{p.categorias.map((c) => nomeCat.get(c)).filter(Boolean).join(', ') || <span className="note">—</span>}</td>
