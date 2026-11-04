@@ -1,6 +1,6 @@
 # Biblioteca de fotos do painel
 
-Estado: **migração da base preparada, não aplicada nem validada em Postgres; interface não implementada**. Autorizada em 04/11/2026 (CAT-DEC-025). Direção fotográfica: UI-DEC-004. A aplicação do SQL será manual pelo responsável, conforme solicitado.
+Estado: **interface implementada; base aplicada manualmente pelo responsável (2/2/0); SQL adicional de operações aguarda aplicação manual**. Autorizada em 04/11/2026 (CAT-DEC-025). Direção fotográfica: UI-DEC-004. A aplicação do SQL será manual pelo responsável, conforme solicitado.
 
 ## Comportamento esperado
 
@@ -10,7 +10,7 @@ Os produtos arquivados já preservam suas fotos hoje. A mudança acrescenta a re
 
 ## Plano antes de alterar schema e RLS
 
-1. Acrescentar uma tabela de mídia independente, com ID, nome, descrição padrão, caminho único e datas. Manter texto alternativo, capa e ordem por vínculo em `product_images`. Preencher a biblioteca a partir dos caminhos existentes, sem mover ou apagar arquivos. Adicionar referência da foto do produto à biblioteca; impedir exclusão de mídia com vínculos usando chave estrangeira.
+1. Tabela `media_assets` independente, com ID, nome, descrição padrão, caminho único e datas. Texto alternativo, capa e ordem por vínculo em `product_images`. A chave estrangeira usa `storage_path`, preservando o contrato existente. A base copia os registros antigos sem mover arquivos.
 2. Dar acesso à biblioteca somente ao admin com RLS. A vitrine continua lendo as fotos dos produtos ativos. O bucket atual é público por URL: biblioteca administrativa não torna os arquivos privados. Alterar a política de remoção de arquivos para impedir que o cliente apague mídia ainda vinculada; definir fluxo de exclusão que possa ser retomado após falha de Storage.
 3. Separar envio, vínculo e exclusão. Adaptar o envio atual para registrar a mídia e depois associá-la; se a associação falhar, manter na biblioteca. Remover a exclusão automática de arquivos ao apagar rascunho ou retirar foto. Validar autorização no servidor e no banco. Invalidar `TAG_CATALOGO` quando mudar a vitrine.
 4. Adicionar aba Biblioteca e acesso no menu Mais do celular; seleção da biblioteca no editor de produto. Usar busca/paginação no servidor, cartões e temas existentes, controles de 44 px, estados vazio/erro/carregando e confirmação própria do painel.
@@ -46,4 +46,14 @@ A base cria `media_assets`, registra as fotos já vinculadas e usa o caminho com
 
 Políticas restritivas impedem remoção/substituição dos arquivos registrados pelas APIs com sessão autenticada. O painel antigo ainda tentará apagar arquivos ao retirar fotos ou apagar rascunhos: o vínculo sairá, a biblioteca preservará os arquivos e poderá aparecer o aviso de arquivo remanescente. Isso só ficará com o texto e a experiência finais quando as ações do painel forem adaptadas. O bucket continua público por URL.
 
-Validação pendente: execução em Postgres/Supabase e testes de RLS, novos envios e preservação. A consulta final precisa mostrar `fotos_sem_biblioteca = 0`. Conferir também capa/ordem/URLs antigas, envio de uma foto nova e que conta fora de `admin_members` não lê nem escreve em `media_assets`. Antes da interface, preparar o fluxo de exclusão definitiva com concorrência e recuperação de falha do Storage, liberar reutilização e gerar os tipos. Não considerar esta base a biblioteca completa.
+## Operações e interface implementadas
+
+SQL adicional: `supabase/migrations/20261104091000_biblioteca_fotos_operacoes.sql`. Aplicar manualmente **depois da base já aplicada**, uma única vez no desenvolvimento. Ele troca a unicidade global de caminho por unicidade por produto (sem apagar registros), acrescenta estado `deleting`, limita cada produto a 12 fotos e fornece as operações de exclusão.
+
+O início da exclusão tranca a mídia e recusa fotos com vínculos. Vínculos novos trancam a mídia e recusam estado de exclusão. A exclusão usa a API do Storage para apagar as duas versões; o banco só finaliza depois de confirmar a ausência de ambas. Falhas deixam a mídia marcada e o painel oferece Retomar exclusão. UPDATE direto do estado/caminho e DELETE direto de mídia não são concedidos ao cliente. A substituição do conteúdo registrado continua bloqueada mesmo durante exclusão.
+
+`src/admin/Biblioteca.tsx`: aba com busca/paginação de 20, envio em lote com redução e remoção de EXIF/GPS, edição de nome/descrição e links para produtos em uso. Menu Mais no celular. `Fotos.tsx` oferece seleção da biblioteca e mantém capa/ordem/alt por produto. Enviar pelo editor registra na biblioteca antes de vincular; se o vínculo falhar, a foto fica disponível para reutilizar. Retirar vínculo/apagar rascunho preserva arquivo e registro.
+
+A interface exige o SQL adicional antes do uso. O aviso do painel antigo descrito acima deixa de se aplicar com as ações novas. O bucket continua público por URL; a listagem administrativa e os metadados da biblioteca exigem admin.
+
+Verificação: typecheck e build passaram. As seis migrações e os 52 testes SQL (incluindo biblioteca) passaram em PGlite, com Auth/Storage simulados. Não equivale ao teste das APIs de Storage nem a concorrência real entre conexões. Galeria testada no Chromium com ações simuladas: busca, paginação, edição, seleção, bloqueios e layouts claro/escuro em 360/390/1440 px, sem overflow e sem erros JS. Testes com login real, APIs de Storage, integração dos menus/janela e duas sessões continuam pendentes. Tipos adicionados em complemento explícito `src/lib/database-biblioteca.types.ts`; regenerar o arquivo completo do Supabase após a aplicação manual.

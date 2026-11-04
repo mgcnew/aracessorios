@@ -63,7 +63,7 @@ Exigência para a implementação: reservar as peças do kit composto sem contá
 
 Arquivos no Supabase Storage, com ordem, texto alternativo e marcação de capa. Validar tipo, tamanho e permissão no servidor. Servir versões comprimidas e responsivas. Só apagar o arquivo quando nada mais o referenciar.
 
-Biblioteca independente do produto: CAT-DEC-025. Retirar a foto de um produto ou apagar um rascunho preserva a imagem para reutilização. Exclusão definitiva fica na biblioteca, somente sem vínculos e com confirmação. Direção dos fundos e fidelidade das edições: UI-DEC-004. Plano técnico em [`../frontend/BIBLIOTECA_FOTOS.md`](../frontend/BIBLIOTECA_FOTOS.md).
+Biblioteca independente do produto: CAT-DEC-025. Retirar a foto de um produto ou apagar um rascunho preserva a imagem para reutilização. Exclusão definitiva fica na biblioteca, somente sem vínculos e com confirmação. Direção dos fundos e fidelidade das edições: UI-DEC-004. Implementação, SQL manual e verificações em [`../frontend/BIBLIOTECA_FOTOS.md`](../frontend/BIBLIOTECA_FOTOS.md).
 
 ## 6. Segurança
 

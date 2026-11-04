@@ -1,10 +1,10 @@
 'use client';
 
-import { useRef, useState } from 'react';
-import { apagarFoto, definirCapa, ordenarFotos, registrarFoto, salvarAlt } from '../app/admin/fotos-acoes';
-import { BUCKET_FOTOS, caminhoPequeno, urlFoto } from '../lib/fotos';
-import { supabaseNavegador } from '../lib/supabase/browser';
-import { prepararFoto } from './fotos';
+import { useEffect, useRef, useState } from 'react';
+import { apagarFoto, definirCapa, ordenarFotos, vincularMidia, salvarAlt } from '../app/admin/fotos-acoes';
+import { urlFoto } from '../lib/fotos';
+import { enviarParaBiblioteca } from './enviar-foto';
+import { Biblioteca } from './Biblioteca';
 import { useAcao } from './Produtos';
 import type { CatalogoPainel, FotoPainel, ProdutoPainel } from './produtos';
 import { confirmar } from './confirmar';
@@ -14,6 +14,7 @@ const MAX_FOTOS = 12;
 
 export function Fotos({ p, aoMudar }: { p: ProdutoPainel; aoMudar: (c: CatalogoPainel) => void }) {
   const entrada = useRef<HTMLInputElement>(null);
+  const [biblioteca, setBiblioteca] = useState(false);
   const [progresso, setProgresso] = useState<string | null>(null);
   const [erroEnvio, setErroEnvio] = useState<string[]>([]);
   const acao = useAcao();
@@ -26,26 +27,13 @@ export function Fotos({ p, aoMudar }: { p: ProdutoPainel; aoMudar: (c: CatalogoP
       setErroEnvio([`Cabem mais ${cabe} foto(s) neste produto (máximo de ${MAX_FOTOS}).`]);
       arquivos = arquivos.slice(0, Math.max(0, cabe));
     }
-    const db = supabaseNavegador();
     const erros: string[] = [];
     for (const [i, arq] of arquivos.entries()) {
       const n = arquivos.length > 1 ? ` ${i + 1} de ${arquivos.length}` : '';
       try {
-        setProgresso(`Preparando foto${n}…`);
-        const f = await prepararFoto(arq);
-        const caminho = `${p.id}/${crypto.randomUUID()}.${f.extensao}`;
-        setProgresso(`Enviando foto${n}…`);
-        const opcoes = { contentType: f.tipo, cacheControl: '31536000', upsert: false };
-        const g = await db.storage.from(BUCKET_FOTOS).upload(caminho, f.grande, opcoes);
-        if (g.error) throw new Error(g.error.message);
-        const pq = await db.storage.from(BUCKET_FOTOS).upload(caminhoPequeno(caminho), f.pequena, { ...opcoes, contentType: f.pequena.type });
-        if (pq.error) {
-          await db.storage.from(BUCKET_FOTOS).remove([caminho]);
-          throw new Error(pq.error.message);
-        }
-        // Registra no banco; se falhar, o servidor apaga os dois arquivos.
-        const r = await registrarFoto(p.id, caminho, p.name);
-        if (!r.ok) throw new Error(r.erro);
+        const midiaId = await enviarParaBiblioteca(arq, p.name, texto => setProgresso(`${texto}${n}`));
+        const r = await vincularMidia(p.id, midiaId);
+        if (!r.ok) throw new Error(`${r.erro} A foto está guardada na biblioteca.`);
         aoMudar(r.dados);
       } catch (e) {
         const msg = e instanceof Error ? e.message : String(e);
@@ -69,6 +57,7 @@ export function Fotos({ p, aoMudar }: { p: ProdutoPainel; aoMudar: (c: CatalogoP
         <button className="btn auth-btn" disabled={ocupado || cabe <= 0} onClick={() => entrada.current?.click()}>
           {progresso ?? 'Adicionar fotos'}
         </button>
+        <button className="pill" disabled={ocupado || cabe <= 0} onClick={() => setBiblioteca(true)}>Escolher da biblioteca</button>
         <input
           ref={entrada}
           type="file"
@@ -87,6 +76,7 @@ export function Fotos({ p, aoMudar }: { p: ProdutoPainel; aoMudar: (c: CatalogoP
         Foto quadrada ou em pé (4:5) fica melhor nos cartões.
       </p>
 
+      {biblioteca && <EscolherFoto fechar={() => setBiblioteca(false)} p={p} aoMudar={aoMudar} />}
       {erroEnvio.length > 0 && (
         <div className="auth-err" role="alert">
           {erroEnvio.map((e) => (
@@ -116,7 +106,7 @@ export function Fotos({ p, aoMudar }: { p: ProdutoPainel; aoMudar: (c: CatalogoP
               mover={mover}
               capa={() => acao.rodar(() => definirCapa(f.id), aoMudar)}
               apagar={async () => {
-                if (await confirmar({ titulo: 'Apagar esta foto?', texto: 'Ela sai da loja e do armazenamento.', confirmar: 'Apagar foto', perigo: true }))
+                if (await confirmar({ titulo: 'Retirar foto do produto?', texto: 'Ela sai deste produto e continua guardada na biblioteca.', confirmar: 'Retirar foto' }))
                   acao.rodar(
                     () => apagarFoto(f.id),
                     (c) => {
@@ -212,9 +202,22 @@ function FotoItem({
           </button>
         )}
         <button className="pill neg" disabled={ocupado} onClick={apagar}>
-          Apagar
+          Retirar do produto
         </button>
       </div>
     </li>
   );
+}
+
+function EscolherFoto({ fechar, p, aoMudar }: { fechar: () => void; p: ProdutoPainel; aoMudar: (c: CatalogoPainel) => void }) {
+  const ref = useRef<HTMLDialogElement>(null);
+  useEffect(() => { const d = ref.current; if (d && !d.open) d.showModal(); }, []);
+  return <dialog ref={ref} className="dlg dlg-biblioteca" aria-labelledby="titulo-escolher-foto" onClose={fechar}>
+    <div className="dlg-h"><h2 id="titulo-escolher-foto">Escolher foto</h2><button className="pill" onClick={() => ref.current?.close()}>Fechar</button></div>
+    <Biblioteca usadas={p.fotos.map(f => f.storage_path)} selecionar={async id => {
+      const r = await vincularMidia(p.id, id);
+      if (!r.ok) throw new Error(r.erro);
+      aoMudar(r.dados); ref.current?.close();
+    }} />
+  </dialog>;
 }

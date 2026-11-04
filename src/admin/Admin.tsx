@@ -6,6 +6,7 @@ import { sair } from '../app/admin/acoes';
 import { Estoque, Situacao } from './Estoque';
 import { descreverVariacao, type FiltroEstoque, type PaginaEstoque } from './estoque';
 import { Produtos } from './Produtos';
+import { Biblioteca } from './Biblioteca';
 import type { PaginaProdutos, ProdutoPainel } from './produtos';
 import { carregarEstoquePagina } from '../app/admin/estoque-acoes';
 import { CaixaIcon, CheckIcon, CrossIcon, EtiquetaIcon, MaisIcon, PainelIcon, PedidoIcon } from '../components/Icons';
@@ -26,18 +27,19 @@ import {
   type OrderStatus,
 } from './seed';
 
-type View = 'overview' | 'stock' | 'products' | 'orders' | 'perms';
+type View = 'overview' | 'stock' | 'products' | 'orders' | 'perms' | 'library';
 
 const MENU: { label: string; view: View }[] = [
   { label: 'Visão geral', view: 'overview' },
   { label: 'Estoque', view: 'stock' },
   { label: 'Produtos', view: 'products' },
+  { label: 'Biblioteca', view: 'library' },
   { label: 'Pedidos', view: 'orders' },
   { label: 'Permissões', view: 'perms' },
 ];
 
 // Abas no endereço (?aba=…): o "voltar" do celular volta para a aba anterior.
-const VIEW_ABA: Record<View, string> = { overview: 'visao', stock: 'estoque', products: 'produtos', orders: 'pedidos', perms: 'permissoes' };
+const VIEW_ABA: Record<View, string> = { overview: 'visao', stock: 'estoque', products: 'produtos', orders: 'pedidos', perms: 'permissoes', library: 'biblioteca' };
 const ABA_VIEW: Record<string, View> = Object.fromEntries(Object.entries(VIEW_ABA).map(([v, a]) => [a, v as View]));
 
 const NAV_CELULAR: { view: View; label: string; Icone: ComponentType }[] = [
@@ -160,6 +162,7 @@ export function Admin({ email, carga }: { email: string; carga: CargaInicial }) 
         )}
         {view === 'stock' && <Estoque inicial={carga.estoque} erroCarga={carga.erro} />}
         {view === 'products' && <Produtos inicial={carga.produtos} produtoInicial={carga.produto} abertoInicial={carga.produtoAberto} erroCarga={carga.erro} />}
+        {view === 'library' && <Biblioteca />}
         {view === 'orders' && <Orders orders={orders} setStatus={setOrderStatus} />}
         {view === 'perms' && <Permissions />}
       </main>
@@ -180,6 +183,7 @@ export function Admin({ email, carga }: { email: string; carga: CargaInicial }) 
           email={email}
           dark={dark}
           toggleDark={toggleDark}
+          irBiblioteca={() => { setMais(false); setView('library'); }}
           irPermissoes={() => {
             setMais(false);
             setView('perms');
@@ -196,12 +200,14 @@ function MaisOpcoes({
   dark,
   toggleDark,
   irPermissoes,
+  irBiblioteca,
 }: {
   fechar: () => void;
   email: string;
   dark: boolean;
   toggleDark: () => void;
   irPermissoes: () => void;
+  irBiblioteca: () => void;
 }) {
   const ref = useRef<HTMLDialogElement>(null);
   useEffect(() => {
@@ -213,6 +219,7 @@ function MaisOpcoes({
       <div className="folha-alca" aria-hidden="true" />
       {email && <p className="quem folha-quem">{email}</p>}
       <div className="folha-lista">
+        <button className="fo" onClick={irBiblioteca}>Biblioteca de fotos</button>
         <button className="fo" onClick={irPermissoes}>
           Permissões
         </button>

@@ -227,7 +227,7 @@ A arte oficial (D-004), sem redesenho e sem o fundo preto, como nas embalagens: 
 Fundo padrão inspirado no cetim preto acetinado das referências reais recebidas em 04/11/2026 (UI-DEC-004): brilho suave, dobras naturais e luz que revela o acabamento da peça. A direção de fundo substitui a sugestão de linho para fotos de catálogo; as cores da interface continuam iguais. Não alterar banho, pedras, proporções ou fechos. Comparar toda edição com a foto original antes de publicar. Referências numeradas em `referencias/galeria.html`.
 
 ### Biblioteca de fotos do painel
-Galeria com miniaturas, nomes e busca, seguindo os cartões, campos e temas existentes. Separar a ação de retirar a foto do produto da exclusão definitiva na biblioteca. Mostrar os produtos que usam a foto e impedir sua exclusão enquanto houver vínculo (CAT-DEC-025).
+Galeria com miniaturas, nomes e busca, seguindo os cartões, campos e temas existentes. Separar a ação de retirar a foto do produto da exclusão definitiva na biblioteca. Mostrar os produtos que usam a foto e impedir sua exclusão enquanto houver vínculo (CAT-DEC-025). No computador, a Biblioteca é uma aba lateral; no celular fica em Mais. O editor abre a seleção em janela, em tela cheia no celular. Exclusão interrompida oferece Retomar exclusão.
 
 ### Cartão de produto (assinatura)
 Foto 4:5 com cantos de 18px e zoom leve ao passar o mouse; coração de favoritar no canto; selo "Novo"/"Promoção" em pílula; categoria em rótulo, nome em serifa 21px e preço em sans 15px/500, com o preço antigo riscado ao lado. Esgotado ganha um véu e um selo, nunca a quantidade.

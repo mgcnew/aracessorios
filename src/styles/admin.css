@@ -306,3 +306,15 @@ html.dark .adm .btn-perigo-cheio{background:#E8907E!important;border-color:#E890
 .adm .pag-n{min-width:56px;text-align:center;font-size:14px;font-variant-numeric:tabular-nums}
 .adm .carregando{opacity:.55;transition:opacity .15s;pointer-events:none}
 @media (prefers-reduced-motion:reduce){.adm .carregando{transition:none}}
+
+/* Biblioteca independente de fotos: cartões e controles nos dois temas. */
+.adm .biblioteca-grid{list-style:none;padding:0;margin:20px 0;display:grid;grid-template-columns:repeat(auto-fill,minmax(min(230px,100%),1fr));gap:16px}
+.adm .biblioteca-card{min-width:0;background:var(--surf);border:1px solid var(--line);border-radius:22px;padding:14px;display:flex;flex-direction:column;gap:10px;overflow-wrap:anywhere}
+.adm .biblioteca-card img{display:block;width:100%;aspect-ratio:4/5;object-fit:contain;border-radius:14px;background:var(--field)}
+.adm .biblioteca-card h3{font-family:var(--serif);font-size:24px;font-weight:600}
+.adm .biblioteca-card form{display:flex;flex-direction:column;gap:10px}
+.adm .biblioteca-card .pill{min-height:44px;justify-content:center}
+.adm .biblioteca-card a{color:var(--acc);text-underline-offset:3px}
+.adm .dlg-biblioteca{width:min(1000px,calc(100vw - 32px));max-width:1000px}
+.adm .dlg-biblioteca .dlg-h{display:flex;justify-content:space-between;gap:12px}
+@media(max-width:599px){.adm .biblioteca-grid{grid-template-columns:1fr}.adm .biblioteca-card .auth-i{font-size:16px}}
