@@ -7,6 +7,7 @@ import {
   mudarStatus,
   salvarCategorias,
   salvarDadosProduto,
+  carregarOpcoesPecas,
   salvarPecas,
   salvarVariacao,
   type DadosProduto,
@@ -29,6 +30,8 @@ import {
   pendenciasParaAtivar,
   textoAtributos,
   type CatalogoPainel,
+  type CategoriaPainel,
+  type OpcaoPeca,
   type FormVariacao,
   type PecaKit,
   type ProdutoPainel,
@@ -57,12 +60,12 @@ function Avisos({ erro, feito }: { erro: string | null; feito: string | null }) 
 
 export function ProdutoEditor({
   produto: p,
-  catalogo,
+  categorias,
   voltar,
   aoMudar,
 }: {
   produto: ProdutoPainel;
-  catalogo: CatalogoPainel;
+  categorias: CategoriaPainel[];
   voltar: () => void;
   aoMudar: AoMudar;
 }) {
@@ -93,7 +96,7 @@ export function ProdutoEditor({
       <div className="ed">
         <Status p={p} aoMudar={aoMudar} voltar={voltar} />
         <Dados p={p} aoMudar={aoMudar} />
-        <Categorias p={p} catalogo={catalogo} aoMudar={aoMudar} />
+        <Categorias p={p} categorias={categorias} aoMudar={aoMudar} />
         <Fotos p={p} aoMudar={aoMudar} />
         <Variacoes
           p={p}
@@ -109,7 +112,6 @@ export function ProdutoEditor({
           key={janela}
           p={p}
           v={aberta}
-          catalogo={catalogo}
           fechar={() => setVariacao(null)}
           aoMudar={aoMudar}
           criada={(id) => {
@@ -291,7 +293,7 @@ function Dados({ p, aoMudar }: { p: ProdutoPainel; aoMudar: AoMudar }) {
 }
 
 // Categorias -----------------------------------------------------------------------
-function Categorias({ p, catalogo, aoMudar }: { p: ProdutoPainel; catalogo: CatalogoPainel; aoMudar: AoMudar }) {
+function Categorias({ p, categorias, aoMudar }: { p: ProdutoPainel; categorias: CategoriaPainel[]; aoMudar: AoMudar }) {
   const [sel, setSel] = useState<string[]>(p.categorias);
   const { pendente, erro, feito, rodar } = useAcao();
   const mudou = [...sel].sort().join() !== [...p.categorias].sort().join();
@@ -303,7 +305,7 @@ function Categorias({ p, catalogo, aoMudar }: { p: ProdutoPainel; catalogo: Cata
         Um produto pode estar em várias. Para criar uma categoria nova, peça ao desenvolvimento por enquanto.
       </p>
       <div className="bar">
-        {catalogo.categorias.map((c) => {
+        {categorias.map((c) => {
           const on = sel.includes(c.id);
           return (
             <button
@@ -394,14 +396,12 @@ function Variacoes({ p, abrir }: { p: ProdutoPainel; abrir: (v: VariacaoPainel |
 function VariacaoDialog({
   p,
   v,
-  catalogo,
   fechar,
   aoMudar,
   criada,
 }: {
   p: ProdutoPainel;
   v: VariacaoPainel | null;
-  catalogo: CatalogoPainel;
   fechar: () => void;
   aoMudar: AoMudar;
   criada: (id: string) => void;
@@ -542,24 +542,35 @@ function VariacaoDialog({
         {v && <p className="note">Variação com histórico de estoque não pode ser apagada: desmarque "ativa".</p>}
       </form>
 
-      {p.kind === 'kit_composto' && v && <Pecas p={p} v={v} catalogo={catalogo} aoMudar={aoMudar} />}
+      {p.kind === 'kit_composto' && v && <Pecas p={p} v={v} aoMudar={aoMudar} />}
     </dialog>
   );
 }
 
 // Peças do kit composto ----------------------------------------------------------
-function Pecas({ p, v, catalogo, aoMudar }: { p: ProdutoPainel; v: VariacaoPainel; catalogo: CatalogoPainel; aoMudar: AoMudar }) {
+function Pecas({ p, v, aoMudar }: { p: ProdutoPainel; v: VariacaoPainel; aoMudar: AoMudar }) {
   const [linhas, setLinhas] = useState<PecaKit[]>(v.pecas.length ? v.pecas : [{ component_variant_id: '', quantity: 1 }]);
   const { pendente, erro, feito, rodar } = useAcao();
   const travado = p.status !== 'rascunho';
 
-  // Peças possíveis: variações de produtos que não são kit composto.
-  const opcoes = catalogo.produtos
-    .filter((x) => x.kind !== 'kit_composto')
-    .flatMap((x) =>
-      x.variacoes.map((vv) => ({ id: vv.id, nome: `${x.name} — ${textoAtributos(vv.attributes)} (${vv.sku})${vv.active ? '' : ' · inativa'}` })),
-    );
-  const opcoesPeca = opcoes.map((o) => ({ value: o.id, label: o.nome }));
+  // Peças possíveis (variações de produtos que não são kit composto): só carregam aqui, quando precisam.
+  const [opcoes, setOpcoes] = useState<OpcaoPeca[] | null>(null);
+  const [erroOpcoes, setErroOpcoes] = useState<string | null>(null);
+  useEffect(() => {
+    let vivo = true;
+    carregarOpcoesPecas().then((r) => {
+      if (!vivo) return;
+      if (r.ok) setOpcoes(r.dados);
+      else setErroOpcoes(r.erro);
+    });
+    return () => {
+      vivo = false;
+    };
+  }, []);
+  // Enquanto carrega, as peças já escolhidas aparecem pelo id (o rótulo chega em seguida).
+  const opcoesPeca = (opcoes ?? linhas.filter((l) => l.component_variant_id).map((l) => ({ id: l.component_variant_id, nome: 'Carregando…' }))).map(
+    (o) => ({ value: o.id, label: o.nome }),
+  );
   const setLinha = (i: number, patch: Partial<PecaKit>) => setLinhas((ls) => ls.map((l, j) => (j === i ? { ...l, ...patch } : l)));
 
   return (
@@ -570,6 +581,11 @@ function Pecas({ p, v, catalogo, aoMudar }: { p: ProdutoPainel; v: VariacaoPaine
           ? 'A composição só muda com o kit em rascunho (Q-CAT-03 em aberto). Para mudar, use “Tirar da loja” acima: o kit sai da vitrine enquanto você edita.'
           : 'Quantas unidades de cada peça formam um kit. A disponibilidade do kit vem do estoque delas.'}
       </p>
+      {erroOpcoes && (
+        <p className="auth-err" role="alert" style={{ marginBottom: 10 }}>
+          Não foi possível carregar a lista de peças: {erroOpcoes}
+        </p>
+      )}
       <div className="pecas">
         {linhas.map((l, i) => (
           <div key={i} className="peca">

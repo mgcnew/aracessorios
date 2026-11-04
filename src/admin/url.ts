@@ -6,8 +6,9 @@ import { useCallback, useEffect, useState } from 'react';
  * Guarda um valor do painel no endereço (?aba=estoque, ?produto=…), para o botão
  * "voltar" do celular funcionar dentro do painel e recarregar manter o lugar.
  */
-export function useParamUrl(nome: string, padrao: string) {
-  const [valor, setValor] = useState(padrao);
+export function useParamUrl(nome: string, padrao: string, inicial?: string) {
+  // `inicial`: o valor que o servidor já leu do endereço (o primeiro desenho já sai na aba certa).
+  const [valor, setValor] = useState(inicial ?? padrao);
 
   useEffect(() => {
     const ler = () => setValor(new URLSearchParams(window.location.search).get(nome) ?? padrao);

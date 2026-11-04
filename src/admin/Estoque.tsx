@@ -1,9 +1,8 @@
 'use client';
 
-import { useEffect, useRef, useState, useTransition } from 'react';
-import { historicoVariacao, movimentarEstoque } from '../app/admin/estoque-acoes';
+import { useCallback, useEffect, useRef, useState, useTransition } from 'react';
+import { carregarEstoquePagina, historicoVariacao, movimentarEstoque } from '../app/admin/estoque-acoes';
 import { MinusIcon, PlusIcon, SearchIcon } from '../components/Icons';
-import { norm } from '../data/catalog';
 import {
   NOME_TIPO,
   OPERACOES,
@@ -11,10 +10,13 @@ import {
   ehKitComposto,
   saldoDepois,
   validarValor,
+  type FiltroEstoque,
   type LinhaEstoque,
   type Movimento,
   type Operacao,
+  type PaginaEstoque,
 } from './estoque';
+import { Paginacao } from './Paginacao';
 
 const dataHora = new Intl.DateTimeFormat('pt-BR', {
   dateStyle: 'short',
@@ -30,33 +32,44 @@ export function Situacao({ l }: { l: LinhaEstoque }) {
   return <span className="tag t-ok">Ok</span>;
 }
 
-export function Estoque({
-  linhas,
-  setLinhas,
-  erroCarga,
-  arquivados,
-}: {
-  linhas: LinhaEstoque[];
-  setLinhas: (l: LinhaEstoque[]) => void;
-  erroCarga: string | null;
-  /** Produtos arquivados: ficam fora da lista até a pessoa pedir para ver. */
-  arquivados: Set<string>;
-}) {
+const FILTRO_INICIAL: FiltroEstoque = { pagina: 1, busca: '', soBaixo: false, verArquivados: false };
+
+export function Estoque({ inicial, erroCarga }: { inicial: PaginaEstoque | null; erroCarga: string | null }) {
+  const [filtro, setFiltro] = useState<FiltroEstoque>(FILTRO_INICIAL);
   const [busca, setBusca] = useState('');
-  const [soBaixo, setSoBaixo] = useState(false);
-  const [verArquivados, setVerArquivados] = useState(false);
+  const [dados, setDados] = useState<PaginaEstoque | null>(inicial);
+  const [erro, setErro] = useState<string | null>(erroCarga);
+  const [carregando, iniciar] = useTransition();
   const [aberta, setAberta] = useState<LinhaEstoque | null>(null);
   const [aviso, setAviso] = useState<string | null>(null);
 
-  const nq = norm(busca.trim());
-  const qtdArquivadas = linhas.filter((l) => arquivados.has(l.product_id)).length;
-  const visiveis = linhas.filter(
-    (l) =>
-      (verArquivados || !arquivados.has(l.product_id)) &&
-      (!soBaixo || l.abaixo_do_minimo) &&
-      (!nq || norm(`${l.product_name} ${l.sku} ${descreverVariacao(l.attributes)}`).includes(nq)),
-  );
-  const baixo = linhas.filter((l) => l.abaixo_do_minimo && (verArquivados || !arquivados.has(l.product_id))).length;
+  // Uma página por vez, do banco. A primeira já vem do servidor quando se abre a aba pelo endereço.
+  const jaTem = useRef(inicial !== null);
+  const carregar = useCallback((f: FiltroEstoque) => {
+    iniciar(async () => {
+      const r = await carregarEstoquePagina(f);
+      if (r.ok) {
+        setDados(r.dados);
+        setErro(null);
+      } else setErro(r.erro);
+    });
+  }, []);
+  useEffect(() => {
+    if (jaTem.current) {
+      jaTem.current = false;
+      return;
+    }
+    carregar(filtro);
+  }, [filtro, carregar]);
+  // Busca espera a pessoa parar de digitar.
+  useEffect(() => {
+    const t = setTimeout(() => setFiltro((f) => (f.busca === busca ? f : { ...f, busca, pagina: 1 })), 300);
+    return () => clearTimeout(t);
+  }, [busca]);
+
+  const linhas = dados?.linhas ?? [];
+  const arquivados = new Set(dados?.arquivados ?? []);
+  const mudar = (patch: Partial<FiltroEstoque>) => setFiltro((f) => ({ ...f, pagina: 1, ...patch }));
 
   return (
     <>
@@ -65,9 +78,9 @@ export function Estoque({
         <p className="sub">Saldo de cada variação, direto do banco. Toda mudança pede um motivo e fica no histórico.</p>
       </div>
 
-      {erroCarga && (
+      {erro && (
         <p className="auth-err" role="alert" style={{ marginBottom: 16 }}>
-          Não foi possível carregar o estoque: {erroCarga}
+          Não foi possível carregar o estoque: {erro}
         </p>
       )}
       {aviso && (
@@ -87,18 +100,22 @@ export function Estoque({
             onChange={(e) => setBusca(e.target.value)}
           />
         </label>
-        <button className={`pill${soBaixo ? ' on' : ''}`} aria-pressed={soBaixo} onClick={() => setSoBaixo((v) => !v)}>
-          Só no mínimo ou esgotado ({baixo})
+        <button className={`pill${filtro.soBaixo ? ' on' : ''}`} aria-pressed={filtro.soBaixo} onClick={() => mudar({ soBaixo: !filtro.soBaixo })}>
+          Só no mínimo ou esgotado ({dados?.baixo ?? 0})
         </button>
-        {qtdArquivadas > 0 && (
-          <button className={`pill${verArquivados ? ' on' : ''}`} aria-pressed={verArquivados} onClick={() => setVerArquivados((v) => !v)}>
-            Mostrar arquivados ({qtdArquivadas})
+        {(dados?.arquivadas ?? 0) > 0 && (
+          <button
+            className={`pill${filtro.verArquivados ? ' on' : ''}`}
+            aria-pressed={filtro.verArquivados}
+            onClick={() => mudar({ verArquivados: !filtro.verArquivados })}
+          >
+            Mostrar arquivados ({dados?.arquivadas})
           </button>
         )}
       </div>
 
       <section className="card">
-        <div className="tw">
+        <div className={`tw${carregando ? ' carregando' : ''}`} aria-busy={carregando}>
           <table className="cartoes toque">
             <thead>
               <tr>
@@ -114,7 +131,7 @@ export function Estoque({
               </tr>
             </thead>
             <tbody>
-              {visiveis.map((l) => {
+              {linhas.map((l) => {
                 const kit = ehKitComposto(l);
                 const variacao = descreverVariacao(l.attributes);
                 return (
@@ -156,16 +173,24 @@ export function Estoque({
                   </tr>
                 );
               })}
-              {visiveis.length === 0 && (
+              {dados && linhas.length === 0 && (
                 <tr>
                   <td colSpan={7} className="sub">
-                    {linhas.length === 0 ? 'Nenhuma variação cadastrada.' : 'Nada encontrado com esse filtro.'}
+                    {filtro.busca || filtro.soBaixo ? 'Nada encontrado com esse filtro.' : 'Nenhuma variação cadastrada.'}
+                  </td>
+                </tr>
+              )}
+              {!dados && !erro && (
+                <tr>
+                  <td colSpan={7} className="sub">
+                    Carregando…
                   </td>
                 </tr>
               )}
             </tbody>
           </table>
         </div>
+        <Paginacao pagina={filtro.pagina} total={dados?.total ?? 0} ir={(pagina) => setFiltro((f) => ({ ...f, pagina }))} carregando={carregando} rotulo="variações" />
         <p className="note" style={{ marginTop: 12 }}>
           Disponível = saldo − reservado. Kit composto não tem estoque próprio: a disponibilidade vem das peças, então para mudar
           um kit composto movimente as peças dele.
@@ -176,10 +201,11 @@ export function Estoque({
         <Movimentar
           linha={aberta}
           fechar={() => setAberta(null)}
-          concluir={(novas, texto) => {
-            setLinhas(novas);
-            setAberta(novas.find((n) => n.variant_id === aberta.variant_id) ?? null);
+          concluir={(nova, texto) => {
+            setDados((d) => d && { ...d, linhas: d.linhas.map((l) => (l.variant_id === nova.variant_id ? nova : l)) });
+            setAberta(nova);
             setAviso(texto);
+            carregar(filtro); // contagens (mínimo/esgotado) podem ter mudado
           }}
         />
       )}
@@ -194,7 +220,7 @@ function Movimentar({
 }: {
   linha: LinhaEstoque;
   fechar: () => void;
-  concluir: (linhas: LinhaEstoque[], aviso: string) => void;
+  concluir: (linha: LinhaEstoque, aviso: string) => void;
 }) {
   const ref = useRef<HTMLDialogElement>(null);
   const [op, setOp] = useState<Operacao>('entrada');
@@ -246,8 +272,8 @@ function Movimentar({
       if (!r.ok) return setErro(r.erro);
       setValor('');
       setMotivo('');
-      const nova = r.dados.find((n) => n.variant_id === linha.variant_id);
-      const texto = `${conf.nome} ${op === 'ajuste' ? 'registrado' : 'registrada'} em ${linha.product_name}${variacao ? ` (${variacao})` : ''}. Saldo agora: ${nova?.on_hand ?? '—'}.`;
+      const nova = r.dados;
+      const texto = `${conf.nome} ${op === 'ajuste' ? 'registrado' : 'registrada'} em ${linha.product_name}${variacao ? ` (${variacao})` : ''}. Saldo agora: ${nova.on_hand}.`;
       setFeito(texto);
       concluir(r.dados, texto);
     });

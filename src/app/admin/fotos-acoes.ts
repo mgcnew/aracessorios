@@ -1,15 +1,21 @@
 'use server';
 
+import { updateTag } from 'next/cache';
 import { mensagemDoBanco, type CatalogoPainel } from '../../admin/produtos';
+import { TAG_CATALOGO } from '../../lib/cache';
 import { BUCKET_FOTOS, caminhoPequeno } from '../../lib/fotos';
 import { supabaseServidor } from '../../lib/supabase/server';
-import { carregarCatalogoPainel, type Resultado } from './produtos-acoes';
+import { carregarProduto, type Resultado } from './produtos-acoes';
 
 const falha = (erro: string) => ({ ok: false as const, erro });
 const CAMINHO_OK = /^[0-9a-f-]{36}\/[0-9a-f-]{36}\.(webp|jpg)$/;
 
-async function recarregar(): Promise<Resultado<CatalogoPainel>> {
-  return carregarCatalogoPainel();
+/** Devolve só o produto das fotos e expira o cache da vitrine. */
+async function recarregar(productId: string): Promise<Resultado<CatalogoPainel>> {
+  updateTag(TAG_CATALOGO);
+  const r = await carregarProduto(productId);
+  if (!r.ok) return r;
+  return { ok: true, dados: { categorias: [], produtos: r.dados ? [r.dados] : [] } };
 }
 
 function altValido(alt: string): { erro: string } | { alt: string } {
@@ -49,16 +55,16 @@ export async function registrarFoto(productId: string, caminho: string, alt: str
     await removerArquivos();
     return falha(mensagemDoBanco(error));
   }
-  return recarregar();
+  return recarregar(productId);
 }
 
 export async function salvarAlt(fotoId: string, alt: string) {
   const a = altValido(alt);
   if ('erro' in a) return falha(a.erro);
   const db = await supabaseServidor();
-  const { error } = await db.from('product_images').update({ alt: a.alt }).eq('id', fotoId);
+  const { data, error } = await db.from('product_images').update({ alt: a.alt }).eq('id', fotoId).select('product_id').single();
   if (error) return falha(mensagemDoBanco(error));
-  return recarregar();
+  return recarregar(data.product_id);
 }
 
 /** Uma capa por produto (o banco garante): tira a atual, marca a nova e a põe em primeiro. */
@@ -89,7 +95,7 @@ export async function ordenarFotos(productId: string, ids: string[]) {
     const { error } = await db.from('product_images').update({ position }).eq('id', id);
     if (error) return falha(mensagemDoBanco(error));
   }
-  return recarregar();
+  return recarregar(productId);
 }
 
 /** Apaga o registro e os dois arquivos. Se era a capa, a próxima foto vira capa. */
@@ -112,7 +118,7 @@ export async function apagarFoto(fotoId: string) {
       .limit(1);
     if (proxima.data?.[0]) await db.from('product_images').update({ is_cover: true }).eq('id', proxima.data[0].id);
   }
-  const r = await recarregar();
+  const r = await recarregar(foto.product_id);
   // O registro já saiu: devolve a lista atualizada e, se sobrou arquivo, um aviso (remove() não dá erro quando não acha).
   const saiu = arquivos.data?.length ?? 0;
   const aviso =

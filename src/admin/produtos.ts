@@ -60,9 +60,14 @@ export interface ProdutoPainel {
   fotos: FotoPainel[];
 }
 
+/**
+ * Resposta das ações do painel. `produtos` traz só o que mudou (não o catálogo inteiro);
+ * `removido` é o id do produto apagado, se for o caso.
+ */
 export interface CatalogoPainel {
   categorias: CategoriaPainel[];
   produtos: ProdutoPainel[];
+  removido?: string;
   /** Algo deu certo só em parte (ex.: arquivo de foto que ficou no armazenamento). */
   aviso?: string;
 }
@@ -249,3 +254,24 @@ export function mensagemDoBanco(erro: { code?: string; message: string; details?
       return erro.message;
   }
 }
+
+// Listagem paginada do painel ---------------------------------------------------------
+
+export const POR_PAGINA = 20;
+export type FiltroStatus = 'todos' | StatusProduto;
+
+export interface PaginaProdutos {
+  produtos: ProdutoPainel[];
+  total: number;
+  contagem: Record<FiltroStatus, number>;
+  categorias: CategoriaPainel[];
+}
+
+/** Opção de peça de kit composto (variação de produto que não é kit composto). */
+export interface OpcaoPeca {
+  id: string;
+  nome: string;
+}
+
+/** Texto de busca seguro para os filtros do PostgREST (sem vírgula, parêntese, asterisco). */
+export const termoBusca = (t: string) => t.trim().replace(/[,()*%\\]/g, ' ').replace(/\s+/g, ' ').slice(0, 60);

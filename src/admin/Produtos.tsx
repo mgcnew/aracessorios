@@ -1,10 +1,11 @@
 'use client';
 
-import { useEffect, useRef, useState, useTransition } from 'react';
-import { criarProduto, type Resultado } from '../app/admin/produtos-acoes';
+import { useCallback, useEffect, useRef, useState, useTransition } from 'react';
+import { carregarProduto, carregarProdutosPagina, criarProduto, type Resultado } from '../app/admin/produtos-acoes';
 import { SearchIcon } from '../components/Icons';
 import { Selecao } from '../components/Selecao';
-import { fmt, norm } from '../data/catalog';
+import { fmt } from '../data/catalog';
+import { Paginacao } from './Paginacao';
 import { ProdutoEditor } from './ProdutoEditor';
 import { useParamUrl } from './url';
 import {
@@ -15,13 +16,15 @@ import {
   TAG_STATUS,
   sugerirSlug,
   type CatalogoPainel,
-  type StatusProduto,
+  type CategoriaPainel,
+  type FiltroStatus,
+  type PaginaProdutos,
+  type ProdutoPainel,
   type TipoProduto,
   type UnidadeVenda,
 } from './produtos';
 
-type Filtro = StatusProduto | 'todos';
-const FILTROS: { f: Filtro; nome: string }[] = [
+const FILTROS: { f: FiltroStatus; nome: string }[] = [
   { f: 'todos', nome: 'Todos' },
   { f: 'ativo', nome: 'Ativos' },
   { f: 'rascunho', nome: 'Rascunhos' },
@@ -47,16 +50,18 @@ export function useAcao() {
 }
 
 export function Produtos({
-  catalogo,
+  inicial,
+  produtoInicial,
+  abertoInicial,
   erroCarga,
-  aoMudar,
 }: {
-  catalogo: CatalogoPainel;
+  inicial: PaginaProdutos | null;
+  produtoInicial: ProdutoPainel | null;
+  abertoInicial: string;
   erroCarga: string | null;
-  aoMudar: (c: CatalogoPainel) => void;
 }) {
   // Produto aberto fica no endereço (?produto=…): o "voltar" do celular volta para a lista.
-  const [aberto, setAbertoUrl] = useParamUrl('produto', '');
+  const [aberto, setAbertoUrl] = useParamUrl('produto', '', abertoInicial);
   const abriuAqui = useRef(false);
   const abrir = (id: string) => {
     abriuAqui.current = true;
@@ -71,21 +76,77 @@ export function Produtos({
   };
   const [novo, setNovo] = useState(false);
   const [busca, setBusca] = useState('');
-  const [filtro, setFiltro] = useState<Filtro>('todos');
+  const [filtro, setFiltro] = useState<{ pagina: number; busca: string; status: FiltroStatus }>({ pagina: 1, busca: '', status: 'todos' });
+  const [dados, setDados] = useState<PaginaProdutos | null>(inicial);
+  const [erro, setErro] = useState<string | null>(erroCarga);
+  const [carregando, iniciar] = useTransition();
+  // Produtos abertos no editor (podem não estar na página atual da lista).
+  const [abertos, setAbertos] = useState<Record<string, ProdutoPainel | null>>(produtoInicial ? { [produtoInicial.id]: produtoInicial } : {});
+  const [categorias, setCategorias] = useState<CategoriaPainel[]>(inicial?.categorias ?? []);
 
-  const produto = aberto ? catalogo.produtos.find((p) => p.id === aberto) : undefined;
-  if (produto) {
-    return <ProdutoEditor produto={produto} catalogo={catalogo} voltar={fecharEditor} aoMudar={aoMudar} />;
+  // Uma página por vez, do banco. A primeira já vem do servidor quando se abre a aba pelo endereço.
+  const jaTem = useRef(inicial !== null);
+  const carregar = useCallback((f: typeof filtro) => {
+    iniciar(async () => {
+      const r = await carregarProdutosPagina(f);
+      if (r.ok) {
+        setDados(r.dados);
+        setCategorias(r.dados.categorias);
+        setErro(null);
+      } else setErro(r.erro);
+    });
+  }, []);
+  useEffect(() => {
+    if (jaTem.current) {
+      jaTem.current = false;
+      return;
+    }
+    carregar(filtro);
+  }, [filtro, carregar]);
+  useEffect(() => {
+    const t = setTimeout(() => setFiltro((f) => (f.busca === busca ? f : { ...f, busca, pagina: 1 })), 300);
+    return () => clearTimeout(t);
+  }, [busca]);
+
+  const produto = aberto ? (aberto in abertos ? abertos[aberto] : dados?.produtos.find((p) => p.id === aberto)) : undefined;
+  // Abriu pelo endereço um produto fora da página atual: busca só ele.
+  useEffect(() => {
+    if (!aberto || produto !== undefined) return;
+    let vivo = true;
+    carregarProduto(aberto).then((r) => vivo && r.ok && setAbertos((a) => ({ ...a, [aberto]: r.dados })));
+    return () => {
+      vivo = false;
+    };
+  }, [aberto, produto]);
+
+  // Resposta de uma ação: troca só o produto que mudou e atualiza a lista em segundo plano.
+  const aoMudar = (c: CatalogoPainel) => {
+    if (c.categorias.length) setCategorias(c.categorias);
+    setAbertos((a) => {
+      const n = { ...a };
+      for (const p of c.produtos) n[p.id] = p;
+      if (c.removido) delete n[c.removido];
+      return n;
+    });
+    setDados((d) => d && { ...d, produtos: d.produtos.map((p) => c.produtos.find((x) => x.id === p.id) ?? p) });
+    carregar(filtro);
+  };
+
+  if (aberto) {
+    if (produto) return <ProdutoEditor produto={produto} categorias={categorias} voltar={fecharEditor} aoMudar={aoMudar} />;
+    return (
+      <div className="top">
+        <button className="sl" onClick={fecharEditor} style={{ marginBottom: 14 }}>
+          Todos os produtos
+        </button>
+        <p className="sub">{produto === null ? 'Produto não encontrado.' : 'Carregando produto…'}</p>
+      </div>
+    );
   }
 
-  const nomeCat = new Map(catalogo.categorias.map((c) => [c.id, c.name]));
-  const nq = norm(busca.trim());
-  const linhas = catalogo.produtos.filter(
-    (p) =>
-      (filtro === 'todos' || p.status === filtro) &&
-      (!nq || norm(`${p.name} ${p.slug} ${p.variacoes.map((v) => v.sku).join(' ')}`).includes(nq)),
-  );
-  const conta = (f: Filtro) => (f === 'todos' ? catalogo.produtos.length : catalogo.produtos.filter((p) => p.status === f).length);
+  const nomeCat = new Map(categorias.map((c) => [c.id, c.name]));
+  const linhas = dados?.produtos ?? [];
+  const conta = (f: FiltroStatus) => dados?.contagem[f] ?? 0;
 
   return (
     <>
@@ -99,9 +160,9 @@ export function Produtos({
         </button>
       </div>
 
-      {erroCarga && (
+      {erro && (
         <p className="auth-err" role="alert" style={{ marginBottom: 16 }}>
-          Não foi possível carregar os produtos: {erroCarga}
+          Não foi possível carregar os produtos: {erro}
         </p>
       )}
 
@@ -117,14 +178,19 @@ export function Produtos({
           />
         </label>
         {FILTROS.map(({ f, nome }) => (
-          <button key={f} className={`pill${filtro === f ? ' on' : ''}`} aria-pressed={filtro === f} onClick={() => setFiltro(f)}>
+          <button
+            key={f}
+            className={`pill${filtro.status === f ? ' on' : ''}`}
+            aria-pressed={filtro.status === f}
+            onClick={() => setFiltro((x) => ({ ...x, status: f, pagina: 1 }))}
+          >
             {nome} ({conta(f)})
           </button>
         ))}
       </div>
 
       <section className="card">
-        <div className="tw">
+        <div className={`tw${carregando ? ' carregando' : ''}`} aria-busy={carregando}>
           <table className="cartoes toque">
             <thead>
               <tr>
@@ -169,16 +235,24 @@ export function Produtos({
                   </tr>
                 );
               })}
-              {linhas.length === 0 && (
+              {dados && linhas.length === 0 && (
                 <tr>
                   <td colSpan={6} className="sub">
-                    {catalogo.produtos.length === 0 ? 'Nenhum produto cadastrado.' : 'Nada encontrado com esse filtro.'}
+                    {conta('todos') === 0 ? 'Nenhum produto cadastrado.' : 'Nada encontrado com esse filtro.'}
+                  </td>
+                </tr>
+              )}
+              {!dados && !erro && (
+                <tr>
+                  <td colSpan={6} className="sub">
+                    Carregando…
                   </td>
                 </tr>
               )}
             </tbody>
           </table>
         </div>
+        <Paginacao pagina={filtro.pagina} total={dados?.total ?? 0} ir={(pagina) => setFiltro((f) => ({ ...f, pagina }))} carregando={carregando} rotulo="produtos" />
       </section>
 
       {novo && (

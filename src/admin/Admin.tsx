@@ -4,10 +4,10 @@ import Link from 'next/link';
 import { useEffect, useRef, useState, type ComponentType, type ReactNode } from 'react';
 import { sair } from '../app/admin/acoes';
 import { Estoque, Situacao } from './Estoque';
-import { descreverVariacao, type LinhaEstoque } from './estoque';
+import { descreverVariacao, type FiltroEstoque, type PaginaEstoque } from './estoque';
 import { Produtos } from './Produtos';
-import type { CatalogoPainel } from './produtos';
-import { carregarEstoque } from '../app/admin/estoque-acoes';
+import type { PaginaProdutos, ProdutoPainel } from './produtos';
+import { carregarEstoquePagina } from '../app/admin/estoque-acoes';
 import { CaixaIcon, CheckIcon, CrossIcon, EtiquetaIcon, MaisIcon, PainelIcon, PedidoIcon } from '../components/Icons';
 import { Selecao } from '../components/Selecao';
 import { useParamUrl } from './url';
@@ -59,37 +59,45 @@ const TAG: Record<OrderStatus, string> = {
 const PAID: OrderStatus[] = ['Pago', 'Em separação', 'Enviado', 'Entregue'];
 const isEditable = (s: OrderStatus) => s === 'Pago' || s === 'Em separação' || s === 'Enviado';
 
-export function Admin({
-  email,
-  estoque,
-  erroEstoque,
-  catalogo: catalogoInicial,
-  erroCatalogo,
-}: {
-  email: string;
-  estoque: LinhaEstoque[];
-  erroEstoque: string | null;
-  catalogo: CatalogoPainel;
-  erroCatalogo: string | null;
-}) {
+/** O que o servidor já trouxe ao abrir o painel: só o necessário para a aba do endereço. */
+export interface CargaInicial {
+  aba: string;
+  produtoAberto: string;
+  baixo: PaginaEstoque | null;
+  estoque: PaginaEstoque | null;
+  produtos: PaginaProdutos | null;
+  produto: ProdutoPainel | null;
+  erro: string | null;
+}
+
+const SO_BAIXO: FiltroEstoque = { pagina: 1, busca: '', soBaixo: true, verArquivados: false };
+
+export function Admin({ email, carga }: { email: string; carga: CargaInicial }) {
   const { dark, toggleDark } = useTheme();
-  const [aba, setAba] = useParamUrl('aba', 'visao');
+  const [aba, setAba] = useParamUrl('aba', 'visao', carga.aba);
   const view: View = ABA_VIEW[aba] ?? 'overview';
   const setView = (v: View) => {
     setAba(VIEW_ABA[v], { produto: null });
     window.scrollTo({ top: 0 });
   };
   const [mais, setMais] = useState(false);
-  const [linhas, setLinhas] = useState<LinhaEstoque[]>(estoque);
-  const [catalogo, setCatalogo] = useState<CatalogoPainel>(catalogoInicial);
   const [orders, setOrders] = useState<AdminOrder[]>(SEED_ORDERS);
 
-  // Mudou o cadastro (variação nova, desativada…): o estoque também muda.
-  const aoMudarCatalogo = (c: CatalogoPainel) => {
-    setCatalogo(c);
-    carregarEstoque().then((r) => r.ok && setLinhas(r.dados));
-  };
-  const arquivados = new Set(catalogo.produtos.filter((p) => p.status === 'arquivado').map((p) => p.id));
+  // Visão geral: só as variações no mínimo ou esgotadas; atualiza ao voltar para ela.
+  const [baixo, setBaixo] = useState<PaginaEstoque | null>(carga.baixo);
+  const primeiraVisao = useRef(carga.baixo !== null);
+  useEffect(() => {
+    if (view !== 'overview') return;
+    if (primeiraVisao.current) {
+      primeiraVisao.current = false;
+      return;
+    }
+    let vivo = true;
+    carregarEstoquePagina(SO_BAIXO).then((r) => vivo && r.ok && setBaixo(r.dados));
+    return () => {
+      vivo = false;
+    };
+  }, [view]);
   const setOrderStatus = (id: number, status: OrderStatus) =>
     setOrders((os) => os.map((o) => (o.id === id ? { ...o, status } : o)));
 
@@ -148,10 +156,10 @@ export function Admin({
           </span>
         )}
         {view === 'overview' && (
-          <Overview linhas={linhas} arquivados={arquivados} orders={orders} goOrders={() => setView('orders')} goStock={() => setView('stock')} />
+          <Overview baixo={baixo} orders={orders} goOrders={() => setView('orders')} goStock={() => setView('stock')} />
         )}
-        {view === 'stock' && <Estoque linhas={linhas} setLinhas={setLinhas} erroCarga={erroEstoque} arquivados={arquivados} />}
-        {view === 'products' && <Produtos catalogo={catalogo} erroCarga={erroCatalogo} aoMudar={aoMudarCatalogo} />}
+        {view === 'stock' && <Estoque inicial={carga.estoque} erroCarga={carga.erro} />}
+        {view === 'products' && <Produtos inicial={carga.produtos} produtoInicial={carga.produto} abertoInicial={carga.produtoAberto} erroCarga={carga.erro} />}
         {view === 'orders' && <Orders orders={orders} setStatus={setOrderStatus} />}
         {view === 'perms' && <Permissions />}
       </main>
@@ -228,25 +236,23 @@ function MaisOpcoes({
 }
 
 function Overview({
-  linhas,
-  arquivados,
+  baixo,
   orders,
   goOrders,
   goStock,
 }: {
-  linhas: LinhaEstoque[];
-  arquivados: Set<string>;
+  baixo: PaginaEstoque | null;
   orders: AdminOrder[];
   goOrders: () => void;
   goStock: () => void;
 }) {
-  const low = linhas.filter((l) => l.abaixo_do_minimo && !arquivados.has(l.product_id));
+  const low = baixo?.linhas ?? [];
   const revenue = orders.filter((o) => PAID.includes(o.status)).reduce((s, o) => s + o.total, 0);
   const kpis = [
     { label: 'Aguardando pagamento', value: orders.filter((o) => o.status === 'Aguardando pagamento').length, note: 'pedidos' },
     { label: 'Para separar', value: orders.filter((o) => o.status === 'Pago' || o.status === 'Em separação').length, note: 'pedidos pagos' },
     { label: 'Vendas pagas', value: fmt(revenue), note: 'soma ilustrativa' },
-    { label: 'Estoque baixo', value: low.length, note: 'variações no mínimo ou esgotadas' },
+    { label: 'Estoque baixo', value: baixo ? baixo.total : '…', note: 'variações no mínimo ou esgotadas' },
   ];
 
   return (

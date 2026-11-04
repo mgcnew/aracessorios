@@ -5,6 +5,24 @@ import type { Database } from '../lib/database.types';
 export type LinhaEstoque = Database['public']['Functions']['painel_estoque']['Returns'][number];
 export type TipoMovimento = Database['public']['Enums']['movement_type'];
 
+export interface FiltroEstoque {
+  pagina: number;
+  busca: string;
+  soBaixo: boolean;
+  verArquivados: boolean;
+}
+
+export interface PaginaEstoque {
+  linhas: LinhaEstoque[];
+  /** Total de linhas com os filtros atuais (para as páginas). */
+  total: number;
+  /** Quantas, com a busca atual, estão no mínimo ou esgotadas. */
+  baixo: number;
+  /** Variações de produtos arquivados (escondidas por padrão). */
+  arquivadas: number;
+  arquivados: string[];
+}
+
 /** Movimentações que o painel pode registrar à mão (CAT-DEC-012/021). */
 export type Operacao = 'entrada' | 'ajuste' | 'contagem';
 
