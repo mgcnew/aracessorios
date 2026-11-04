@@ -8,7 +8,7 @@ import { HeartIcon } from './Icons';
 
 export function productBadge(p: Product): string {
   if (!isAvailable(p)) return '';
-  if (cheapestVariant(p).compare) return 'Promoção ilustrativa';
+  if (cheapestVariant(p).compare) return 'Promoção';
   if (p.isNew) return 'Novo';
   if (p.isKit) return 'Kit';
   return '';

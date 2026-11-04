@@ -46,7 +46,7 @@ Referência visual (`../assets/referencia_visual.png`): inspira hierarquia, card
 - 12 a 18 produtos entre os seis tipos; ao menos 1 kit com estoque próprio e 1 kit composto.
 - Cada variação com SKU único; preços podem variar entre variações; unidade comercial por produto.
 - Alguns itens esgotados, com compra bloqueada. Promoção só com período fictício explícito; sem contador de urgência.
-- Aviso de demonstração visível em todas as páginas.
+- Aviso de demonstração na sacola e no checkout, onde há tentativa de compra; as páginas de navegação não têm aviso de protótipo (UI-DEC-003).
 - Sacola e favoritos podem ficar no `localStorage` (só IDs, variações e quantidades), com opção de limpar.
 - Reserva de 15 min e baixa após pagamento são regras do backend futuro: **não simular**.
 

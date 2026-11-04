@@ -123,7 +123,7 @@ export function ProductPage({ productId }: { productId: string }) {
             <strong>{fmt(cur.price)}</strong>
             {cur.compare && cur.avail && <s>{fmt(cur.compare)}</s>}
           </div>
-          <p className="note">Preço por {unitWord} · Valores ilustrativos</p>
+          <p className="note">Preço por {unitWord}</p>
           {cur.compare && cur.avail && cur.promoEnds && (
             <p className="note" style={{ marginTop: 4 }}>
               Promoção válida até {FIM_PROMO.format(new Date(cur.promoEnds))}.
@@ -164,7 +164,7 @@ export function ProductPage({ productId }: { productId: string }) {
 
           <p className={`stat${cur.avail ? '' : ' bad'}`} role="status">
             <i />
-            {cur.avail ? 'Disponível (demonstração)' : 'Esgotado nesta combinação'}
+            {cur.avail ? 'Disponível' : 'Esgotado nesta combinação'}
           </p>
 
           <div className="pdp-actions">
