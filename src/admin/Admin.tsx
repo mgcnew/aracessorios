@@ -113,7 +113,6 @@ export function Admin({ email, carga }: { email: string; carga: CargaInicial }) 
     document.addEventListener('visibilitychange', aoVoltar);
     const aoReceber = (e: MessageEvent) => e.data?.tipo === 'aviso' && void atualizarNaoLidos();
     if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('/sw.js').catch(() => {});
       navigator.serviceWorker.addEventListener('message', aoReceber);
     }
     return () => {

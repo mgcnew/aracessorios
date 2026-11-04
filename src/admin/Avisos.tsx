@@ -3,6 +3,8 @@
 import { useCallback, useEffect, useState, useTransition } from 'react';
 import { carregarAvisos, enviarTeste, marcarLidos, registrarAparelho, removerAparelho, type EstadoAvisos } from '../app/admin/avisos-acoes';
 import { CompartilharIcon, SinoIcon } from '../components/Icons';
+import { useInstalar } from '../components/useInstalar';
+import { ehIos, estaInstalado } from '../lib/pwa';
 
 /*
  * Avisos do painel (NOT-DEC-001): a dona recebe uma notificação no celular quando há uma compra.
@@ -13,13 +15,6 @@ type Situacao = 'carregando' | 'instalar' | 'sem-suporte' | 'pedir' | 'negado' |
 
 const dataHora = new Intl.DateTimeFormat('pt-BR', { dateStyle: 'short', timeStyle: 'short', timeZone: 'America/Sao_Paulo' });
 
-function ehIos() {
-  const ua = navigator.userAgent;
-  return /iPad|iPhone|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
-}
-function instalado() {
-  return (navigator as Navigator & { standalone?: boolean }).standalone === true || window.matchMedia('(display-mode: standalone)').matches;
-}
 const temPush = () => 'serviceWorker' in navigator && 'PushManager' in window && 'Notification' in window;
 
 function chaveParaBytes(base64: string): Uint8Array<ArrayBuffer> {
@@ -37,6 +32,7 @@ export function Avisos({ versao, aoMudarNaoLidos }: { versao: number; aoMudarNao
   const [ios, setIos] = useState(false);
   const [feito, setFeito] = useState<string | null>(null);
   const [ocupado, iniciar] = useTransition();
+  const app = useInstalar();
 
   const carregar = useCallback(async () => {
     const r = await carregarAvisos();
@@ -60,7 +56,7 @@ export function Avisos({ versao, aoMudarNaoLidos }: { versao: number; aoMudarNao
       setIos(iphone);
       const s: Situacao = !estado.configurado
         ? 'sem-chaves'
-        : iphone && !instalado()
+        : iphone && !estaInstalado()
           ? 'instalar'
           : !temPush()
             ? 'sem-suporte'
@@ -181,6 +177,14 @@ export function Avisos({ versao, aoMudarNaoLidos }: { versao: number; aoMudarNao
         </div>
 
         {situacao === 'carregando' && !erro && <p className="note">Verificando…</p>}
+
+        {app.podeInstalar && (
+          <div className="avisos-acoes" style={{ marginBottom: 14 }}>
+            <button className="btn" onClick={() => void app.instalar()}>
+              Instalar o painel neste aparelho
+            </button>
+          </div>
+        )}
 
         {situacao === 'sem-chaves' && (
           <p className="note">As chaves de envio (VAPID) ainda não estão configuradas neste ambiente, então não dá para ativar os avisos aqui.</p>
