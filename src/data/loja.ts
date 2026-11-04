@@ -1,7 +1,9 @@
 // Catálogo da vitrine lido do banco e convertido para o formato que as telas usam.
 // Só roda no servidor. O visitante recebe disponível sim/não, nunca quantidade (CAT-DEC-024).
 
+import { unstable_cache } from 'next/cache';
 import { cache } from 'react';
+import { TAG_CATALOGO } from '../lib/cache';
 import { urlFoto } from '../lib/fotos';
 import { supabasePublico } from '../lib/supabase/public';
 import type { Database } from '../lib/database.types';
@@ -41,8 +43,7 @@ function falha(etapa: string, erro: { message: string } | null): never {
   throw new Error(`Não foi possível carregar ${etapa} do banco: ${erro?.message ?? 'erro desconhecido'}`);
 }
 
-/** Lê o catálogo uma vez por requisição, mesmo que várias partes da página peçam. */
-export const getCatalogo = cache(async (): Promise<Catalogo> => {
+async function lerCatalogo(): Promise<Catalogo> {
   const db = supabasePublico();
 
   const [cats, prods, kits] = await Promise.all([
@@ -138,4 +139,15 @@ export const getCatalogo = cache(async (): Promise<Catalogo> => {
   });
 
   return { categories: cats.data.map((c) => ({ id: c.slug, name: c.name })), products };
-});
+}
+
+/*
+ * O catálogo fica em cache no servidor: cada página e cada clique na vitrine deixam de
+ * esperar o banco (eram 150–300 ms por navegação). O painel expira a etiqueta a cada
+ * mudança (updateTag), então a cliente vê a alteração no clique seguinte. Os 60 s cobrem
+ * o que muda sem passar pelo painel: início e fim de promoção e, no futuro, pedidos.
+ */
+const catalogoEmCache = unstable_cache(lerCatalogo, ['catalogo-vitrine'], { tags: [TAG_CATALOGO], revalidate: 60 });
+
+/** Catálogo da vitrine; lido do cache e uma vez por requisição. */
+export const getCatalogo = cache(() => catalogoEmCache());

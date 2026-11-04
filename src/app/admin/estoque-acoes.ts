@@ -1,7 +1,10 @@
 'use server';
 
+import { updateTag } from 'next/cache';
+import { TAG_CATALOGO } from '../../lib/cache';
 import { supabaseServidor } from '../../lib/supabase/server';
-import { validarValor, type LinhaEstoque, type Movimento, type Operacao } from '../../admin/estoque';
+import { validarValor, type FiltroEstoque, type LinhaEstoque, type Movimento, type Operacao, type PaginaEstoque } from '../../admin/estoque';
+import { POR_PAGINA, termoBusca } from '../../admin/produtos';
 
 export type Resultado<T> = { ok: true; dados: T } | { ok: false; erro: string };
 
@@ -12,9 +15,49 @@ function mensagem(erro: { code?: string; message: string }): string {
   return erro.message;
 }
 
-export async function carregarEstoque(): Promise<Resultado<LinhaEstoque[]>> {
-  const supabase = await supabaseServidor();
-  const { data, error } = await supabase.rpc('painel_estoque');
+/**
+ * Uma página do estoque (POR_PAGINA linhas), com busca por produto ou SKU e filtros no
+ * banco. Produtos arquivados ficam de fora, a não ser que se peça para vê-los.
+ */
+export async function carregarEstoquePagina(f: FiltroEstoque): Promise<Resultado<PaginaEstoque>> {
+  const db = await supabaseServidor();
+  const termo = termoBusca(f.busca);
+  const pagina = Math.max(1, Math.floor(f.pagina) || 1);
+
+  const arq = await db.from('products').select('id').eq('status', 'arquivado');
+  if (arq.error) return { ok: false, erro: mensagem(arq.error) };
+  const arquivados = arq.data.map((p) => p.id);
+
+  // Mesmo filtro para a lista e para as contagens (variant/product ids são uuids: seguros na lista).
+  const base = (opcoes?: { count: 'exact'; head?: boolean }) => {
+    let q = db.rpc('painel_estoque', undefined, opcoes);
+    if (!f.verArquivados && arquivados.length) q = q.not('product_id', 'in', `(${arquivados.join(',')})`);
+    if (termo) q = q.or(`product_name.ilike.*${termo}*,sku.ilike.*${termo}*`);
+    return q;
+  };
+  const de = (pagina - 1) * POR_PAGINA;
+  let lista = base({ count: 'exact' });
+  if (f.soBaixo) lista = lista.eq('abaixo_do_minimo', true);
+  const qArq = arquivados.length
+    ? db.rpc('painel_estoque', undefined, { count: 'exact', head: true }).in('product_id', arquivados)
+    : null;
+
+  const [linhas, baixo, emArquivados] = await Promise.all([
+    lista.order('product_name').order('sku').range(de, de + POR_PAGINA - 1),
+    base({ count: 'exact', head: true }).eq('abaixo_do_minimo', true),
+    qArq,
+  ]);
+  for (const r of [linhas, baixo, emArquivados]) if (r?.error) return { ok: false, erro: mensagem(r.error) };
+  return {
+    ok: true,
+    dados: { linhas: linhas.data ?? [], total: linhas.count ?? 0, baixo: baixo.count ?? 0, arquivadas: emArquivados?.count ?? 0, arquivados },
+  };
+}
+
+/** Uma linha só (depois de movimentar). */
+async function linhaEstoque(variantId: string): Promise<Resultado<LinhaEstoque>> {
+  const db = await supabaseServidor();
+  const { data, error } = await db.rpc('painel_estoque').eq('variant_id', variantId).single();
   if (error) return { ok: false, erro: mensagem(error) };
   return { ok: true, dados: data };
 }
@@ -28,7 +71,7 @@ export async function movimentarEstoque(
   variantId: string,
   valorTexto: string,
   motivo: string,
-): Promise<Resultado<LinhaEstoque[]>> {
+): Promise<Resultado<LinhaEstoque>> {
   const v = validarValor(op, valorTexto);
   if ('erro' in v) return { ok: false, erro: v.erro };
   if (!motivo.trim()) return { ok: false, erro: 'Informe o motivo.' };
@@ -43,7 +86,9 @@ export async function movimentarEstoque(
   const { error } = await chamada;
   if (error) return { ok: false, erro: mensagem(error) };
 
-  return carregarEstoque();
+  // A vitrine mostra disponível/esgotado: expira o cache para refletir no clique seguinte.
+  updateTag(TAG_CATALOGO);
+  return linhaEstoque(variantId);
 }
 
 export async function historicoVariacao(variantId: string): Promise<Resultado<Movimento[]>> {

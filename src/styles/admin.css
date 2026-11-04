@@ -297,3 +297,12 @@ html.dark .adm .btn-perigo-cheio{background:#E8907E!important;border-color:#E890
 @keyframes dlg-in{from{opacity:0;transform:translateY(8px) scale(.98)}}
 @keyframes dlg-fundo{from{opacity:0}}
 @media (prefers-reduced-motion:reduce){.adm .dlg[open],.adm .dlg[open]::backdrop{animation:none}}
+
+/* Listas paginadas (estoque, produtos): carregam uma página por vez. */
+.adm .pag{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-top:14px}
+.adm .pag-info{font-size:13.5px;color:var(--ink2);font-variant-numeric:tabular-nums}
+.adm .pag-bts{display:inline-flex;align-items:center;gap:8px}
+.adm .pag-bts .pill{min-width:44px;justify-content:center;padding:0!important}
+.adm .pag-n{min-width:56px;text-align:center;font-size:14px;font-variant-numeric:tabular-nums}
+.adm .carregando{opacity:.55;transition:opacity .15s;pointer-events:none}
+@media (prefers-reduced-motion:reduce){.adm .carregando{transition:none}}
