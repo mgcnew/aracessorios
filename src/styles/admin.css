@@ -326,3 +326,25 @@ html.dark .adm .btn-perigo-cheio{background:#E8907E!important;border-color:#E890
   .adm .filtro-sel{display:block;flex:1 1 200px}
   .adm .filtro-sel .selecao{width:100%;max-width:none}
 }
+
+/* Avisos (sino, contador, tela de avisos). */
+.adm .mi-n{margin-left:auto;min-width:22px;height:22px;padding:0 7px;border-radius:999px;background:var(--acc);color:var(--bg);font-size:12.5px;font-weight:500;display:inline-grid;place-items:center;font-variant-numeric:tabular-nums}
+.adm .sino{position:relative}
+.adm .sino-n{position:absolute;top:5px;right:3px;min-width:19px;height:19px;padding:0 5px;border-radius:999px;background:var(--acc);color:var(--bg);font-size:11px;font-weight:500;display:grid;place-items:center;font-variant-numeric:tabular-nums}
+.adm .avisos-passos p{color:var(--ink2);font-size:15px}
+.adm .avisos-passos ol{margin:12px 0 0;padding-left:22px;display:grid;gap:10px;font-size:15px}
+.adm .avisos-ic{vertical-align:-3px;margin:0 2px;color:var(--acc)}
+.adm .avisos-lista{list-style:none;margin:0;padding:0}
+.adm .avisos-lista li{border-top:1px solid var(--line)}
+.adm .avisos-lista li:first-child{border-top:0}
+.adm .aviso{display:grid;grid-template-columns:24px minmax(0,1fr) 10px;gap:12px;align-items:start;width:100%;min-height:56px;padding:14px 4px;text-align:left}
+.adm .aviso-ic{margin-top:2px;color:var(--ink2)}
+.adm .novo .aviso-ic{color:var(--acc)}
+.adm .aviso-t{display:flex;flex-direction:column;gap:2px;min-width:0}
+.adm .aviso-t strong{font-weight:500}
+.adm .novo .aviso-t strong{font-weight:600}
+.adm .aviso-t span{color:var(--ink2);font-size:15px}
+.adm .aviso-t small{color:var(--ink2);font-size:12.5px}
+.adm .aviso-ponto{width:9px;height:9px;margin-top:7px;border-radius:50%;background:var(--acc)}
+.adm .avisos-acoes{display:flex;flex-wrap:wrap;gap:10px}
+.adm .avisos-acoes .btn{flex:1 1 190px;justify-content:center}

@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useEffect, useRef, useState, type ComponentType, type ReactNode } from 'react';
+import { useCallback, useEffect, useRef, useState, type ComponentType, type ReactNode } from 'react';
 import { sair } from '../app/admin/acoes';
 import { Estoque, Situacao } from './Estoque';
 import { descreverVariacao, type FiltroEstoque, type PaginaEstoque } from './estoque';
@@ -11,6 +11,9 @@ import type { PaginaProdutos, ProdutoPainel } from './produtos';
 import { carregarEstoquePagina } from '../app/admin/estoque-acoes';
 import { CaixaIcon, CheckIcon, CrossIcon, EtiquetaIcon, MaisIcon, PainelIcon, PedidoIcon } from '../components/Icons';
 import { Selecao } from '../components/Selecao';
+import { contarNaoLidos } from '../app/admin/avisos-acoes';
+import { SinoIcon } from '../components/Icons';
+import { Avisos } from './Avisos';
 import { FiltroOpcoes } from './FiltroOpcoes';
 import { useParamUrl } from './url';
 import { Confirmacoes } from './confirmar';
@@ -28,7 +31,7 @@ import {
   type OrderStatus,
 } from './seed';
 
-type View = 'overview' | 'stock' | 'products' | 'orders' | 'perms' | 'library';
+type View = 'overview' | 'stock' | 'products' | 'orders' | 'perms' | 'library' | 'notices';
 
 const MENU: { label: string; view: View }[] = [
   { label: 'Visão geral', view: 'overview' },
@@ -36,11 +39,12 @@ const MENU: { label: string; view: View }[] = [
   { label: 'Produtos', view: 'products' },
   { label: 'Biblioteca', view: 'library' },
   { label: 'Pedidos', view: 'orders' },
+  { label: 'Avisos', view: 'notices' },
   { label: 'Permissões', view: 'perms' },
 ];
 
 // Abas no endereço (?aba=…): o "voltar" do celular volta para a aba anterior.
-const VIEW_ABA: Record<View, string> = { overview: 'visao', stock: 'estoque', products: 'produtos', orders: 'pedidos', perms: 'permissoes', library: 'biblioteca' };
+const VIEW_ABA: Record<View, string> = { overview: 'visao', stock: 'estoque', products: 'produtos', orders: 'pedidos', perms: 'permissoes', library: 'biblioteca', notices: 'avisos' };
 const ABA_VIEW: Record<string, View> = Object.fromEntries(Object.entries(VIEW_ABA).map(([v, a]) => [a, v as View]));
 
 const NAV_CELULAR: { view: View; label: string; Icone: ComponentType }[] = [
@@ -86,6 +90,48 @@ export function Admin({ email, carga }: { email: string; carga: CargaInicial }) 
   const [mais, setMais] = useState(false);
   const [orders, setOrders] = useState<AdminOrder[]>(SEED_ORDERS);
 
+  // Avisos (NOT-DEC-001): contador do sino, atualizado ao abrir, a cada 45 s com a aba visível,
+  // ao voltar para ela e na hora em que o service worker avisa que chegou um push.
+  const [naoLidos, setNaoLidos] = useState(0);
+  const [versaoAvisos, setVersaoAvisos] = useState(0);
+  const ultimoNaoLidos = useRef(0);
+  const aoMudarNaoLidos = useCallback((n: number) => {
+    setNaoLidos(n);
+    ultimoNaoLidos.current = n;
+  }, []);
+  const atualizarNaoLidos = useCallback(async () => {
+    const n = await contarNaoLidos();
+    if (n === null) return;
+    setNaoLidos(n);
+    if (n > ultimoNaoLidos.current) setVersaoAvisos((v) => v + 1);
+    ultimoNaoLidos.current = n;
+  }, []);
+  useEffect(() => {
+    void atualizarNaoLidos();
+    const t = setInterval(() => document.visibilityState === 'visible' && void atualizarNaoLidos(), 45000);
+    const aoVoltar = () => document.visibilityState === 'visible' && void atualizarNaoLidos();
+    document.addEventListener('visibilitychange', aoVoltar);
+    const aoReceber = (e: MessageEvent) => e.data?.tipo === 'aviso' && void atualizarNaoLidos();
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.addEventListener('message', aoReceber);
+    }
+    return () => {
+      clearInterval(t);
+      document.removeEventListener('visibilitychange', aoVoltar);
+      if ('serviceWorker' in navigator) navigator.serviceWorker.removeEventListener('message', aoReceber);
+    };
+  }, [atualizarNaoLidos]);
+  // Número no ícone do aplicativo instalado (iOS 16.4+ e computador), quando o aparelho permite.
+  useEffect(() => {
+    const nav = navigator as Navigator & { setAppBadge?: (n?: number) => Promise<void>; clearAppBadge?: () => Promise<void> };
+    try {
+      if (naoLidos > 0) void nav.setAppBadge?.(naoLidos);
+      else void nav.clearAppBadge?.();
+    } catch {
+      /* sem suporte: segue sem o número */
+    }
+  }, [naoLidos]);
+
   // Visão geral: só as variações no mínimo ou esgotadas; atualiza ao voltar para ela.
   const [baixo, setBaixo] = useState<PaginaEstoque | null>(carga.baixo);
   const primeiraVisao = useRef(carga.baixo !== null);
@@ -122,6 +168,7 @@ export function Admin({ email, carga }: { email: string; carga: CargaInicial }) 
               onClick={() => setView(m.view)}
             >
               {m.label}
+              {m.view === 'notices' && naoLidos > 0 && <span className="mi-n" aria-label={`${naoLidos} não lidos`}>{naoLidos}</span>}
             </button>
           ))}
         </nav>
@@ -145,6 +192,10 @@ export function Admin({ email, carga }: { email: string; carga: CargaInicial }) 
       <header className="topo">
         <LogoMark />
         <span className="topo-t">Painel</span>
+        <button className="topo-b sino" onClick={() => setView('notices')} aria-label={`Avisos${naoLidos ? ` (${naoLidos} não lidos)` : ''}`}>
+          <SinoIcon />
+          {naoLidos > 0 && <span className="sino-n">{naoLidos > 9 ? '9+' : naoLidos}</span>}
+        </button>
         <button className="topo-b" onClick={() => setMais(true)} aria-label="Mais opções" aria-haspopup="dialog">
           <MaisIcon />
         </button>
@@ -165,6 +216,7 @@ export function Admin({ email, carga }: { email: string; carga: CargaInicial }) 
         {view === 'products' && <Produtos inicial={carga.produtos} produtoInicial={carga.produto} abertoInicial={carga.produtoAberto} erroCarga={carga.erro} />}
         {view === 'library' && <Biblioteca />}
         {view === 'orders' && <Orders orders={orders} setStatus={setOrderStatus} />}
+        {view === 'notices' && <Avisos versao={versaoAvisos} aoMudarNaoLidos={aoMudarNaoLidos} />}
         {view === 'perms' && <Permissions />}
       </main>
 

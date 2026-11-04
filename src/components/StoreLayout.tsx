@@ -7,6 +7,7 @@ import { useCatalogo } from '../data/CatalogoContext';
 import { catalogHref } from '../data/catalogQuery';
 import { useStore } from '../store';
 import { BagIcon, CheckIcon, CrossIcon, GemIcon, HeartIcon, HomeIcon, InfoIcon, MoonIcon, SearchIcon, SunIcon } from './Icons';
+import { InstalarApp } from './InstalarApp';
 import { Midia } from './Midia';
 import { LogoMark } from './ui';
 
@@ -141,6 +142,7 @@ export function StoreLayout({ children }: { children: ReactNode }) {
           {/* Sem itens de bastidor no rodapé público: o painel fica em /admin e "limpar" fica na sacola. */}
           <div className="foot-b">
             <span>© {new Date().getFullYear()} AR Acessórios</span>
+            <InstalarApp />
           </div>
         </div>
       </footer>

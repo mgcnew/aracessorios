@@ -62,6 +62,7 @@ Os IDs antigos foram mantidos para rastreabilidade com o pacote anterior (v2.1, 
 | ID | Decisão | Estado | Falta definir |
 |---|---|---|---|
 | PAY-DEC-001 | Meios no lançamento: Pix e cartão. Boleto fora. | Decidido | — |
+| NOT-DEC-001 | **Aviso de compra à dona** por notificação push (Web Push com chaves VAPID, sem app nativo e sem conta de desenvolvedor Apple) e por uma caixa de avisos no painel. No iPhone só funciona com o painel instalado na tela inicial (iOS 16.4 ou mais novo). O aviso mostra só o número e o valor do pedido, **nunca dado da cliente**. A chave privada de envio fica só no servidor (`.env.local` e variáveis da Vercel), nunca no repositório. Autorizado pelo responsável em 04/11/2026: infraestrutura com aviso de teste agora; o gatilho de compra real entra com a Fase 3 (pagamento confirmado). | Decidido | E-mail de reserva (Q-NOT-01); gatilho de compra (Fase 3) |
 | PAY-DEC-002 | Pagamentos tardios e falhas de conciliação são tratados no Módulo 02, sem estorno nem liberação automáticos. | Decidido | — |
 | PAY-DEC-003 | Provedor de pagamento. **Reaberto em 03/11/2026:** Mercado Pago é o mais provável, mas ainda não está decidido. | Em aberto | Escolha do provedor; modalidade de integração (Q-PAG-05) |
 | PAY-DEC-004 | Compra como visitante permitida; conta não obrigatória. *(Unifica D-008.)* | Decidido | Dados mínimos pedidos ao visitante |
@@ -125,6 +126,7 @@ Os IDs antigos foram mantidos para rastreabilidade com o pacote anterior (v2.1, 
 | Q-UX-02 | Conta de cliente opcional (para acompanhar pedidos)? |
 | Q-UX-03 | Cupons, vale-presente, avaliações, recuperação de carrinho abandonado, integração com WhatsApp. |
 | Q-UX-04 | Metas numéricas: conversão, ticket médio, volume de pedidos, prazo de expedição. |
+| Q-NOT-01 | E-mail de reserva para o aviso de compra (o push do iPhone pode ser silenciado pelo modo Foco ou perdido se o ícone for removido): qual endereço recebe e qual serviço de envio (conta gratuita de e-mail transacional) é autorizado. Também: contato da loja para o campo `VAPID_SUBJECT`. |
 
 ---
 
