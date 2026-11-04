@@ -8,6 +8,7 @@
 - [x] Miniaturas numeradas em `referencias/galeria.html`; originais preservados em `referencias/originais/`, ignorada pelo Git. Não apagar os ZIPs de Downloads: originais ainda não estão na biblioteca.
 - [x] Padrão aprovado: cetim preto acetinado das fotos reais (UI-DEC-004), preservando os detalhes da peça.
 - [x] Biblioteca independente aprovada (CAT-DEC-025); plano, arquivos, riscos e testes em `docs/frontend/BIBLIOTECA_FOTOS.md`.
+- [x] SQL da base preparado em `supabase/migrations/20261104090000_biblioteca_fotos_base.sql`; o responsável aplicará manualmente. **Não aplicado e não testado em Postgres nesta sessão.**
 - [ ] Implementar e validar a biblioteca conforme o plano antes de enviar o lote de fotos.
 - [ ] Escolher referência de fundo, consultar custo Dreamina e aprovar créditos antes da primeira edição; comparar com a peça real antes de gerar um lote.
 - Combinado com o responsável: commit e push ao concluir cada etapa. Branch atual: `desempenho`. `.claude/` já estava não rastreada; não foi incluída.

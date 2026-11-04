@@ -1,6 +1,6 @@
 # Biblioteca de fotos do painel
 
-Estado: **planejada, não implementada**. Autorizada em 04/11/2026 (CAT-DEC-025). Direção fotográfica: UI-DEC-004. Esta etapa não gera imagens, aplica migrações nem envia fotos ao banco.
+Estado: **migração da base preparada, não aplicada nem validada em Postgres; interface não implementada**. Autorizada em 04/11/2026 (CAT-DEC-025). Direção fotográfica: UI-DEC-004. A aplicação do SQL será manual pelo responsável, conforme solicitado.
 
 ## Comportamento esperado
 
@@ -37,3 +37,13 @@ Os produtos arquivados já preservam suas fotos hoje. A mudança acrescenta a re
 ## Fotos recebidas
 
 Inventário e miniaturas em `referencias/`. Originais locais ignorados pelo Git. Antes de gerar um lote: selecionar referência de acetinado, consultar orçamento Dreamina, obter aprovação dos créditos e validar uma primeira edição contra a peça real. Sem nome, preço ou composição presumidos a partir da imagem.
+
+## Aplicação manual da base
+
+SQL versionado: `supabase/migrations/20261104090000_biblioteca_fotos_base.sql`. Aplicar uma vez no SQL Editor do banco de desenvolvimento, com o painel sem uso durante a execução. Não executar no banco de produção. Se houver erro, não continuar comandos separados; a migração usa transação.
+
+A base cria `media_assets`, registra as fotos já vinculadas e usa o caminho como chave estrangeira, preservando os contratos atuais. Novos registros em `product_images` alimentam a biblioteca por gatilho. A unicidade antiga de `product_images.storage_path` fica intacta: reutilização em vários produtos ainda não está liberada nesta etapa. Nenhum arquivo é enviado ou apagado. Arquivos soltos no bucket sem vínculo não são importados automaticamente.
+
+Políticas restritivas impedem remoção/substituição dos arquivos registrados pelas APIs com sessão autenticada. O painel antigo ainda tentará apagar arquivos ao retirar fotos ou apagar rascunhos: o vínculo sairá, a biblioteca preservará os arquivos e poderá aparecer o aviso de arquivo remanescente. Isso só ficará com o texto e a experiência finais quando as ações do painel forem adaptadas. O bucket continua público por URL.
+
+Validação pendente: execução em Postgres/Supabase e testes de RLS, novos envios e preservação. A consulta final precisa mostrar `fotos_sem_biblioteca = 0`. Conferir também capa/ordem/URLs antigas, envio de uma foto nova e que conta fora de `admin_members` não lê nem escreve em `media_assets`. Antes da interface, preparar o fluxo de exclusão definitiva com concorrência e recuperação de falha do Storage, liberar reutilização e gerar os tipos. Não considerar esta base a biblioteca completa.
