@@ -1,7 +1,8 @@
 'use client';
 
 import { useCallback, useEffect, useRef, useState, useTransition } from 'react';
-import { carregarEstoquePagina, historicoVariacao, movimentarEstoque } from '../app/admin/estoque-acoes';
+import { apagarVariacaoSemHistorico, carregarEstoquePagina, historicoVariacao, mudarVisibilidadeVariacao, movimentarEstoque } from '../app/admin/estoque-acoes';
+import { confirmar } from './confirmar';
 import { MinusIcon, PlusIcon, SearchIcon } from '../components/Icons';
 import {
   NOME_TIPO,
@@ -32,7 +33,7 @@ export function Situacao({ l }: { l: LinhaEstoque }) {
   return <span className="tag t-ok">Ok</span>;
 }
 
-const FILTRO_INICIAL: FiltroEstoque = { pagina: 1, busca: '', soBaixo: false, verArquivados: false };
+const FILTRO_INICIAL: FiltroEstoque = { pagina: 1, busca: '', soBaixo: false, verArquivados: false, verInativas: false };
 
 export function Estoque({ inicial, erroCarga }: { inicial: PaginaEstoque | null; erroCarga: string | null }) {
   const [filtro, setFiltro] = useState<FiltroEstoque>(FILTRO_INICIAL);
@@ -69,6 +70,7 @@ export function Estoque({ inicial, erroCarga }: { inicial: PaginaEstoque | null;
 
   const linhas = dados?.linhas ?? [];
   const arquivados = new Set(dados?.arquivados ?? []);
+  const inativas = new Set(dados?.inativas ?? []);
   const mudar = (patch: Partial<FiltroEstoque>) => setFiltro((f) => ({ ...f, pagina: 1, ...patch }));
 
   return (
@@ -112,6 +114,11 @@ export function Estoque({ inicial, erroCarga }: { inicial: PaginaEstoque | null;
             Mostrar arquivados ({dados?.arquivadas})
           </button>
         )}
+        {(dados?.inativas.length ?? 0) > 0 && (
+          <button className={`pill${filtro.verInativas ? ' on' : ''}`} aria-pressed={filtro.verInativas} onClick={() => mudar({ verInativas: !filtro.verInativas })}>
+            Mostrar inativas ({dados?.inativas.length})
+          </button>
+        )}
       </div>
 
       <section className="card">
@@ -143,6 +150,7 @@ export function Estoque({ inicial, erroCarga }: { inicial: PaginaEstoque | null;
                         {l.sku}
                         {kit && ' · kit composto'}
                         {arquivados.has(l.product_id) && ' · arquivado'}
+                        {inativas.has(l.variant_id) && ' · inativa'}
                       </div>
                     </td>
                     <td className="num c-dado" data-label="Saldo">{kit ? '—' : l.on_hand}</td>
@@ -200,6 +208,19 @@ export function Estoque({ inicial, erroCarga }: { inicial: PaginaEstoque | null;
       {aberta && (
         <Movimentar
           linha={aberta}
+          inativa={inativas.has(aberta.variant_id)}
+          aoMudarVisibilidade={(ativa) => {
+            setDados((d) =>
+              d && { ...d, inativas: ativa ? d.inativas.filter((id) => id !== aberta.variant_id) : [...d.inativas, aberta.variant_id] },
+            );
+            setAviso(ativa ? 'Variação mostrada na loja de novo.' : 'Variação oculta da loja. Saldo e histórico continuam guardados.');
+            carregar(filtro);
+          }}
+          aoApagar={() => {
+            setAberta(null);
+            setAviso('Variação apagada.');
+            carregar(filtro);
+          }}
           fechar={() => setAberta(null)}
           concluir={(nova, texto) => {
             setDados((d) => d && { ...d, linhas: d.linhas.map((l) => (l.variant_id === nova.variant_id ? nova : l)) });
@@ -215,10 +236,16 @@ export function Estoque({ inicial, erroCarga }: { inicial: PaginaEstoque | null;
 
 function Movimentar({
   linha,
+  inativa,
+  aoMudarVisibilidade,
+  aoApagar,
   fechar,
   concluir,
 }: {
   linha: LinhaEstoque;
+  inativa: boolean;
+  aoMudarVisibilidade: (ativa: boolean) => void;
+  aoApagar: () => void;
   fechar: () => void;
   concluir: (linha: LinhaEstoque, aviso: string) => void;
 }) {
@@ -235,6 +262,45 @@ function Movimentar({
   const [salvando, iniciar] = useTransition();
   const [hist, setHist] = useState<Movimento[] | null>(null);
   const [erroHist, setErroHist] = useState<string | null>(null);
+
+  const [mexendo, iniciarVis] = useTransition();
+  const [erroVis, setErroVis] = useState<string | null>(null);
+  // Só se apaga variação que nunca teve movimentação (o banco recusa as outras).
+  const podeApagar = hist !== null && hist.length === 0;
+
+  const alternarVisibilidade = async () => {
+    const ocultar = !inativa;
+    const ok = await confirmar({
+      titulo: ocultar ? 'Ocultar da loja?' : 'Mostrar na loja?',
+      texto: ocultar
+        ? 'A variação deixa de aparecer para as clientes. O saldo e o histórico continuam guardados e dá para mostrar de novo quando quiser.'
+        : 'A variação volta a aparecer para as clientes, com o saldo atual.',
+      confirmar: ocultar ? 'Ocultar' : 'Mostrar',
+    });
+    if (!ok) return;
+    setErroVis(null);
+    iniciarVis(async () => {
+      const r = await mudarVisibilidadeVariacao(linha.variant_id, !ocultar);
+      if (!r.ok) return setErroVis(r.erro);
+      aoMudarVisibilidade(r.dados.ativa);
+    });
+  };
+
+  const apagar = async () => {
+    const ok = await confirmar({
+      titulo: 'Apagar esta variação?',
+      texto: `SKU ${linha.sku}. Ela nunca teve movimentação de estoque. Isso não pode ser desfeito.`,
+      confirmar: 'Apagar variação',
+      perigo: true,
+    });
+    if (!ok) return;
+    setErroVis(null);
+    iniciarVis(async () => {
+      const r = await apagarVariacaoSemHistorico(linha.variant_id);
+      if (!r.ok) return setErroVis(r.erro);
+      aoApagar();
+    });
+  };
 
   const variacao = descreverVariacao(linha.attributes);
   const conf = OPERACOES.find((o) => o.op === op)!;
@@ -420,6 +486,33 @@ function Movimentar({
             </li>
           ))}
         </ul>
+      )}
+
+      <h3 className="dlg-s">Esta variação na loja</h3>
+      <p className="note" style={{ marginBottom: 10 }}>
+        {inativa
+          ? 'Está oculta: não aparece na loja. O saldo e o histórico continuam guardados.'
+          : 'Aparece na loja. Ocultar tira só esta variação da vitrine; o saldo e o histórico ficam guardados e dá para mostrar de novo.'}
+      </p>
+      {erroVis && (
+        <p className="auth-err" role="alert" style={{ marginBottom: 10 }}>
+          {erroVis}
+        </p>
+      )}
+      <div className="acoes-fim">
+        <button className="btn" type="button" onClick={alternarVisibilidade} disabled={mexendo}>
+          {inativa ? 'Mostrar na loja' : 'Ocultar da loja'}
+        </button>
+        {podeApagar && (
+          <button className="btn btn-perigo" type="button" onClick={apagar} disabled={mexendo}>
+            Apagar variação
+          </button>
+        )}
+      </div>
+      {hist && hist.length > 0 && (
+        <p className="note" style={{ marginTop: 10 }}>
+          Apagar não está disponível porque esta variação tem histórico de estoque. Para tirá-la de circulação, use “Ocultar da loja”.
+        </p>
       )}
     </dialog>
   );

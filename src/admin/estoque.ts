@@ -10,6 +10,8 @@ export interface FiltroEstoque {
   busca: string;
   soBaixo: boolean;
   verArquivados: boolean;
+  /** Variações ocultas da loja ficam fora da lista até a pessoa pedir para ver. */
+  verInativas: boolean;
 }
 
 export interface PaginaEstoque {
@@ -21,6 +23,8 @@ export interface PaginaEstoque {
   /** Variações de produtos arquivados (escondidas por padrão). */
   arquivadas: number;
   arquivados: string[];
+  /** Ids das variações ocultas da loja (inativas); a linha ganha a marca "inativa". */
+  inativas: string[];
 }
 
 /** Movimentações que o painel pode registrar à mão (CAT-DEC-012/021). */
