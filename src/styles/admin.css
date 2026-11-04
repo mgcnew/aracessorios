@@ -279,6 +279,6 @@
 .adm.dark .mi.on,.adm.dark .pill.on{background:var(--ouro)!important;color:var(--sobre-ouro)!important;border-color:var(--ouro)!important}
 .adm.dark .auth-btn{background:var(--ouro)!important;color:var(--sobre-ouro)!important;border-color:var(--ouro)!important}
 .adm.dark .demo{background:var(--surf);color:var(--acc);border:1px solid var(--line)}
-.adm.dark .seg button.on{background:var(--champ);box-shadow:none;outline:1px solid var(--line)}
+.adm.dark .seg button.on{background:var(--champ);color:var(--acc);box-shadow:none;outline:1px solid var(--acc)}
 .adm.dark .an.on::before{background:var(--ouro)}
 .adm.dark .dlg::backdrop{background:rgba(0,0,0,.6)}
