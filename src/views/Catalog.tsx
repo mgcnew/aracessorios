@@ -2,7 +2,7 @@
 
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import { FilterIcon, SearchIcon } from '../components/Icons';
+import { CrossIcon, FilterIcon, SearchIcon } from '../components/Icons';
 import { Selecao } from '../components/Selecao';
 import { ProductGrid } from '../components/ProductCard';
 import { EmptyState, PageHead } from '../components/ui';
@@ -32,10 +32,28 @@ export function Catalog({ cat }: { cat: CategoryId | 'all' }) {
   const results = filterProducts(products, { ...query, q });
   const title = cat === 'all' ? 'Todas as peças' : (categories.find((c) => c.id === cat)?.name ?? 'Loja');
 
+  // Filtros ativos viram etiquetas que se removem com um clique.
+  const ativos: { chave: string; rotulo: string; remover: () => void }[] = [];
+  if (cat !== 'all') ativos.push({ chave: 'cat', rotulo: title, remover: () => go({ cat: 'all' }) });
+  if (q.trim()) {
+    ativos.push({
+      chave: 'q',
+      rotulo: `Busca: “${q.trim()}”`,
+      remover: () => {
+        setQ('');
+        go({ q: '' });
+      },
+    });
+  }
+  if (query.onlyAvail) ativos.push({ chave: 'disp', rotulo: 'Somente disponíveis', remover: () => go({ onlyAvail: false }) });
+  const contagem = (n: number) => (n === 1 ? '1 peça' : `${n} peças`);
+
   return (
     <div className="wrap fade">
       <PageHead title={title}>
-        <p role="status">{results.length === 1 ? '1 peça' : `${results.length} peças`}</p>
+        <p role="status">
+          {ativos.length > 0 && results.length !== products.length ? `${results.length} de ${contagem(products.length)}` : contagem(results.length)}
+        </p>
       </PageHead>
 
       <div className="chips" role="group" aria-label="Categorias">
@@ -99,6 +117,24 @@ export function Catalog({ cat }: { cat: CategoryId | 'all' }) {
             </button>
             <Selecao className="sel" aria-label="Ordenar por" value={query.sort} opcoes={SORTS} onChange={(v) => go({ sort: v })} />
           </div>
+
+          {ativos.length > 0 && (
+            <div className="fchips" role="group" aria-label="Filtros ativos">
+              {ativos.map((a) => (
+                <button key={a.chave} className="fchip" onClick={a.remover} aria-label={`Remover filtro: ${a.rotulo}`}>
+                  <span>{a.rotulo}</span>
+                  <i aria-hidden="true">
+                    <CrossIcon size={12} />
+                  </i>
+                </button>
+              ))}
+              {ativos.length > 1 && (
+                <button className="lnk" onClick={clearFilters}>
+                  Limpar tudo
+                </button>
+              )}
+            </div>
+          )}
 
           {results.length > 0 ? (
             <ProductGrid products={results} three />

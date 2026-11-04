@@ -100,6 +100,13 @@ html.dark .logo-escuro{display:block!important}
 .chips::-webkit-scrollbar{display:none}
 .chips .pill{flex:none}
 @media (min-width:900px){.chips{display:none}}
+.fchips{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:-4px 0 18px}
+.ar .fchip{display:inline-flex;align-items:center;gap:8px;min-height:36px;padding:0 6px 0 14px;border:1px solid var(--line);border-radius:999px;background:var(--surf);font-size:14px;max-width:100%;transition:border-color .2s,background .2s}
+.ar .fchip span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ar .fchip i{width:24px;height:24px;border-radius:50%;display:grid;place-items:center;color:var(--ink2);flex:none;transition:background .2s,color .2s}
+.ar .fchip:hover{border-color:var(--ink)}
+.ar .fchip:hover i{background:var(--champ);color:var(--ink)}
+@media (pointer:coarse){.ar .fchip{min-height:44px}}
 .cat-layout{display:grid;gap:24px;padding-bottom:60px}
 @media (min-width:900px){.cat-layout{grid-template-columns:240px minmax(0,1fr);gap:56px}}
 .toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:20px}
@@ -232,6 +239,13 @@ html.dark .logo-escuro{display:block!important}
 .pc:hover .pc-zoom{transform:scale(1.04)}
 @media (prefers-reduced-motion:reduce){.pc-zoom{transition:none}
 .pc:hover .pc-zoom{transform:none}}
+/* Segunda foto: aparece em fade por cima da primeira com mouse ou teclado (não existe no toque). */
+.pc-zoom{position:relative}
+.pc-alt{position:absolute;inset:0;opacity:0;transition:opacity .45s cubic-bezier(.2,.7,.2,1);border-radius:inherit}
+.pc-alt .art{height:100%}
+@media (hover:hover){.pc:hover .pc-alt{opacity:1}}
+.pc:focus-within .pc-alt{opacity:1}
+@media (prefers-reduced-motion:reduce){.pc-alt{transition:none}}
 .pc-fav{position:absolute;top:8px;right:8px;width:44px;height:44px;border-radius:50%;background:var(--glass2,rgba(255,249,244,.92));display:grid!important;place-items:center;color:var(--ink,#38291F)}
 .pc-badge{position:absolute;left:12px;top:14px;background:var(--surf,#FFF9F4);color:var(--ink2,#6B4E3D);font-size:11px;font-weight:500;letter-spacing:.12em;text-transform:uppercase;padding:5px 10px;border-radius:999px}
 .pc-sold{position:absolute;inset:0;background:var(--soldbg,rgba(253,246,240,.58));display:grid;place-items:end center;padding-bottom:16px;pointer-events:none}
