@@ -213,7 +213,8 @@ Formas macias e discretas. Pílula (999px) para tudo que se toca em linha: botõ
 ### Inputs / Fields
 - **Style:** busca e filtros em pílula de 48px sobre linho; formulários com 12px de canto sobre areia.
 - **Focus:** a borda vira cacau.
-- **Controles nativos:** seta própria nos menus; caixas de marcar (cantos de 6px) e rádios desenhados, em cacau ou ouro quando marcados (`src/styles/base.css`).
+- **Menus de seleção:** nunca `<select>` nativo (a lista aberta do navegador não aceita o tema). Use `Selecao` (`src/components/Selecao.tsx`): botão com o estilo do campo e seta que gira; lista em linho com cantos de 14px, borda areia, sombra difusa, opção ativa em champagne, ✓ caramelo na escolhida, opções de 40px (46px no toque). Abre para cima quando falta espaço; teclado completo (setas, Home/End, letras, Enter, Esc).
+- **Controles nativos:** caixas de marcar (cantos de 6px) e rádios desenhados, em cacau ou ouro quando marcados (`src/styles/base.css`).
 
 ### Navigation
 - **Computador:** cabeçalho fixo de 76px sobre marfim translúcido, links em pílula (o ativo em champagne), busca em pílula e ícones de 44px com dica.
@@ -244,6 +245,7 @@ Na página inicial, Lançamentos e Mais vendidos viram uma faixa horizontal abai
 - **Don't** colocar sobretítulo em maiúsculas acima de título nem numerar seções (01/02/03).
 - **Don't** usar símbolos de texto (←, →, ↗, −, +) como ícone; use os ícones desenhados de `src/components/Icons.tsx`.
 - **Don't** usar `window.confirm`/`alert` no painel; use `confirmar()` de `src/admin/confirmar.tsx`.
+- **Don't** usar `<select>` nativo; use `Selecao`.
 - **Don't** usar urgência artificial (contador, "últimas unidades") nem promessas que a cliente não confirmou; use `[A DEFINIR]` fora da vitrine.
 - **Don't** deixar animação de entrada "presa" com `fill-mode: forwards`/`both`: ela quebra os elementos fixos no celular.
 - **Don't** usar branco puro, preto puro ou cinza neutro.

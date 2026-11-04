@@ -106,6 +106,7 @@ export const AJUDA_TIPO: Record<TipoProduto, string> = {
   kit_composto: 'Kit montado na hora a partir de outras peças; a disponibilidade vem do estoque delas.',
 };
 export const NOME_UNIDADE: Record<UnidadeVenda, string> = { unidade: 'Unidade', par: 'Par', conjunto: 'Conjunto' };
+export const OPCOES_UNIDADE = (Object.keys(NOME_UNIDADE) as UnidadeVenda[]).map((u) => ({ value: u, label: NOME_UNIDADE[u] }));
 
 // Texto → valores ----------------------------------------------------------------
 /** "Brinco Gota Aurora" → "brinco-gota-aurora". */

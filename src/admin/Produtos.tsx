@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState, useTransition } from 'react';
 import { criarProduto, type Resultado } from '../app/admin/produtos-acoes';
 import { SearchIcon } from '../components/Icons';
+import { Selecao } from '../components/Selecao';
 import { fmt, norm } from '../data/catalog';
 import { ProdutoEditor } from './ProdutoEditor';
 import { useParamUrl } from './url';
@@ -10,7 +11,7 @@ import {
   AJUDA_TIPO,
   NOME_STATUS,
   NOME_TIPO,
-  NOME_UNIDADE,
+  OPCOES_UNIDADE,
   TAG_STATUS,
   sugerirSlug,
   type CatalogoPainel,
@@ -270,13 +271,7 @@ function NovoProdutoDialog({ fechar, criado }: { fechar: () => void; criado: (c:
         </fieldset>
         <label className="auth-l">
           Vendido por
-          <select className="auth-i" value={unidade} onChange={(e) => setUnidade(e.target.value as UnidadeVenda)}>
-            {(Object.keys(NOME_UNIDADE) as UnidadeVenda[]).map((u) => (
-              <option key={u} value={u}>
-                {NOME_UNIDADE[u]}
-              </option>
-            ))}
-          </select>
+          <Selecao className="auth-i" value={unidade} opcoes={OPCOES_UNIDADE} onChange={setUnidade} />
         </label>
         {erro && (
           <p className="auth-err" role="alert">

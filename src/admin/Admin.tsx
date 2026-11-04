@@ -9,6 +9,7 @@ import { Produtos } from './Produtos';
 import type { CatalogoPainel } from './produtos';
 import { carregarEstoque } from '../app/admin/estoque-acoes';
 import { CaixaIcon, CheckIcon, CrossIcon, EtiquetaIcon, MaisIcon, PainelIcon, PedidoIcon } from '../components/Icons';
+import { Selecao } from '../components/Selecao';
 import { useParamUrl } from './url';
 import { Confirmacoes } from './confirmar';
 import { LogoMark } from '../components/ui';
@@ -382,16 +383,13 @@ function Orders({ orders, setStatus }: { orders: AdminOrder[]; setStatus: (id: n
                   <td className="c-dado" data-label="Total">{fmt(o.total)}</td>
                   <td className="c-sit">
                     {isEditable(o.status) ? (
-                      <label>
-                        <span className="sr-only">Status do pedido {o.id}</span>
-                        <select className="sel" value={o.status} onChange={(e) => setStatus(o.id, e.target.value as OrderStatus)}>
-                          {EDITABLE_STATUSES.map((s) => (
-                            <option key={s} value={s}>
-                              {s}
-                            </option>
-                          ))}
-                        </select>
-                      </label>
+                      <Selecao
+                        className="sel"
+                        aria-label={`Status do pedido ${o.id}`}
+                        value={o.status}
+                        opcoes={EDITABLE_STATUSES.map((s) => ({ value: s, label: s }))}
+                        onChange={(v) => setStatus(o.id, v)}
+                      />
                     ) : (
                       <span className={`tag ${TAG[o.status]}`}>{o.status}</span>
                     )}

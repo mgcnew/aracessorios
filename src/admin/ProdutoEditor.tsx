@@ -14,13 +14,14 @@ import {
 import { fmt } from '../data/catalog';
 import { avisar, confirmar } from './confirmar';
 import { ExternoIcon, SetaIcon } from '../components/Icons';
+import { Selecao } from '../components/Selecao';
 import { Fotos } from './Fotos';
 import { useAcao } from './Produtos';
 import {
   ATRIBUTOS,
   NOME_STATUS,
   NOME_TIPO,
-  NOME_UNIDADE,
+  OPCOES_UNIDADE,
   SLUG_OK,
   TAG_STATUS,
   diaCurto,
@@ -32,7 +33,6 @@ import {
   type PecaKit,
   type ProdutoPainel,
   type StatusProduto,
-  type UnidadeVenda,
   type VariacaoPainel,
 } from './produtos';
 
@@ -264,13 +264,7 @@ function Dados({ p, aoMudar }: { p: ProdutoPainel; aoMudar: AoMudar }) {
           </label>
           <label className="auth-l">
             Vendido por
-            <select className="auth-i" value={d.sale_unit} onChange={(e) => set('sale_unit', e.target.value as UnidadeVenda)}>
-              {(Object.keys(NOME_UNIDADE) as UnidadeVenda[]).map((u) => (
-                <option key={u} value={u}>
-                  {NOME_UNIDADE[u]}
-                </option>
-              ))}
-            </select>
+            <Selecao className="auth-i" value={d.sale_unit} opcoes={OPCOES_UNIDADE} onChange={(v) => set('sale_unit', v)} />
           </label>
         </div>
         <label className="auth-l">
@@ -565,6 +559,7 @@ function Pecas({ p, v, catalogo, aoMudar }: { p: ProdutoPainel; v: VariacaoPaine
     .flatMap((x) =>
       x.variacoes.map((vv) => ({ id: vv.id, nome: `${x.name} — ${textoAtributos(vv.attributes)} (${vv.sku})${vv.active ? '' : ' · inativa'}` })),
     );
+  const opcoesPeca = opcoes.map((o) => ({ value: o.id, label: o.nome }));
   const setLinha = (i: number, patch: Partial<PecaKit>) => setLinhas((ls) => ls.map((l, j) => (j === i ? { ...l, ...patch } : l)));
 
   return (
@@ -578,20 +573,15 @@ function Pecas({ p, v, catalogo, aoMudar }: { p: ProdutoPainel; v: VariacaoPaine
       <div className="pecas">
         {linhas.map((l, i) => (
           <div key={i} className="peca">
-            <select
+            <Selecao
               className="auth-i"
               aria-label={`Peça ${i + 1}`}
+              placeholder="Escolha a peça…"
               value={l.component_variant_id}
               disabled={travado}
-              onChange={(e) => setLinha(i, { component_variant_id: e.target.value })}
-            >
-              <option value="">Escolha a peça…</option>
-              {opcoes.map((o) => (
-                <option key={o.id} value={o.id}>
-                  {o.nome}
-                </option>
-              ))}
-            </select>
+              opcoes={opcoesPeca}
+              onChange={(v) => setLinha(i, { component_variant_id: v })}
+            />
             <input
               className="auth-i qtd"
               inputMode="numeric"
