@@ -55,6 +55,7 @@ Os IDs antigos foram mantidos para rastreabilidade com o pacote anterior (v2.1, 
 | CAT-DEC-019 | Kit composto: quantidade fixa de cada peça; disponibilidade = menor valor, entre as peças, de ⌊estoque vendável da peça ÷ quantidade exigida⌋, descontando reservas ativas. Kit com estoque próprio usa só o próprio saldo e não debita as peças. *(Incorpora CAT-DEC-009.)* | Decidido | — |
 | CAT-DEC-020 | Preço normal e preço promocional opcional com data de início e fim. | Decidido | Prioridade entre ofertas, limites, exibição |
 | CAT-DEC-021 | Estoque mínimo configurável com alerta; contagem manual com ajustes auditáveis. | Decidido | Periodicidade da contagem; quem recebe os alertas |
+| CAT-DEC-025 | Biblioteca de fotos no painel, independente dos produtos, com miniaturas, nome, busca e seleção no cadastro. Arquivar/apagar produto ou retirar seu vínculo com uma foto preserva o arquivo na biblioteca. Exclusão definitiva separada, com confirmação, permitida somente sem vínculos. Aprovado pelo responsável em 04/11/2026. | Decidido | Implementação e migração das fotos existentes |
 
 ## 3. Checkout e pagamentos (detalhes: `modulos/02_PEDIDOS_PAGAMENTOS.md`)
 
@@ -79,6 +80,7 @@ Os IDs antigos foram mantidos para rastreabilidade com o pacote anterior (v2.1, 
 |---|---|---|---|
 | UI-DEC-001 | Frontend **demonstrativo**: paleta marfim, champagne e rosé dourado, inspirada na referência visual. Logo inalterada. | Decidido (só para a demo) | Paleta do site real (D-014) |
 | UI-DEC-002 | A referência visual inspira composição e experiência mobile; não copiar marca, textos, imagens ou preços dela. | Decidido | — |
+| UI-DEC-004 | Fundo padrão das fotos de produto inspirado no **cetim preto acetinado das fotos reais fornecidas**, com brilho suave e dobras. Edições devem preservar formato, banho, pedras, fechos e proporções da peça; comparar com o original antes de publicar. Aprovado pelo responsável em 04/11/2026. | Decidido | Selecionar a foto principal de referência e validar uma primeira edição antes do lote |
 | UI-DEC-003 | Sem aviso de protótipo nas páginas de navegação (faixa do topo, rodapé, hero, produto). O aviso fica onde há tentativa de compra: sacola e checkout continuam demonstrativos e com a compra travada (D-017). A nota de texto ilustrativo da página Sobre continua. Decidido pelo responsável em 04/11/2026. *(Substitui o "aviso visível em todas as páginas" do brief.)* | Decidido | — |
 
 ---

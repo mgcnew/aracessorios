@@ -394,7 +394,13 @@
         "name": "computador",
         "value": "900px"
       }
-    ]
+    ],
+    "productPhotography": {
+      "decision": "UI-DEC-004",
+      "background": "Cetim preto acetinado inspirado nas fotos reais, com brilho suave e dobras naturais.",
+      "fidelity": "Preservar formato, banho, pedras, fechos e proporções. Comparar a edição com o original antes de publicar.",
+      "references": "referencias/galeria.html"
+    }
   },
   "components": [
     {

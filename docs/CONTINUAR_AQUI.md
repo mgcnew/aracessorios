@@ -2,6 +2,18 @@
 
 **Última atualização:** 04/11/2026. Atualize este arquivo no fim de cada sessão: risque o que terminou e escreva onde parou.
 
+## Fotos reais e biblioteca (04/11/2026)
+
+- [x] Quatro ZIPs e a foto avulsa organizados: 58 arquivos distintos, com SHA-256 e rastreio de origem em `referencias/inventario.json`. Algumas peças se repetem entre os arquivos.
+- [x] Miniaturas numeradas em `referencias/galeria.html`; originais preservados em `referencias/originais/`, ignorada pelo Git. Não apagar os ZIPs de Downloads: originais ainda não estão na biblioteca.
+- [x] Padrão aprovado: cetim preto acetinado das fotos reais (UI-DEC-004), preservando os detalhes da peça.
+- [x] Biblioteca independente aprovada (CAT-DEC-025); plano, arquivos, riscos e testes em `docs/frontend/BIBLIOTECA_FOTOS.md`.
+- [ ] Implementar e validar a biblioteca conforme o plano antes de enviar o lote de fotos.
+- [ ] Escolher referência de fundo, consultar custo Dreamina e aprovar créditos antes da primeira edição; comparar com a peça real antes de gerar um lote.
+- Combinado com o responsável: commit e push ao concluir cada etapa. Branch atual: `desempenho`. `.claude/` já estava não rastreada; não foi incluída.
+- Ambiente desta sessão: Node/npm, Docker e psql não foram encontrados nos caminhos usuais. Localizar as instalações antes da implementação para permitir typecheck, build, geração dos tipos e testes locais de banco.
+- Nenhuma geração paga, envio ao Supabase ou alteração de banco foi realizada nesta etapa.
+
 ## Onde paramos
 
 | Parte | Situação |
