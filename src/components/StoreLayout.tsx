@@ -2,12 +2,13 @@
 
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { useState, type ReactElement, type ReactNode } from 'react';
+import { useEffect, useRef, useState, type ReactElement, type ReactNode } from 'react';
 import { useCatalogo } from '../data/CatalogoContext';
 import { catalogHref } from '../data/catalogQuery';
 import { useStore } from '../store';
-import { BagIcon, GemIcon, HeartIcon, HomeIcon, InfoIcon, MoonIcon, SearchIcon, SunIcon } from './Icons';
+import { BagIcon, CheckIcon, CrossIcon, GemIcon, HeartIcon, HomeIcon, InfoIcon, MoonIcon, SearchIcon, SunIcon } from './Icons';
 import { InstalarApp } from './InstalarApp';
+import { Midia } from './Midia';
 import { LogoMark } from './ui';
 
 type NavKey = 'home' | 'catalog' | 'favs' | 'about';
@@ -30,15 +31,27 @@ function activeNav(pathname: string): NavKey | null {
 export function StoreLayout({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
-  const { dark, toggleDark, favs, cart, toast } = useStore();
+  const { dark, toggleDark, favs, cart, toast, segurarToast, soltarToast, fecharToast } = useStore();
   const { categories } = useCatalogo();
   const [search, setSearch] = useState('');
   const active = activeNav(pathname);
   const cartCount = cart.reduce((s, l) => s + l.qty, 0);
+  // Contador da sacola dá um pulo quando entra uma peça (e não ao carregar a página).
+  const [pulo, setPulo] = useState(false);
+  const antes = useRef(cartCount);
+  useEffect(() => {
+    if (cartCount > antes.current) {
+      setPulo(true);
+      const t = window.setTimeout(() => setPulo(false), 500);
+      antes.current = cartCount;
+      return () => window.clearTimeout(t);
+    }
+    antes.current = cartCount;
+  }, [cartCount]);
   const isProduct = pathname.startsWith('/produto/');
 
   return (
-    <div className={`ar${isProduct ? ' r-product' : ''}`}>
+    <div className={`ar${isProduct ? ' r-product' : ''}${pathname.startsWith('/sacola') ? ' r-cart' : ''}`}>
       <a className="skip" href="#conteudo">
         Pular para o conteúdo
       </a>
@@ -84,7 +97,7 @@ export function StoreLayout({ children }: { children: ReactNode }) {
             </Link>
             <Link className="ib dica-esq" href="/sacola" aria-label={`Sacola (${cartCount} itens)`} data-dica="Sacola">
               <BagIcon />
-              {cartCount > 0 && <span className="cnt">{cartCount}</span>}
+              {cartCount > 0 && <span className={`cnt${pulo ? ' pulo' : ''}`}>{cartCount}</span>}
             </Link>
           </div>
         </div>
@@ -144,9 +157,36 @@ export function StoreLayout({ children }: { children: ReactNode }) {
       </nav>
 
       {toast && (
-        <div className="toast" role="status">
-          <span>{toast}</span>
-          <Link href="/sacola">Ver sacola</Link>
+        <div
+          key={toast.id}
+          className={`toast${toast.saindo ? ' saindo' : ''}`}
+          role="status"
+          onMouseEnter={segurarToast}
+          onMouseLeave={soltarToast}
+          onFocus={segurarToast}
+          onBlur={soltarToast}
+        >
+          {toast.foto || toast.art ? (
+            <span className="toast-m">
+              <Midia foto={toast.foto} art={toast.art!} />
+            </span>
+          ) : (
+            <span className="toast-m ok">
+              <CheckIcon size={16} />
+            </span>
+          )}
+          <span className="toast-t">
+            <strong>{toast.titulo}</strong>
+            {toast.detalhe && <span>{toast.detalhe}</span>}
+          </span>
+          {toast.acao && (
+            <Link className="toast-a" href={toast.acao.href}>
+              {toast.acao.rotulo}
+            </Link>
+          )}
+          <button className="toast-x" onClick={fecharToast} aria-label="Fechar aviso">
+            <CrossIcon size={14} />
+          </button>
         </div>
       )}
     </div>

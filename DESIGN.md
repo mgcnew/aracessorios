@@ -230,6 +230,12 @@ Fundo padrão inspirado no cetim preto acetinado das referências reais recebida
 ### Biblioteca de fotos do painel
 Galeria com miniaturas, nomes e busca, seguindo os cartões, campos e temas existentes. Separar a ação de retirar a foto do produto da exclusão definitiva na biblioteca. Mostrar os produtos que usam a foto e impedir sua exclusão enquanto houver vínculo (CAT-DEC-025). No computador, a Biblioteca é uma aba lateral; no celular fica em Mais. O editor abre a seleção em janela, em tela cheia no celular. Exclusão interrompida oferece Retomar exclusão.
 
+### Balão de confirmação (toast)
+Cartão da loja (linho, borda areia de 1px, 18px de canto, sombra difusa; no escuro, anel de 1px na cor da borda) com miniatura da peça de 48px, título em 14,5px/500, detalhe em 13px, **uma** ação principal em pílula (cacau no claro, ouro champagne no escuro) e um fechar de 32px. Fica logo abaixo do cabeçalho (centrado no celular, à direita no computador), nunca sobre a barra de compra. Entra com um deslize curto de 380ms, sai em 200ms, some sozinho em 4,5s e fica parado enquanto o mouse ou o foco estão nele. Texto nunca quebra: título e detalhe cortam com reticências.
+
+### Sacola no celular
+Total e botão de seguir numa barra fixa (`.cart-bar`) acima da navegação de baixo, como a barra de compra do produto; o botão do resumo some para não duplicar. A linha da sacola não mostra SKU: é dado interno.
+
 ### Cartão de produto (assinatura)
 Foto 4:5 com cantos de 18px e zoom leve ao passar o mouse; coração de favoritar no canto; selo "Novo"/"Promoção" em pílula; categoria em rótulo, nome em serifa 21px e preço em sans 15px/500, com o preço antigo riscado ao lado. Esgotado ganha um véu e um selo, nunca a quantidade.
 
@@ -253,6 +259,8 @@ Na página inicial, Lançamentos e Mais vendidos viram uma faixa horizontal abai
 - **Don't** usar símbolos de texto (←, →, ↗, −, +) como ícone; use os ícones desenhados de `src/components/Icons.tsx`.
 - **Don't** usar `window.confirm`/`alert` no painel; use `confirmar()` de `src/admin/confirmar.tsx`.
 - **Don't** usar `<select>` nativo; use `Selecao`.
+- **Don't** repetir a cor de fundo de um botão no fundo do cartão onde ele mora (o botão some): cada superfície define a cor da própria ação. Vale para o balão e para qualquer cartão novo.
+- **Don't** mostrar dado interno ao cliente (SKU, termos de kit/estoque) fora da página do produto.
 - **Don't** fazer faixa ou tabela que role para o lado no painel: filtros de uma escolha viram `FiltroOpcoes` (dropdown abaixo de 900px) e tabelas viram cartões pela largura da própria área (`.tw`, container query de 700px).
 - **Don't** usar urgência artificial (contador, "últimas unidades") nem promessas que a cliente não confirmou; use `[A DEFINIR]` fora da vitrine.
 - **Don't** deixar animação de entrada "presa" com `fill-mode: forwards`/`both`: ela quebra os elementos fixos no celular.
