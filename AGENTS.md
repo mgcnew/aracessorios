@@ -10,6 +10,7 @@ Projeto: loja virtual **própria** da AR Acessórios (semijoias, B2C, estoque pr
    - catálogo e estoque: [`docs/modulos/01_CATALOGO_ESTOQUE.md`](docs/modulos/01_CATALOGO_ESTOQUE.md)
    - pedidos e pagamentos: [`docs/modulos/02_PEDIDOS_PAGAMENTOS.md`](docs/modulos/02_PEDIDOS_PAGAMENTOS.md)
    - protótipo visual: [`docs/frontend/BRIEF_FRONTEND.md`](docs/frontend/BRIEF_FRONTEND.md)
+   - sistema visual (cores, fontes, formas, componentes e regras): [`DESIGN.md`](DESIGN.md); qualquer mudança visual segue e atualiza esse arquivo
 
 ## Regras
 - **Decidido** é regra. **Proposto** e **Em aberto** não são: não implemente como se fossem.

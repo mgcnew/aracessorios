@@ -8,7 +8,7 @@ import { useCatalogo } from '../data/CatalogoContext';
 import { useStore } from '../store';
 
 export function Favorites() {
-  const { favs } = useStore();
+  const { favs, clearDemo } = useStore();
   const { byId } = useCatalogo();
   const items = favs.map((id) => byId[id]).filter(Boolean);
   const label =
@@ -20,7 +20,14 @@ export function Favorites() {
         <p role="status">{label}</p>
       </PageHead>
       {items.length > 0 ? (
-        <ProductGrid products={items} />
+        <>
+          <ProductGrid products={items} />
+          <div style={{ textAlign: 'center', marginTop: 36 }}>
+            <button className="lnk" onClick={clearDemo} style={{ color: 'var(--ink2)', fontSize: 13.5 }}>
+              Limpar sacola e favoritos deste aparelho
+            </button>
+          </div>
+        </>
       ) : (
         <EmptyState
           icon={<HeartIcon size={40} strokeWidth={1.3} style={{ color: 'var(--acc)' }} />}

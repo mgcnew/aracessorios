@@ -29,7 +29,7 @@ function activeNav(pathname: string): NavKey | null {
 export function StoreLayout({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
-  const { dark, toggleDark, favs, cart, toast, clearDemo } = useStore();
+  const { dark, toggleDark, favs, cart, toast } = useStore();
   const { categories } = useCatalogo();
   const [search, setSearch] = useState('');
   const active = activeNav(pathname);
@@ -125,14 +125,9 @@ export function StoreLayout({ children }: { children: ReactNode }) {
               </ul>
             </nav>
           </div>
+          {/* Sem itens de bastidor no rodapé público: o painel fica em /admin e "limpar" fica na sacola. */}
           <div className="foot-b">
-            <span>© AR Acessórios</span>
-            <span className="foot-acoes">
-              <button className="lnk" onClick={clearDemo}>
-                Limpar sacola e favoritos
-              </button>
-              <Link href="/admin">Painel da loja</Link>
-            </span>
+            <span>© {new Date().getFullYear()} AR Acessórios</span>
           </div>
         </div>
       </footer>

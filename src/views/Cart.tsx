@@ -39,7 +39,7 @@ const exploreLink = (
 );
 
 export function Cart() {
-  const { setLineQty, removeLine } = useStore();
+  const { setLineQty, removeLine, clearDemo } = useStore();
   const { lines, subtotal, itemCount } = useCartLines();
 
   return (
@@ -99,6 +99,9 @@ export function Cart() {
               <span>{fmt(subtotal)}</span>
             </div>
             <p className="note">Valores ilustrativos para apresentação. Nenhuma compra é realizada.</p>
+            <button className="lnk limpar" onClick={clearDemo}>
+              Limpar sacola e favoritos deste aparelho
+            </button>
             <Link className="btn btn-p" href="/checkout" style={{ marginTop: 6 }}>
               Ver prévia do checkout
             </Link>

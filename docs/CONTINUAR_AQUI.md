@@ -227,6 +227,8 @@ Observações do teste:
   - no computador, tem miniaturas e zoom que acompanha o mouse nas fotos;
   - os blocos "Cuidados com a peça" (campo Cuidados do cadastro, hoje vazio em todos os produtos), "Entrega" e "Trocas" abrem e fecham e só aparecem com texto. Os textos de entrega e trocas ficam em `src/data/infoLoja.ts`, vazios até a cliente responder (D-010, D-015).
 - **Painel conferido com login (04/11/2026):** no escuro, menus, datas e caixas de marcar seguem o tema; a confirmação abre no tema no computador e no celular (pequena, centrada), e "Cancelar" e Esc não apagam nada.
+- **Rodapé público (04/11/2026):** sem "Limpar sacola e favoritos" e "Painel da loja". A opção de limpar foi para a sacola e para os favoritos; o painel continua em `/admin`.
+- **`DESIGN.md` (04/11/2026):** sistema visual registrado com o impeccable (estrela-guia "O porta-joias de linho"; acolhida e confiante; componentes macios e discretos), com `.impeccable/design.json` ao lado. O `AGENTS.md` manda segui-lo. A paleta continua provisória (D-014).
 - **Dado ruim no banco de desenvolvimento:** a foto do "Anel Duo Entrelaçado" é um folheto de Natal ("Por apenas R$ 42,99") e aparece em primeiro em Lançamentos e na loja. Trocar ou apagar pelo painel.
 
 ## Pendências que não são de código

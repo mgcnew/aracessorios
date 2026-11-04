@@ -261,8 +261,6 @@ html.dark .ar .logo-img{box-shadow:0 0 0 1px #4a423c}
 .foot li a{min-height:40px;display:inline-flex;align-items:center;color:var(--ink);font-size:15px}
 .foot li a:hover{text-decoration:underline;text-underline-offset:4px}
 .foot-b{border-top:1px solid var(--line);margin-top:18px;padding-top:12px;font-size:12.5px;line-height:1.5;color:var(--ink2);display:flex;flex-wrap:wrap;align-items:center;gap:2px 20px;justify-content:space-between}
-.foot-acoes{display:flex;flex-wrap:wrap;column-gap:18px}
-.foot-acoes .lnk,.foot-acoes a{font-size:12.5px;letter-spacing:0;min-height:40px;color:var(--ink2);text-decoration:underline;text-underline-offset:3px;display:inline-flex;align-items:center}
 @media (max-width:359px){.foot-cats{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media (min-width:900px){
   .foot{padding:36px 0 20px}
@@ -350,3 +348,4 @@ html.dark .ar .btn-p:hover:not([disabled]){background:var(--hov)!important}
 .acc summary:hover::after{border-color:var(--ink)}
 .acc summary:focus-visible{outline:2px solid var(--ink);outline-offset:2px;border-radius:6px}
 .acc details p{color:var(--ink2);font-size:15px;line-height:1.6;padding:0 0 18px;max-width:60ch;white-space:pre-line}
+.sum .limpar{align-self:center;font-size:13.5px;letter-spacing:.02em;color:var(--ink2)}
