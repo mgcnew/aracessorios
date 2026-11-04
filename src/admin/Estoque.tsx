@@ -17,6 +17,7 @@ import {
   type Operacao,
   type PaginaEstoque,
 } from './estoque';
+import { Miniatura } from './Miniatura';
 import { Paginacao } from './Paginacao';
 
 const dataHora = new Intl.DateTimeFormat('pt-BR', {
@@ -144,13 +145,18 @@ export function Estoque({ inicial, erroCarga }: { inicial: PaginaEstoque | null;
                 return (
                   <tr key={l.variant_id}>
                     <td className="c-tit">
-                      <strong style={{ fontWeight: 500 }}>{l.product_name}</strong>
-                      <div className="sku">
-                        {variacao && `${variacao} · `}
-                        {l.sku}
-                        {kit && ' · kit composto'}
-                        {arquivados.has(l.product_id) && ' · arquivado'}
-                        {inativas.has(l.variant_id) && ' · inativa'}
+                      <div className="tit-mini">
+                        <Miniatura fotos={dados?.fotos[l.product_id] ?? []} nome={l.product_name} />
+                        <div className="tit-txt">
+                          <strong style={{ fontWeight: 500 }}>{l.product_name}</strong>
+                          <div className="sku">
+                            {variacao && `${variacao} · `}
+                            {l.sku}
+                            {kit && ' · kit composto'}
+                            {arquivados.has(l.product_id) && ' · arquivado'}
+                            {inativas.has(l.variant_id) && ' · inativa'}
+                          </div>
+                        </div>
                       </div>
                     </td>
                     <td className="num c-dado" data-label="Saldo">{kit ? '—' : l.on_hand}</td>

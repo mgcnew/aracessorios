@@ -4,7 +4,7 @@ import { updateTag } from 'next/cache';
 import { TAG_CATALOGO } from '../../lib/cache';
 import { supabaseServidor } from '../../lib/supabase/server';
 import { validarValor, type FiltroEstoque, type LinhaEstoque, type Movimento, type Operacao, type PaginaEstoque } from '../../admin/estoque';
-import { POR_PAGINA, termoBusca } from '../../admin/produtos';
+import { POR_PAGINA, termoBusca, type FotoZoom } from '../../admin/produtos';
 
 export type Resultado<T> = { ok: true; dados: T } | { ok: false; erro: string };
 
@@ -53,9 +53,21 @@ export async function carregarEstoquePagina(f: FiltroEstoque): Promise<Resultado
     qArq,
   ]);
   for (const r of [linhas, baixo, emArquivados]) if (r?.error) return { ok: false, erro: mensagem(r.error) };
+
+  // Fotos dos produtos desta página (capa primeiro): uma consulta só. Se falhar, a lista sai sem miniaturas.
+  const fotos: Record<string, FotoZoom[]> = {};
+  const idsProdutos = [...new Set((linhas.data ?? []).map((l) => l.product_id))];
+  if (idsProdutos.length) {
+    const im = await db.from('product_images').select('product_id, storage_path, alt, is_cover, position').in('product_id', idsProdutos);
+    if (!im.error) {
+      for (const f of [...im.data].sort((a, b) => Number(b.is_cover) - Number(a.is_cover) || a.position - b.position)) {
+        (fotos[f.product_id] ??= []).push({ caminho: f.storage_path, alt: f.alt });
+      }
+    }
+  }
   return {
     ok: true,
-    dados: { linhas: linhas.data ?? [], total: linhas.count ?? 0, baixo: baixo.count ?? 0, arquivadas: emArquivados?.count ?? 0, arquivados, inativas },
+    dados: { linhas: linhas.data ?? [], total: linhas.count ?? 0, baixo: baixo.count ?? 0, arquivadas: emArquivados?.count ?? 0, arquivados, inativas, fotos },
   };
 }
 

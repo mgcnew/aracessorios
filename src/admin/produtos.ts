@@ -275,3 +275,9 @@ export interface OpcaoPeca {
 
 /** Texto de busca seguro para os filtros do PostgREST (sem vírgula, parêntese, asterisco). */
 export const termoBusca = (t: string) => t.trim().replace(/[,()*%\\]/g, ' ').replace(/\s+/g, ' ').slice(0, 60);
+
+/** Foto para a miniatura e a ampliação das listas do painel (caminho da versão grande no Storage). */
+export interface FotoZoom {
+  caminho: string;
+  alt: string;
+}
