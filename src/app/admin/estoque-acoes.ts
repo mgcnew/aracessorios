@@ -27,11 +27,16 @@ export async function carregarEstoquePagina(f: FiltroEstoque): Promise<Resultado
   const arq = await db.from('products').select('id').eq('status', 'arquivado');
   if (arq.error) return { ok: false, erro: mensagem(arq.error) };
   const arquivados = arq.data.map((p) => p.id);
+  // Variações ocultas da loja (inativas): mesmo tratamento dos produtos arquivados.
+  const ina = await db.from('product_variants').select('id').eq('active', false);
+  if (ina.error) return { ok: false, erro: mensagem(ina.error) };
+  const inativas = ina.data.map((v) => v.id);
 
   // Mesmo filtro para a lista e para as contagens (variant/product ids são uuids: seguros na lista).
   const base = (opcoes?: { count: 'exact'; head?: boolean }) => {
     let q = db.rpc('painel_estoque', undefined, opcoes);
     if (!f.verArquivados && arquivados.length) q = q.not('product_id', 'in', `(${arquivados.join(',')})`);
+    if (!f.verInativas && inativas.length) q = q.not('variant_id', 'in', `(${inativas.join(',')})`);
     if (termo) q = q.or(`product_name.ilike.*${termo}*,sku.ilike.*${termo}*`);
     return q;
   };
@@ -50,7 +55,7 @@ export async function carregarEstoquePagina(f: FiltroEstoque): Promise<Resultado
   for (const r of [linhas, baixo, emArquivados]) if (r?.error) return { ok: false, erro: mensagem(r.error) };
   return {
     ok: true,
-    dados: { linhas: linhas.data ?? [], total: linhas.count ?? 0, baixo: baixo.count ?? 0, arquivadas: emArquivados?.count ?? 0, arquivados },
+    dados: { linhas: linhas.data ?? [], total: linhas.count ?? 0, baixo: baixo.count ?? 0, arquivadas: emArquivados?.count ?? 0, arquivados, inativas },
   };
 }
 
@@ -102,4 +107,36 @@ export async function historicoVariacao(variantId: string): Promise<Resultado<Mo
     .limit(30);
   if (error) return { ok: false, erro: mensagem(error) };
   return { ok: true, dados: data };
+}
+
+/**
+ * Oculta a variação da loja (inativa) ou mostra de novo. Saldo e histórico não mudam; só some da vitrine.
+ * Um produto sem nenhuma variação ativa também sai da vitrine.
+ */
+export async function mudarVisibilidadeVariacao(variantId: string, ativa: boolean): Promise<Resultado<{ ativa: boolean }>> {
+  const supabase = await supabaseServidor();
+  const { data, error } = await supabase.from('product_variants').update({ active: ativa }).eq('id', variantId).select('id');
+  if (error) return { ok: false, erro: mensagem(error) };
+  if (!data || data.length === 0) return { ok: false, erro: 'Variação não encontrada.' };
+  updateTag(TAG_CATALOGO);
+  return { ok: true, dados: { ativa } };
+}
+
+/**
+ * Apaga a variação. Só vale para a que nunca teve movimentação de estoque (ex.: criada por engano):
+ * com histórico o banco recusa, e a saída é ocultar da loja. Peça de um kit também não se apaga.
+ */
+export async function apagarVariacaoSemHistorico(variantId: string): Promise<Resultado<null>> {
+  const supabase = await supabaseServidor();
+  const mov = await supabase.from('inventory_movements').select('id', { count: 'exact', head: true }).eq('variant_id', variantId);
+  if (mov.error) return { ok: false, erro: mensagem(mov.error) };
+  if ((mov.count ?? 0) > 0) return { ok: false, erro: 'Esta variação tem histórico de estoque e não pode ser apagada. Oculte da loja em vez de apagar.' };
+  const { data, error } = await supabase.from('product_variants').delete().eq('id', variantId).select('id');
+  if (error) {
+    if (error.code === '23503') return { ok: false, erro: 'Não dá para apagar: a variação é peça de um kit ou tem histórico. Oculte da loja em vez de apagar.' };
+    return { ok: false, erro: mensagem(error) };
+  }
+  if (!data || data.length === 0) return { ok: false, erro: 'Variação não encontrada.' };
+  updateTag(TAG_CATALOGO);
+  return { ok: true, dados: null };
 }

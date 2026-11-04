@@ -77,7 +77,7 @@ export interface CargaInicial {
   erro: string | null;
 }
 
-const SO_BAIXO: FiltroEstoque = { pagina: 1, busca: '', soBaixo: true, verArquivados: false };
+const SO_BAIXO: FiltroEstoque = { pagina: 1, busca: '', soBaixo: true, verArquivados: false, verInativas: false };
 
 export function Admin({ email, carga }: { email: string; carga: CargaInicial }) {
   const { dark, toggleDark } = useTheme();

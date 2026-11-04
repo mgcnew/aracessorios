@@ -11,7 +11,7 @@ export const metadata: Metadata = { title: 'Painel' };
 // Depende da sessão de quem acessa: nunca gerar como página estática.
 export const dynamic = 'force-dynamic';
 
-const FILTRO = { pagina: 1, busca: '', soBaixo: false, verArquivados: false };
+const FILTRO = { pagina: 1, busca: '', soBaixo: false, verArquivados: false, verInativas: false };
 
 export default async function AdminPage({ searchParams }: { searchParams: Promise<{ aba?: string; produto?: string }> }) {
   const supabase = await supabaseServidor();

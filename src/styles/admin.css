@@ -348,3 +348,7 @@ html.dark .adm .btn-perigo-cheio{background:#E8907E!important;border-color:#E890
 .adm .aviso-ponto{width:9px;height:9px;margin-top:7px;border-radius:50%;background:var(--acc)}
 .adm .avisos-acoes{display:flex;flex-wrap:wrap;gap:10px}
 .adm .avisos-acoes .btn{flex:1 1 190px;justify-content:center}
+
+/* Ações da variação no fim da janela do estoque (ocultar/apagar): em linha, sem grudar no rodapé como o "Registrar". */
+.adm .acoes-fim{display:flex;flex-wrap:wrap;gap:10px}
+.adm .acoes-fim .btn{flex:1 1 190px;justify-content:center}
