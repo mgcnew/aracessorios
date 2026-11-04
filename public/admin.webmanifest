@@ -1,0 +1,63 @@
+{
+  "id": "/admin",
+  "name": "Painel AR Acessórios",
+  "short_name": "Painel AR",
+  "description": "Painel da loja AR Acessórios: estoque, produtos, pedidos e avisos.",
+  "lang": "pt-BR",
+  "start_url": "/admin",
+  "scope": "/admin",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#100E0D",
+  "theme_color": "#100E0D",
+  "icons": [
+    {
+      "src": "/icons/painel-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/icons/painel-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    },
+    {
+      "src": "/icons/painel-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Avisos",
+      "url": "/admin?aba=avisos",
+      "icons": [
+        {
+          "src": "/icons/painel-192.png",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "Estoque",
+      "url": "/admin?aba=estoque",
+      "icons": [
+        {
+          "src": "/icons/painel-192.png",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "Pedidos",
+      "url": "/admin?aba=pedidos",
+      "icons": [
+        {
+          "src": "/icons/painel-192.png",
+          "sizes": "192x192"
+        }
+      ]
+    }
+  ]
+}

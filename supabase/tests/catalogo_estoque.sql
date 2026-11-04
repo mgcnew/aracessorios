@@ -363,5 +363,117 @@ begin
 end $$;
 reset role;
 
+-- Avisos do painel e aparelhos push (NOT-DEC-001) ------------------------------------------
+-- Admin: cadastra o próprio aparelho, cria aviso de teste, marca como lido; não cria aviso de compra,
+-- não cadastra aparelho em nome de outro nem altera o texto de um aviso.
+set local role authenticated;
+select set_config('request.jwt.claims', '{"role":"authenticated","sub":"11111111-1111-1111-1111-111111111111"}', true);
+do $$
+declare n int; lido timestamptz;
+begin
+  insert into public.push_subscriptions (user_id, endpoint, p256dh, auth, user_agent)
+  values ('11111111-1111-1111-1111-111111111111', 'https://web.push.apple.com/teste-aparelho', repeat('p', 87), repeat('a', 22), 'iPhone de teste');
+  select count(*) into n from public.push_subscriptions;
+  insert into resultados(teste, ok) values ('admin cadastra o próprio aparelho para avisos', n = 1);
+
+  begin
+    insert into public.push_subscriptions (user_id, endpoint, p256dh, auth)
+    values ('22222222-2222-2222-2222-222222222222', 'https://web.push.apple.com/em-nome-de-outro', repeat('p', 87), repeat('a', 22));
+    insert into resultados(teste, ok) values ('admin não cadastra aparelho em nome de outro usuário', false);
+  exception when insufficient_privilege then
+    insert into resultados(teste, ok) values ('admin não cadastra aparelho em nome de outro usuário', true);
+  end;
+
+  begin
+    insert into public.push_subscriptions (user_id, endpoint, p256dh, auth)
+    values ('11111111-1111-1111-1111-111111111111', 'http://inseguro.exemplo.invalid/x', repeat('p', 87), repeat('a', 22));
+    insert into resultados(teste, ok) values ('aparelho só aceita endereço https', false);
+  exception when check_violation then
+    insert into resultados(teste, ok) values ('aparelho só aceita endereço https', true);
+  end;
+
+  insert into public.admin_notifications (kind, title, body) values ('teste', 'Aviso de teste', 'Funcionando.');
+  select count(*) into n from public.admin_notifications where read_at is null;
+  insert into resultados(teste, ok) values ('admin cria aviso de teste, que nasce não lido', n = 1);
+
+  begin
+    insert into public.admin_notifications (kind, title, body) values ('compra', 'Nova compra', '#1');
+    insert into resultados(teste, ok) values ('admin não cria aviso de compra pelo painel', false);
+  exception when insufficient_privilege then
+    insert into resultados(teste, ok) values ('admin não cria aviso de compra pelo painel', true);
+  end;
+
+  begin
+    insert into public.admin_notifications (kind, title, url) values ('teste', 'Fora do painel', 'https://exemplo.invalid');
+    insert into resultados(teste, ok) values ('aviso só aponta para dentro do painel', false);
+  exception when check_violation then
+    insert into resultados(teste, ok) values ('aviso só aponta para dentro do painel', true);
+  end;
+
+  begin
+    update public.admin_notifications set title = 'Adulterado';
+    insert into resultados(teste, ok) values ('admin não altera o texto de um aviso', false);
+  exception when insufficient_privilege then
+    insert into resultados(teste, ok) values ('admin não altera o texto de um aviso', true);
+  end;
+
+  update public.admin_notifications set read_at = now() where read_at is null;
+  select count(*) into n from public.admin_notifications where read_at is null;
+  insert into resultados(teste, ok) values ('admin marca avisos como lidos', n = 0);
+end $$;
+reset role;
+
+-- Cliente logado (não é admin): não enxerga nem grava nada.
+set local role authenticated;
+select set_config('request.jwt.claims', '{"role":"authenticated","sub":"22222222-2222-2222-2222-222222222222"}', true);
+do $$
+declare n int;
+begin
+  select count(*) into n from public.push_subscriptions;
+  insert into resultados(teste, ok, detalhe) values ('cliente não vê aparelhos de avisos', n = 0, n || ' linhas');
+  select count(*) into n from public.admin_notifications;
+  insert into resultados(teste, ok, detalhe) values ('cliente não vê os avisos do painel', n = 0, n || ' linhas');
+
+  begin
+    insert into public.admin_notifications (kind, title) values ('teste', 'Invasão');
+    insert into resultados(teste, ok) values ('cliente não cria aviso', false);
+  exception when insufficient_privilege then
+    insert into resultados(teste, ok) values ('cliente não cria aviso', true);
+  end;
+
+  begin
+    insert into public.push_subscriptions (user_id, endpoint, p256dh, auth)
+    values ('22222222-2222-2222-2222-222222222222', 'https://web.push.apple.com/cliente', repeat('p', 87), repeat('a', 22));
+    insert into resultados(teste, ok) values ('cliente não cadastra aparelho para avisos', false);
+  exception when insufficient_privilege then
+    insert into resultados(teste, ok) values ('cliente não cadastra aparelho para avisos', true);
+  end;
+
+  delete from public.push_subscriptions;
+  get diagnostics n = row_count;
+  insert into resultados(teste, ok) values ('cliente não remove aparelhos', n = 0);
+end $$;
+reset role;
+
+-- Visitante anônimo: sem acesso algum às duas tabelas.
+set local role anon;
+select set_config('request.jwt.claims', '{"role":"anon"}', true);
+do $$
+begin
+  begin
+    perform 1 from public.push_subscriptions;
+    insert into resultados(teste, ok) values ('visitante não lê aparelhos de avisos', false);
+  exception when insufficient_privilege then
+    insert into resultados(teste, ok) values ('visitante não lê aparelhos de avisos', true);
+  end;
+  begin
+    perform 1 from public.admin_notifications;
+    insert into resultados(teste, ok) values ('visitante não lê os avisos do painel', false);
+  exception when insufficient_privilege then
+    insert into resultados(teste, ok) values ('visitante não lê os avisos do painel', true);
+  end;
+end $$;
+reset role;
+
 select n, teste, ok, detalhe from resultados order by n;
 rollback;

@@ -393,3 +393,11 @@ html.dark .ar .btn-p:hover:not([disabled]){background:var(--hov)!important}
 .esq-foto{aspect-ratio:4/5;border-radius:18px}
 @keyframes esq-pulso{50%{opacity:.55}}
 @media (prefers-reduced-motion:reduce){.esq-titulo,.esq-linha,.esq-foto{animation:none}}
+
+/* Instalar aplicativo (PWA): passo a passo para o iPhone. */
+.inst-dlg{width:min(380px,calc(100vw - 32px));padding:26px 24px 22px;border:1px solid var(--line);border-radius:22px;background:var(--surf);color:var(--ink);font-family:var(--sans)}
+.inst-dlg::backdrop{background:rgba(30,20,14,.5)}
+.inst-dlg h2{font-family:var(--serif);font-weight:600;font-size:28px;line-height:1.1;margin:0 0 12px}
+.inst-dlg ol{margin:0 0 22px;padding-left:22px;display:grid;gap:10px;color:var(--ink2);font-size:16px}
+.inst-dlg .btn{width:100%}
+.inst-ic{vertical-align:-3px;margin:0 2px;color:var(--acc)}
