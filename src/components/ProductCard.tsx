@@ -60,9 +60,10 @@ export function ProductCard({ product: p }: { product: Product }) {
   );
 }
 
-export function ProductGrid({ products, three = false }: { products: Product[]; three?: boolean }) {
+/** `trilho`: no celular vira uma faixa que desliza com o dedo (página inicial). */
+export function ProductGrid({ products, three = false, trilho = false }: { products: Product[]; three?: boolean; trilho?: boolean }) {
   return (
-    <div className={`pgrid${three ? ' three' : ''}`}>
+    <div className={`pgrid${three ? ' three' : ''}${trilho ? ' trilho' : ''}`}>
       {products.map((p) => (
         <ProductCard key={p.id} product={p} />
       ))}

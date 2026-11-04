@@ -5,7 +5,7 @@ import { SectionHead } from '../components/ui';
 import { artCatOf, CATEGORY_TONE, cheapestVariant, fmt, isAvailable } from '../data/catalog';
 import type { Catalogo } from '../data/loja';
 import { catalogHref } from '../data/catalogQuery';
-import { ConversaIcon, GemIcon, PresenteIcon } from '../components/Icons';
+import { ConversaIcon, GemIcon, PresenteIcon, SetaIcon } from '../components/Icons';
 import { PILLARS } from './About';
 
 const ICONE_PILAR = [GemIcon, PresenteIcon, ConversaIcon];
@@ -25,6 +25,11 @@ const FOTO_CATEGORIA: Record<string, { src: string; thumb: string; alt: string }
   aneis: fotoCat('aneis', 'Anel solitário dourado'),
   tornozeleiras: fotoCat('tornozeleiras', 'Tornozeleira dourada com pingentes de concha'),
   piercings: fotoCat('piercings', 'Piercings dourados em um pratinho de cerâmica'),
+};
+const FOTO_PRESENTES = {
+  src: '/marca/sobre.webp',
+  thumb: '/marca/sobre.webp',
+  alt: 'Colar, brincos de pérola e anel dourados sobre linho, com flores secas',
 };
 const FOTO_EMBALAGEM = {
   src: '/marca/embalagem.webp',
@@ -113,10 +118,49 @@ export function Home({ catalogo: { categories, products } }: { catalogo: Catalog
             </Link>
           }
         />
-        <ProductGrid products={newest} />
+        <ProductGrid products={newest} trilho />
       </section>
 
-      <section className="wrap sec" aria-labelledby="h-best">
+      {/* Presentes: foto grande de um lado, kits em lista do outro (substitui os cartões grandes de kit). */}
+      <section className="wrap sec" aria-labelledby="h-kits">
+        <div className="presentes">
+          <div className="presentes-foto">
+            <Midia foto={FOTO_PRESENTES} tamanho="g" art={{ cat: 'kit', tone: 'gold', gem: true, bg: 1 }} ratio="4 / 5" />
+          </div>
+          <div className="presentes-txt">
+            <h2 id="h-kits" className="h-serif">
+              Kits para <em>presentear</em>
+            </h2>
+            <p className="presentes-lead">Conjuntos pensados para combinar entre si, prontos para entregar a quem você gosta.</p>
+            <ul className="kitlista">
+              {kits.map((k) => {
+                const href = `/produto/${k.slug}`;
+                const disp = isAvailable(k);
+                return (
+                  <li key={k.id}>
+                    <Link className="kitl" href={href}>
+                      <span className="kitl-i">
+                        <Midia foto={k.photos?.[0]} art={{ cat: 'kit', tone: k.tone, gem: true, bg: k.bg }} />
+                      </span>
+                      <span className="kitl-b">
+                        <span className="kitl-n">{k.name}</span>
+                        {k.short && <span className="kitl-s">{k.short}</span>}
+                        <span className="kitl-p">
+                          {fmt(cheapestVariant(k).price)}
+                          {!disp && <span className="kitl-esg">Esgotado</span>}
+                        </span>
+                      </span>
+                      <SetaIcon className="kitl-seta" />
+                    </Link>
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <section className="wrap" aria-labelledby="h-best">
         <SectionHead
           title="Mais vendidos"
           id="h-best"
@@ -126,33 +170,7 @@ export function Home({ catalogo: { categories, products } }: { catalogo: Catalog
             </Link>
           }
         />
-        <ProductGrid products={best} />
-      </section>
-
-      <section className="wrap" aria-labelledby="h-kits">
-        <SectionHead title="Vitrine de kits" id="h-kits" />
-        <div className="kits">
-          {kits.map((k) => {
-            const href = `/produto/${k.slug}`;
-            return (
-              <article key={k.id} className="kit">
-                <Link href={href} aria-label={`Ver ${k.name}`} tabIndex={-1} style={{ display: 'block' }}>
-                  <Midia foto={k.photos?.[0]} art={{ cat: 'kit', tone: k.tone, gem: true, bg: k.bg }} ratio="5 / 4" />
-                </Link>
-                <div className="kit-b">
-                  <h3>{k.name}</h3>
-                  <p>{k.short}</p>
-                  <div className="kit-f">
-                    <strong>{fmt(cheapestVariant(k).price)}</strong>
-                    <Link className="btn btn-s" href={href}>
-                      {isAvailable(k) ? 'Ver kit' : 'Ver detalhes'}
-                    </Link>
-                  </div>
-                </div>
-              </article>
-            );
-          })}
-        </div>
+        <ProductGrid products={best} trilho />
       </section>
 
       <section className="wrap sec" aria-labelledby="h-inst">

@@ -12,7 +12,6 @@ colors:
   cacau: "#38291F"
   cacau-claro: "#6B4E3D"
   cacau-hover: "#4D3A2C"
-  preto-logo: "#141414"
   carvao: "#100E0D"
   carvao-cartao: "#1F1B19"
   carvao-destaque: "#2D2825"
@@ -146,7 +145,6 @@ Neutros quentes de linho e cacau, com um único acento dourado.
 - **Champagne** (#EAD9C6): blocos institucionais, rodapé, hover de botões secundários.
 - **Areia** (#F4EBE2) para fundo de campo e **Borda areia** (#E8DAD0) para divisórias e contornos.
 - **Cacau claro** (#6B4E3D): texto secundário, rótulos, notas.
-- **Preto da logo** (#141414): só por trás da logo.
 - **Carvão** (#100E0D), **Carvão cartão** (#1F1B19), **Carvão destaque** (#2D2825), **Carvão campo** (#2A2522) e **Carvão borda** (#4A423C): os degraus do modo noturno. **Pergaminho** (#F4ECE3) e **Pergaminho suave** (#C9BDB1) são o texto sobre eles.
 - **Disponível** (#5E7A4E) e **Esgotado** (#9B4A3B): só no pontinho de situação da peça, sempre com texto ao lado.
 
@@ -191,7 +189,7 @@ Quase plano. A profundidade vem das camadas de tom (marfim, linho, champagne; ca
 
 ## Shapes
 
-Formas macias e discretas. Pílula (999px) para tudo que se toca em linha: botões, filtros, busca, contadores. Cantos grandes nos blocos: 26px em painéis e galeria, 22px em cartões, 18px no cartão de produto, 14px em miniaturas, 12px em campos de formulário. Círculos para categorias e logo. A foto principal do destaque usa um arco (999px 999px 28px 28px), a assinatura do topo. Bordas sempre de 1px em tom de areia; o selecionado troca a borda para cacau.
+Formas macias e discretas. Pílula (999px) para tudo que se toca em linha: botões, filtros, busca, contadores. Cantos grandes nos blocos: 26px em painéis e galeria, 22px em cartões, 18px no cartão de produto, 14px em miniaturas, 12px em campos de formulário. Círculos para categorias. A foto principal do destaque usa um arco (999px 999px 28px 28px), a assinatura do topo. Bordas sempre de 1px em tom de areia; o selecionado troca a borda para cacau.
 
 ## Components
 
@@ -221,8 +219,17 @@ Formas macias e discretas. Pílula (999px) para tudo que se toca em linha: botõ
 - **Computador:** cabeçalho fixo de 76px sobre marfim translúcido, links em pílula (o ativo em champagne), busca em pílula e ícones de 44px com dica.
 - **Celular:** cabeçalho de 64px e navegação de baixo com 4 itens (ícone e rótulo de 12px); o ativo ganha um traço rosé acima.
 
+### Logo
+A arte oficial (D-004), sem redesenho e sem o fundo preto, como nas embalagens: dourado mais fundo sobre o claro (`src/assets/logo-ar-claro.png`) e o dourado original sobre o escuro (`logo-ar-escuro.png`), trocados pelo tema. Tamanhos: 52px no celular, 62px no cabeçalho do computador e 64–84px no rodapé. Nunca dentro de círculo preto nem com sombra.
+
 ### Cartão de produto (assinatura)
 Foto 4:5 com cantos de 18px e zoom leve ao passar o mouse; coração de favoritar no canto; selo "Novo"/"Promoção" em pílula; categoria em rótulo, nome em serifa 21px e preço em sans 15px/500, com o preço antigo riscado ao lado. Esgotado ganha um véu e um selo, nunca a quantidade.
+
+### Kits para presentear (assinatura da página inicial)
+Foto editorial grande (4:5, cantos de 26px, sombra "foto do topo") ao lado de uma lista de kits: miniatura de 84–104px com cantos de 16px, nome em serifa 24–27px, descrição curta em duas linhas, preço e uma seta que anda 4px ao passar o mouse. Divisórias de 1px areia entre os itens. No celular a foto vai de ponta a ponta (4:3) e a lista vem embaixo.
+
+### Vitrine que desliza (celular)
+Na página inicial, Lançamentos e Mais vendidos viram uma faixa horizontal abaixo de 900px: cartões de min(64vw, 250px), encaixe por cartão e o próximo cartão aparecendo pela borda como convite para deslizar. No computador continuam em grade de 4.
 
 ## Do's and Don'ts
 

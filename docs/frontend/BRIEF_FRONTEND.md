@@ -58,7 +58,7 @@ Referência visual (`../assets/referencia_visual.png`): inspira hierarquia, card
 | Rotas | `/catalogo`, `/checkout-demo` | `/loja`, `/loja/[categoria]`, `/produto/[slug]`, `/checkout` | Alinhado com PR-004; filtros no endereço (`?q=`, `?ordem=`, `?disponiveis=1`) |
 | Produtos | 12–18 | 19 (incl. 3 kits), lidos do banco de desenvolvimento | Ok |
 | Fotos | Próprias ou placeholders | Ilustrações vetoriais por tipo | Trocar por fotos reais quando houver |
-| Logo | Original | Logo oficial aplicada em círculo preto | Trocar pelo SVG quando houver (D-014) |
+| Logo | Original | Logo oficial sem o fundo preto, como nas embalagens: dourado fundo no claro, dourado original no escuro (`src/assets/logo-ar-*.png`, geradas de `docs/assets/logo_ar_original.jpg`) | Trocar pelo SVG quando houver (D-014) |
 | Painel admin | Fora do brief | Incluído | Serve para validar D-013 com a cliente |
 | Favoritos | Incluído | Incluído | Aprovação para o site real: Q-UX-01 |
 
