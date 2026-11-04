@@ -7,6 +7,12 @@ import { artCatOf, CATEGORY_TONE, cheapestVariant, fmt, isAvailable } from '../d
 import type { Catalogo } from '../data/loja';
 import { catalogHref } from '../data/catalogQuery';
 
+const HERO = {
+  pulseira: { src: '/hero/pulseira.webp', thumb: '/hero/pulseira.webp', alt: 'Pulseira dourada fina com pontos de brilho no pulso, sobre linho claro' },
+  brincos: { src: '/hero/brincos.webp', thumb: '/hero/brincos.webp', alt: 'Par de brincos em ouro rosé com pérolas em gota, sobre seda champagne' },
+  anel: { src: '/hero/anel.webp', thumb: '/hero/anel.webp', alt: 'Anel solitário dourado com zircônia, em um pratinho de cerâmica' },
+};
+
 export function Home({ catalogo: { categories, products } }: { catalogo: Catalogo }) {
   const newest = products.filter((p) => p.isNew).slice(0, 4);
   const best = products.filter((p) => p.best).slice(0, 4);
@@ -33,15 +39,16 @@ export function Home({ catalogo: { categories, products } }: { catalogo: Catalog
               </Link>
             </div>
           </div>
+          {/* Fotos ilustrativas geradas por IA (Kairogen) para o protótipo; trocar pelas fotos reais da loja. */}
           <div className="hero-art">
             <div className="hero-main">
-              <Art cat="pulseiras" tone="gold" gem bg={1} ratio="4 / 5" />
+              <Midia foto={HERO.pulseira} tamanho="g" art={{ cat: 'pulseiras', tone: 'gold', gem: true, bg: 1 }} ratio="4 / 5" prioridade />
             </div>
             <div className="hero-f hero-f1">
-              <Art cat="brincos" tone="rose" gem bg={2} />
+              <Midia foto={HERO.brincos} art={{ cat: 'brincos', tone: 'rose', gem: true, bg: 2 }} />
             </div>
             <div className="hero-f hero-f2">
-              <Art cat="aneis" tone="gold" gem bg={3} />
+              <Midia foto={HERO.anel} art={{ cat: 'aneis', tone: 'gold', gem: true, bg: 3 }} />
             </div>
           </div>
         </section>
