@@ -11,6 +11,7 @@ import type { PaginaProdutos, ProdutoPainel } from './produtos';
 import { carregarEstoquePagina } from '../app/admin/estoque-acoes';
 import { CaixaIcon, CheckIcon, CrossIcon, EtiquetaIcon, MaisIcon, PainelIcon, PedidoIcon } from '../components/Icons';
 import { Selecao } from '../components/Selecao';
+import { FiltroOpcoes } from './FiltroOpcoes';
 import { useParamUrl } from './url';
 import { Confirmacoes } from './confirmar';
 import { LogoMark } from '../components/ui';
@@ -366,12 +367,13 @@ function Orders({ orders, setStatus }: { orders: AdminOrder[]; setStatus: (id: n
         <h1 className="h1">Pedidos</h1>
         <p className="sub">Acompanhe e atualize a separação e o envio. O pagamento não pode ser alterado manualmente.</p>
       </div>
-      <div className="bar" role="group" aria-label="Filtrar por status">
-        {(['Todos', ...ORDER_STATUSES] as const).map((f) => (
-          <button key={f} className={`pill${filter === f ? ' on' : ''}`} aria-pressed={filter === f} onClick={() => setFilter(f)}>
-            {f}
-          </button>
-        ))}
+      <div className="bar">
+        <FiltroOpcoes
+          rotulo="Filtrar por status"
+          valor={filter}
+          opcoes={(['Todos', ...ORDER_STATUSES] as const).map((f) => ({ value: f, label: f }))}
+          onChange={setFilter}
+        />
       </div>
       <section className="card">
         <div className="tw">
