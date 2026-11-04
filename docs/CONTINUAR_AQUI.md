@@ -208,6 +208,23 @@ Observações para decidir (nada foi mudado no código):
 - Produto arquivado continua na aba Estoque (ex.: `AR-TST999-OURO`).
 - "Arquivar" não pede confirmação; "Apagar rascunho" e "Apagar foto" pedem.
 
+## Auditoria visual (04/11/2026, skill impeccable)
+
+- **Tema na raiz:** a classe `dark` agora fica no `<html>`, aplicada por um script antes da primeira pintura (`src/app/layout.tsx`), sem piscar claro. Ela vem junto com `color-scheme`, para que menus abertos, calendário, barras de rolagem e preenchimento automático sigam o tema, e com a cor da barra do celular. O CSS usa `html.dark .ar` / `html.dark .adm`.
+- **Controles do navegador no tema** (`src/styles/base.css`): menus de seleção com seta própria, caixas de marcar e rádios desenhados (no escuro os nativos sumiam no fundo), ícone do calendário, campo de busca sem o "x" cinza, preenchimento automático, seleção de texto e barras de rolagem.
+- **Dicas (tooltips) no tema:** `data-dica` nos botões só com ícone (cabeçalho, favoritar no cartão, setas das fotos). Só aparecem com mouse ou teclado.
+- **Confirmações do painel:** `window.confirm`/`alert` trocados por `src/admin/confirmar.tsx` (apagar foto, variação e rascunho).
+- **Defeito corrigido:** no celular, a barra fixa "Adicionar à sacola" da página de produto ficava fora da tela, porque a animação de entrada (`.fade`, fill `both`) deixava um `transform` aplicado. Agora a animação usa `backwards`.
+- **Vitrine:**
+  - saíram os sobretítulos em maiúsculas antes dos títulos e os números 01/02/03 da página Sobre;
+  - os cartões de kit não mostram mais "Kit com estoque próprio"/"Kit composto" (termos internos);
+  - a categoria foi para a trilha do produto (Início / Loja / Brincos / peça);
+  - no celular, os botões do destaque ficam lado a lado e a foto aparece na primeira tela;
+  - entrou uma faixa com os três compromissos que já estavam na página Sobre;
+  - os símbolos de texto usados como ícone (←, →, ↗, −, +) viraram ícones desenhados.
+- **Painel conferido com login (04/11/2026):** no escuro, menus, datas e caixas de marcar seguem o tema; a confirmação abre no tema no computador e no celular (pequena, centrada), e "Cancelar" e Esc não apagam nada.
+- **Dado ruim no banco de desenvolvimento:** a foto do "Anel Duo Entrelaçado" é um folheto de Natal ("Por apenas R$ 42,99") e aparece em primeiro em Lançamentos e na loja. Trocar ou apagar pelo painel.
+
 ## Pendências que não são de código
 
 | Item | Onde |

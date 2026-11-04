@@ -4,16 +4,14 @@ import Link from 'next/link';
 import { useActionState } from 'react';
 import { entrar, type EstadoEntrar } from '../app/admin/acoes';
 import { LogoMark } from '../components/ui';
-import { useTheme } from '../store';
 
 const INICIAL: EstadoEntrar = { erro: null, email: '' };
 
 export function Entrar() {
-  const { dark } = useTheme();
   const [estado, acao, enviando] = useActionState(entrar, INICIAL);
 
   return (
-    <div className={`adm auth${dark ? ' dark' : ''}`}>
+    <div className="adm auth">
       <main className="auth-box">
         <div className="brand">
           <LogoMark />

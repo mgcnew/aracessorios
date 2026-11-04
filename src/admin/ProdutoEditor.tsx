@@ -12,6 +12,8 @@ import {
   type DadosProduto,
 } from '../app/admin/produtos-acoes';
 import { fmt } from '../data/catalog';
+import { avisar, confirmar } from './confirmar';
+import { ExternoIcon, SetaIcon } from '../components/Icons';
 import { Fotos } from './Fotos';
 import { useAcao } from './Produtos';
 import {
@@ -73,14 +75,14 @@ export function ProdutoEditor({
     <>
       <div className="top">
         <button className="sl" onClick={voltar} style={{ marginBottom: 14 }}>
-          ← Todos os produtos
+          <SetaIcon dir="esq" size={16} /> Todos os produtos
         </button>
         <h1 className="h1">{p.name}</h1>
         <p className="sub">
           <span className={`tag ${TAG_STATUS[p.status]}`}>{NOME_STATUS[p.status]}</span> {NOME_TIPO[p.kind]} ·{' '}
           {p.status === 'ativo' ? (
             <a className="sl sl-mini" href={`/produto/${p.slug}`} target="_blank" rel="noreferrer">
-              Ver na loja ↗
+              Ver na loja <ExternoIcon />
             </a>
           ) : (
             'fora da vitrine'
@@ -161,13 +163,20 @@ function Status({ p, aoMudar, voltar }: { p: ProdutoPainel; aoMudar: AoMudar; vo
           <button
             className="btn btn-perigo"
             disabled={pendente}
-            onClick={() => {
-              if (window.confirm(`Apagar "${p.name}" e todas as variações? Isso não pode ser desfeito.`))
+            onClick={async () => {
+              if (
+                await confirmar({
+                  titulo: `Apagar "${p.name}"?`,
+                  texto: 'O produto e todas as variações saem do cadastro. Isso não pode ser desfeito.',
+                  confirmar: 'Apagar rascunho',
+                  perigo: true,
+                })
+              )
                 rodar(
                   () => apagarProduto(p.id),
                   (c) => {
                     aoMudar(c);
-                    if (c.extra) window.alert(c.extra);
+                    if (c.extra) void avisar('Produto apagado', c.extra);
                     voltar();
                   },
                 );
@@ -508,8 +517,8 @@ function VariacaoDialog({
               type="button"
               className="btn btn-perigo"
               disabled={pendente}
-              onClick={() => {
-                if (window.confirm(`Apagar a variação ${v.sku}?`))
+              onClick={async () => {
+                if (await confirmar({ titulo: 'Apagar esta variação?', texto: `SKU ${v.sku}. Isso não pode ser desfeito.`, confirmar: 'Apagar variação', perigo: true }))
                   rodar(
                     () => apagarVariacao(v.id),
                     (d) => {

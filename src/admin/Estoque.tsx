@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState, useTransition } from 'react';
 import { historicoVariacao, movimentarEstoque } from '../app/admin/estoque-acoes';
-import { SearchIcon } from '../components/Icons';
+import { MinusIcon, PlusIcon, SearchIcon } from '../components/Icons';
 import { norm } from '../data/catalog';
 import {
   NOME_TIPO,
@@ -310,7 +310,7 @@ function Movimentar({
           )}
           <span className="qtd-l">
             <button type="button" className="qtd-b" onClick={() => passo(-1)} aria-label="Diminuir quantidade">
-              −
+              <MinusIcon size={20} />
             </button>
             <input
               className="auth-i qtd-i"
@@ -323,7 +323,7 @@ function Movimentar({
               aria-label={op === 'ajuste' ? `Quantidade a ${sinal}` : conf.campo}
             />
             <button type="button" className="qtd-b" onClick={() => passo(1)} aria-label="Aumentar quantidade">
-              +
+              <PlusIcon size={20} />
             </button>
           </span>
         </div>

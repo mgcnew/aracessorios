@@ -8,22 +8,18 @@ export function LogoMark() {
   return <Image className="logo-img" src={logo} alt="AR Acessórios" width={52} height={52} priority />;
 }
 
-export function SectionHead({ eyebrow, title, id, action }: { eyebrow: string; title: string; id: string; action?: ReactNode }) {
+export function SectionHead({ title, id, action }: { title: string; id: string; action?: ReactNode }) {
   return (
     <div className="sec-h">
-      <div>
-        <span className="eyebrow">{eyebrow}</span>
-        <h2 id={id}>{title}</h2>
-      </div>
+      <h2 id={id}>{title}</h2>
       {action}
     </div>
   );
 }
 
-export function PageHead({ eyebrow, title, children }: { eyebrow: string; title: string; children?: ReactNode }) {
+export function PageHead({ title, children }: { title: string; children?: ReactNode }) {
   return (
     <div className="page-h">
-      <span className="eyebrow">{eyebrow}</span>
       <h1>{title}</h1>
       {children}
     </div>

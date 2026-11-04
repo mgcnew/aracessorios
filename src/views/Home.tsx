@@ -5,6 +5,10 @@ import { SectionHead } from '../components/ui';
 import { artCatOf, CATEGORY_TONE, cheapestVariant, fmt, isAvailable } from '../data/catalog';
 import type { Catalogo } from '../data/loja';
 import { catalogHref } from '../data/catalogQuery';
+import { ConversaIcon, GemIcon, PresenteIcon } from '../components/Icons';
+import { PILLARS } from './About';
+
+const ICONE_PILAR = [GemIcon, PresenteIcon, ConversaIcon];
 
 const HERO = {
   pulseira: { src: '/hero/pulseira.webp', thumb: '/hero/pulseira.webp', alt: 'Pulseira dourada fina com pontos de brilho no pulso, sobre linho claro' },
@@ -38,7 +42,6 @@ export function Home({ catalogo: { categories, products } }: { catalogo: Catalog
       <div className="wrap">
         <section className="hero" aria-label="Destaque">
           <div>
-            <span className="eyebrow">Nova coleção</span>
             <h1>
               Brilho <em>delicado</em> para os seus dias
             </h1>
@@ -69,8 +72,25 @@ export function Home({ catalogo: { categories, products } }: { catalogo: Catalog
         </section>
       </div>
 
+      <div className="wrap">
+        <ul className="promessas" aria-label="O que você encontra na AR">
+          {PILLARS.map((p, i) => {
+            const Icone = ICONE_PILAR[i];
+            return (
+              <li key={p.n}>
+                <Icone size={26} />
+                <div>
+                  <strong>{p.title}</strong>
+                  <span>{p.text}</span>
+                </div>
+              </li>
+            );
+          })}
+        </ul>
+      </div>
+
       <section className="wrap sec" aria-labelledby="h-cats">
-        <SectionHead eyebrow="Navegue por categoria" title="Escolha o seu estilo" id="h-cats" />
+        <SectionHead title="Escolha o seu estilo" id="h-cats" />
         <div className="ctiles">
           {categories.map((c, i) => (
             <Link key={c.id} className="ctile" href={catalogHref({ cat: c.id })} aria-label={`Ver ${c.name}`}>
@@ -85,7 +105,6 @@ export function Home({ catalogo: { categories, products } }: { catalogo: Catalog
 
       <section className="wrap" aria-labelledby="h-new">
         <SectionHead
-          eyebrow="Acabou de chegar"
           title="Lançamentos"
           id="h-new"
           action={
@@ -99,7 +118,6 @@ export function Home({ catalogo: { categories, products } }: { catalogo: Catalog
 
       <section className="wrap sec" aria-labelledby="h-best">
         <SectionHead
-          eyebrow="As mais desejadas"
           title="Mais vendidos"
           id="h-best"
           action={
@@ -112,7 +130,7 @@ export function Home({ catalogo: { categories, products } }: { catalogo: Catalog
       </section>
 
       <section className="wrap" aria-labelledby="h-kits">
-        <SectionHead eyebrow="Para presentear" title="Vitrine de kits" id="h-kits" />
+        <SectionHead title="Vitrine de kits" id="h-kits" />
         <div className="kits">
           {kits.map((k) => {
             const href = `/produto/${k.slug}`;
@@ -122,7 +140,6 @@ export function Home({ catalogo: { categories, products } }: { catalogo: Catalog
                   <Midia foto={k.photos?.[0]} art={{ cat: 'kit', tone: k.tone, gem: true, bg: k.bg }} ratio="5 / 4" />
                 </Link>
                 <div className="kit-b">
-                  <span className="eyebrow">{k.kind === 'kit_stocked' ? 'Kit com estoque próprio' : 'Kit composto'}</span>
                   <h3>{k.name}</h3>
                   <p>{k.short}</p>
                   <div className="kit-f">
@@ -141,8 +158,7 @@ export function Home({ catalogo: { categories, products } }: { catalogo: Catalog
       <section className="wrap sec" aria-labelledby="h-inst">
         <div className="inst split">
           <div>
-            <span className="eyebrow">Sobre a AR</span>
-            <h2 id="h-inst" className="h-serif" style={{ fontSize: 'clamp(34px,4.8vw,56px)', marginTop: 10 }}>
+            <h2 id="h-inst" className="h-serif" style={{ fontSize: 'clamp(34px,4.8vw,56px)' }}>
               Feita para ser presenteada
             </h2>
             <p>

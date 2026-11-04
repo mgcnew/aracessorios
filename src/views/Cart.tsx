@@ -44,7 +44,7 @@ export function Cart() {
 
   return (
     <div className="wrap fade">
-      <PageHead eyebrow="Sua sacola" title="Sacola" />
+      <PageHead title="Sacola" />
       {lines.length > 0 ? (
         <div className="cart-l">
           <div>
@@ -143,7 +143,7 @@ export function Checkout() {
         Demonstração — nenhuma compra ou pagamento será realizado
       </div>
       <div className="wrap fade">
-        <PageHead eyebrow="Prévia não operacional" title="Checkout" />
+        <PageHead title="Checkout" />
         {lines.length > 0 ? (
           <div className="cart-l">
             <div>

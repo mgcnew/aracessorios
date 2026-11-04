@@ -16,7 +16,7 @@ export function Favorites() {
 
   return (
     <div className="wrap fade" style={{ paddingBottom: 60 }}>
-      <PageHead eyebrow="Sua seleção" title="Favoritos">
+      <PageHead title="Favoritos">
         <p role="status">{label}</p>
       </PageHead>
       {items.length > 0 ? (

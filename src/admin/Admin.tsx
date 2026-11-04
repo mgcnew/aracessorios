@@ -10,6 +10,7 @@ import type { CatalogoPainel } from './produtos';
 import { carregarEstoque } from '../app/admin/estoque-acoes';
 import { CaixaIcon, CheckIcon, CrossIcon, EtiquetaIcon, MaisIcon, PainelIcon, PedidoIcon } from '../components/Icons';
 import { useParamUrl } from './url';
+import { Confirmacoes } from './confirmar';
 import { LogoMark } from '../components/ui';
 import { fmt } from '../data/catalog';
 import { useTheme } from '../store';
@@ -91,7 +92,8 @@ export function Admin({
     setOrders((os) => os.map((o) => (o.id === id ? { ...o, status } : o)));
 
   return (
-    <div className={`adm${dark ? ' dark' : ''}`}>
+    <div className="adm">
+      <Confirmacoes />
       {/* Computador: barra lateral. */}
       <aside className="side">
         <div className="brand">

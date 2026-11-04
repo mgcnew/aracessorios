@@ -1,6 +1,6 @@
 /* AR Acessórios — estilos do painel administrativo (escopo .adm). */
 .adm{--bg:#FDF6F0;--surf:#FFF9F4;--champ:#EAD9C6;--rose:#C89F7A;--ink:#38291F;--ink2:#6B4E3D;--line:#E8DAD0;--acc:#8A5A38;--field:#F4EBE2;--ok:#E3EEDC;--okt:#2F5A24;--warn:#F6E6C8;--warnt:#6B4A0C;--bad:#F3D9D3;--badt:#8A2E1F;--info:#E0E7F1;--infot:#2B4A75;--serif:var(--font-serif),Georgia,serif;--sans:var(--font-sans),system-ui,sans-serif}
-.adm.dark{--bg:#100E0D;--surf:#1F1B19;--champ:#2D2825;--ink:#F4ECE3;--ink2:#C9BDB1;--line:#4A423C;--acc:#D9B384;--field:#2A2522;--ok:#1D2B1A;--okt:#B5DDA8;--warn:#33291A;--warnt:#F0D18A;--bad:#3A1F1B;--badt:#F2B3A6;--info:#1A2536;--infot:#B7CDEE;--ouro:#D9B384;--sobre-ouro:#1A1511}
+html.dark .adm{--bg:#100E0D;--surf:#1F1B19;--champ:#2D2825;--ink:#F4ECE3;--ink2:#C9BDB1;--line:#4A423C;--acc:#D9B384;--field:#2A2522;--ok:#1D2B1A;--okt:#B5DDA8;--warn:#33291A;--warnt:#F0D18A;--bad:#3A1F1B;--badt:#F2B3A6;--info:#1A2536;--infot:#B7CDEE;--ouro:#D9B384;--sobre-ouro:#1A1511}
 .adm{font-family:var(--sans);background:var(--bg);color:var(--ink);min-height:100vh;display:flex;flex-wrap:wrap;line-height:1.5;overflow-x:clip}
 .adm *{box-sizing:border-box}
 .adm button,.adm a{font:inherit;color:inherit}
@@ -57,8 +57,7 @@
 .adm .st button:hover{background:var(--champ)}
 .adm .st span{min-width:30px;text-align:center;font-weight:500}
 .adm .sw{display:inline-flex;align-items:center;gap:8px;min-height:44px;cursor:pointer;font-size:14px}
-.adm .sw input{width:20px;height:20px;accent-color:#38291F;margin:0}
-.adm.dark .sw input{accent-color:#D9B384}
+.adm .sw input{width:20px;height:20px;margin:0}
 .adm .perm{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(380px,100%),1fr));gap:18px}
 .adm .perm ul{list-style:none;margin:0;padding:0}
 .adm .perm li{display:grid;grid-template-columns:24px 1fr;gap:10px;padding:11px 0;border-top:1px solid var(--line);font-size:15px}
@@ -119,7 +118,6 @@
 .adm .g2{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(240px,100%),1fr));gap:14px}
 .adm .g3{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(150px,100%),1fr));gap:12px}
 .adm .auth-t{height:auto;min-height:96px;padding:12px 14px;resize:vertical;line-height:1.5}
-.adm select.auth-i{appearance:auto}
 .adm .auth-i:disabled{opacity:.7}
 .adm .pre-i{display:flex;align-items:center;gap:0;background:var(--field);border:1px solid var(--line);border-radius:12px;overflow:hidden}
 .adm .pre-i span{padding:0 0 0 14px;color:var(--ink2);font-size:14px;white-space:nowrap}
@@ -128,8 +126,7 @@
 .adm .opcoes legend{font-size:14px;color:var(--ink2);margin-bottom:8px;padding:0}
 .adm .opcao{display:grid;grid-template-columns:22px 1fr;gap:10px;align-items:start;padding:12px 14px;border:1px solid var(--line);border-radius:14px;cursor:pointer;background:var(--bg)}
 .adm .opcao:has(input:checked){border-color:var(--ink)}
-.adm .opcao input{width:18px;height:18px;margin:2px 0 0;accent-color:#38291F}
-.adm.dark .opcao input{accent-color:#D9B384}
+.adm .opcao input{width:18px;height:18px;margin:2px 0 0}
 .adm .opcao small{display:block;color:var(--ink2);font-size:13.5px}
 .adm .btn-perigo{border-color:var(--badt)!important;color:var(--badt)!important}
 .adm .btn:disabled{opacity:.55;cursor:not-allowed}
@@ -247,8 +244,8 @@
 
 /* Janelas em tela cheia, cabeçalho e ações fixos */
 @media (max-width:599px){
-  .adm .dlg:not(.folha){width:100%;max-width:100%;height:100dvh;max-height:100dvh;margin:0;inset:0;border:0;border-radius:0;padding:0 16px 16px}
-  .adm .dlg:not(.folha) .dlg-h{position:sticky;top:0;z-index:3;background:var(--surf);margin:0 -16px 14px;padding:calc(10px + env(safe-area-inset-top)) 16px 10px;border-bottom:1px solid var(--line);align-items:center}
+  .adm .dlg:not(.folha):not(.dlg-conf){width:100%;max-width:100%;height:100dvh;max-height:100dvh;margin:0;inset:0;border:0;border-radius:0;padding:0 16px 16px}
+  .adm .dlg:not(.folha):not(.dlg-conf) .dlg-h{position:sticky;top:0;z-index:3;background:var(--surf);margin:0 -16px 14px;padding:calc(10px + env(safe-area-inset-top)) 16px 10px;border-bottom:1px solid var(--line);align-items:center}
   .adm .dlg-h h2{font-size:22px}
   .adm .dlg-acoes{position:sticky;bottom:0;z-index:3;background:var(--surf);margin:4px -16px 0;padding:12px 16px calc(12px + env(safe-area-inset-bottom));border-top:1px solid var(--line)}
   .adm .dlg-acoes .btn{flex:1 1 140px;justify-content:center}
@@ -276,12 +273,27 @@
 }
 
 /* Modo noturno do painel: seleção e ação principal em dourado, aviso de demonstração discreto. */
-.adm.dark .mi.on,.adm.dark .pill.on{background:var(--ouro)!important;color:var(--sobre-ouro)!important;border-color:var(--ouro)!important}
-.adm.dark .auth-btn{background:var(--ouro)!important;color:var(--sobre-ouro)!important;border-color:var(--ouro)!important}
-.adm.dark .demo{background:var(--surf);color:var(--acc);border:1px solid var(--line)}
-.adm.dark .seg button.on{background:var(--champ);color:var(--acc);box-shadow:none;outline:1px solid var(--acc)}
-.adm.dark .an.on::before{background:var(--ouro)}
-.adm.dark .dlg::backdrop{background:rgba(0,0,0,.6)}
+html.dark .adm .mi.on,html.dark .adm .pill.on{background:var(--ouro)!important;color:var(--sobre-ouro)!important;border-color:var(--ouro)!important}
+html.dark .adm .auth-btn{background:var(--ouro)!important;color:var(--sobre-ouro)!important;border-color:var(--ouro)!important}
+html.dark .adm .demo{background:var(--surf);color:var(--acc);border:1px solid var(--line)}
+html.dark .adm .seg button.on{background:var(--champ);color:var(--acc);box-shadow:none;outline:1px solid var(--acc)}
+html.dark .adm .an.on::before{background:var(--ouro)}
+html.dark .adm .dlg::backdrop{background:rgba(0,0,0,.6)}
 /* Toque no celular: sem o retângulo de destaque nativo; cada controle já tem o próprio retorno ao tocar. */
 .adm{-webkit-tap-highlight-color:transparent}
 .adm .foto img,.adm .art{border-radius:inherit}
+
+/* Confirmação no tema (substitui window.confirm/alert): pequena e centrada também no celular. */
+.adm .dlg-conf{width:min(420px,calc(100vw - 32px));padding:24px 24px 20px;border-radius:22px}
+.adm .dlg-conf h2{font-family:var(--serif);font-weight:600;font-size:26px;line-height:1.15;text-wrap:balance}
+.adm .dlg-conf p{color:var(--ink2);font-size:15px;margin-top:8px}
+.adm .conf-acoes{display:flex;flex-wrap:wrap;justify-content:flex-end;gap:10px;margin-top:22px}
+.adm .conf-acoes .btn{justify-content:center;min-width:120px}
+@media (max-width:599px){.adm .conf-acoes .btn{flex:1 1 0;min-width:0;padding:0 12px!important;white-space:nowrap}}
+.adm .btn-perigo-cheio{background:var(--badt)!important;border-color:var(--badt)!important;color:#fff!important}
+html.dark .adm .btn-perigo-cheio{background:#E8907E!important;border-color:#E8907E!important;color:#2A0F0A!important}
+.adm .dlg[open]{animation:dlg-in .2s cubic-bezier(.16,1,.3,1)}
+.adm .dlg[open]::backdrop{animation:dlg-fundo .2s ease-out}
+@keyframes dlg-in{from{opacity:0;transform:translateY(8px) scale(.98)}}
+@keyframes dlg-fundo{from{opacity:0}}
+@media (prefers-reduced-motion:reduce){.adm .dlg[open],.adm .dlg[open]::backdrop{animation:none}}

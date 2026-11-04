@@ -143,3 +143,28 @@ export const VoltarIcon = ({ size = 20, ...p }: IconProps) => (
     <path d="M15 5l-7 7 7 7" />
   </svg>
 );
+
+export const SetaIcon = ({ size = 18, dir = 'dir', ...p }: IconProps & { dir?: 'esq' | 'dir' }) => (
+  <svg {...base(size, p)} strokeLinecap="round" strokeLinejoin="round">
+    <path d={dir === 'dir' ? 'M5 12h14M13 6l6 6-6 6' : 'M19 12H5M11 6l-6 6 6 6'} />
+  </svg>
+);
+
+export const ExternoIcon = ({ size = 14, ...p }: IconProps) => (
+  <svg {...base(size, p)} strokeLinecap="round" strokeLinejoin="round">
+    <path d="M14 5h5v5M19 5l-8 8M17 14v4a1 1 0 01-1 1H6a1 1 0 01-1-1V8a1 1 0 011-1h4" />
+  </svg>
+);
+
+export const PresenteIcon = ({ size = 24, ...p }: IconProps) => (
+  <svg {...base(size, p)} strokeLinejoin="round" strokeLinecap="round">
+    <path d="M4 11h16v9a1 1 0 01-1 1H5a1 1 0 01-1-1zM3 7.5h18V11H3zM12 7.5V21M12 7.5C10.5 4 7 3.8 7 5.8 7 7.2 9.5 7.5 12 7.5zM12 7.5c1.5-3.5 5-3.7 5-1.7 0 1.4-2.5 1.7-5 1.7z" />
+  </svg>
+);
+
+export const ConversaIcon = ({ size = 24, ...p }: IconProps) => (
+  <svg {...base(size, p)} strokeLinejoin="round" strokeLinecap="round">
+    <path d="M20 12a7.5 7.5 0 01-10.9 6.7L4 20l1.4-4.4A7.5 7.5 0 1120 12z" />
+    <path d="M9 11.5h.01M12.5 11.5h.01M16 11.5h.01" strokeWidth={2.2} />
+  </svg>
+);

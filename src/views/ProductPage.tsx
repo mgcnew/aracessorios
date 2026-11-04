@@ -8,6 +8,7 @@ import { HeartIcon } from '../components/Icons';
 import { ProductGrid } from '../components/ProductCard';
 import { SectionHead, Stepper } from '../components/ui';
 import { useCatalogo } from '../data/CatalogoContext';
+import { catalogHref } from '../data/catalogQuery';
 import { artOf, categoryLabel, fmt, type Product } from '../data/catalog';
 import { MAX_QTY, useStore } from '../store';
 
@@ -68,7 +69,13 @@ export function ProductPage({ productId }: { productId: string }) {
         <span aria-hidden="true">/</span>
         <Link href="/loja">Loja</Link>
         <span aria-hidden="true">/</span>
-        <span>{p.name}</span>
+        {!p.isKit && p.catIds[0] && (
+          <>
+            <Link href={catalogHref({ cat: p.catIds[0] })}>{categoryLabel(p)}</Link>
+            <span aria-hidden="true">/</span>
+          </>
+        )}
+        <span aria-current="page">{p.name}</span>
       </nav>
 
       <div className="pdp">
@@ -117,7 +124,6 @@ export function ProductPage({ productId }: { productId: string }) {
         </div>
 
         <div className="pdp-info">
-          <span className="eyebrow">{categoryLabel(p)}</span>
           <h1>{p.name}</h1>
           <div className="price">
             <strong>{fmt(cur.price)}</strong>
@@ -216,7 +222,7 @@ export function ProductPage({ productId }: { productId: string }) {
       </div>
 
       <section className="sec" style={{ paddingTop: 20 }} aria-labelledby="h-rel">
-        <SectionHead eyebrow="Combina com" title="Você também pode gostar" id="h-rel" />
+        <SectionHead title="Você também pode gostar" id="h-rel" />
         <ProductGrid products={relatedTo(p, products)} />
       </section>
     </div>
