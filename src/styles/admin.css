@@ -282,3 +282,6 @@
 .adm.dark .seg button.on{background:var(--champ);color:var(--acc);box-shadow:none;outline:1px solid var(--acc)}
 .adm.dark .an.on::before{background:var(--ouro)}
 .adm.dark .dlg::backdrop{background:rgba(0,0,0,.6)}
+/* Toque no celular: sem o retângulo de destaque nativo; cada controle já tem o próprio retorno ao tocar. */
+.adm{-webkit-tap-highlight-color:transparent}
+.adm .foto img,.adm .art{border-radius:inherit}

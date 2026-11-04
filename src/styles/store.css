@@ -287,3 +287,19 @@ body{margin:0;background:#FDF6F0}
 .ar.dark .skip:focus{background:var(--ouro);color:var(--sobre-ouro)}
 .ar.dark .payo:has(input:checked){border-color:var(--ouro)}
 .ar.dark .btn-p:hover:not([disabled]){background:var(--hov)!important}
+
+/* Toque no celular: sem o retângulo de destaque nativo (aparecia quadrado atrás do logo,
+   dos círculos das categorias e das fotos). Em troca, um retorno discreto ao tocar. */
+.ar{-webkit-tap-highlight-color:transparent}
+@media (hover:none){
+  .ar a,.ar button{transition:opacity .15s}
+  .ar a:active,.ar button:active{opacity:.7}
+}
+
+/* Cantos arredondados: a própria foto/ilustração herda o arredondamento da moldura.
+   No Safari, uma moldura que anima (hover) ou cujo conteúdo anima deixa de recortar
+   os cantos e a imagem aparecia quadrada por trás. */
+.art,.foto img,.pc-img,.pc-zoom{border-radius:inherit}
+.ctile-i .art,.hero-main .art,.hero-f .art,.gal-main .art,.gal-t .art,.rounded .art,.line-i .art{border-radius:inherit}
+.pc-media{-webkit-mask-image:-webkit-radial-gradient(white,black);mask-image:radial-gradient(white,black)}
+.logo-btn{border-radius:50%}
