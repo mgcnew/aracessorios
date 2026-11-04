@@ -224,6 +224,12 @@ Formas macias e discretas. Pílula (999px) para tudo que se toca em linha: botõ
 ### Cartão de produto (assinatura)
 Foto 4:5 com cantos de 18px e zoom leve ao passar o mouse; coração de favoritar no canto; selo "Novo"/"Promoção" em pílula; categoria em rótulo, nome em serifa 21px e preço em sans 15px/500, com o preço antigo riscado ao lado. Esgotado ganha um véu e um selo, nunca a quantidade.
 
+### Kits para presentear (assinatura da página inicial)
+Foto editorial grande (4:5, cantos de 26px, sombra "foto do topo") ao lado de uma lista de kits: miniatura de 84–104px com cantos de 16px, nome em serifa 24–27px, descrição curta em duas linhas, preço e uma seta que anda 4px ao passar o mouse. Divisórias de 1px areia entre os itens. No celular a foto vai de ponta a ponta (4:3) e a lista vem embaixo.
+
+### Vitrine que desliza (celular)
+Na página inicial, Lançamentos e Mais vendidos viram uma faixa horizontal abaixo de 900px: cartões de min(64vw, 250px), encaixe por cartão e o próximo cartão aparecendo pela borda como convite para deslizar. No computador continuam em grade de 4.
+
 ## Do's and Don'ts
 
 ### Do:

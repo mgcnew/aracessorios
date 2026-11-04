@@ -81,13 +81,6 @@ html.dark .ar .logo-img{box-shadow:0 0 0 1px #4a423c}
 .pgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:22px 14px}
 @media (min-width:900px){.pgrid{grid-template-columns:repeat(4,minmax(0,1fr));gap:40px 28px}
 .pgrid.three{grid-template-columns:repeat(3,minmax(0,1fr))}}
-.kits{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(300px,100%),1fr));gap:24px}
-.kit{background:var(--surf);border:1px solid var(--line);border-radius:26px;overflow:hidden;display:flex;flex-direction:column}
-.kit-b{padding:22px 24px 26px;display:flex;flex-direction:column;gap:8px;flex:1}
-.kit-b h3{font-family:var(--serif);font-size:28px;font-weight:600;line-height:1.1}
-.kit-b p{color:var(--ink2);font-size:15px}
-.kit-f{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:auto;padding-top:14px;flex-wrap:wrap}
-.kit-f strong{font-weight:500;font-size:18px}
 .split{display:grid;gap:36px;align-items:center}
 @media (min-width:900px){.split{grid-template-columns:1fr 1fr;gap:80px}}
 .inst{background:var(--champ);border-radius:32px;padding:32px 22px}
@@ -349,3 +342,40 @@ html.dark .ar .btn-p:hover:not([disabled]){background:var(--hov)!important}
 .acc summary:focus-visible{outline:2px solid var(--ink);outline-offset:2px;border-radius:6px}
 .acc details p{color:var(--ink2);font-size:15px;line-height:1.6;padding:0 0 18px;max-width:60ch;white-space:pre-line}
 .sum .limpar{align-self:center;font-size:13.5px;letter-spacing:.02em;color:var(--ink2)}
+
+/* Página inicial: vitrines que deslizam com o dedo no celular, mostrando parte do próximo cartão. */
+@media (max-width:899px){
+  .pgrid.trilho{grid-template-columns:none;grid-auto-flow:column;grid-auto-columns:min(64vw,250px);gap:14px;overflow-x:auto;overscroll-behavior-x:contain;scroll-snap-type:x mandatory;scroll-padding-inline:20px;margin-inline:-20px;padding:0 20px 6px;scrollbar-width:none}
+  .pgrid.trilho::-webkit-scrollbar{display:none}
+  .pgrid.trilho > *{scroll-snap-align:start}
+}
+
+/* Kits para presentear: foto editorial + lista de kits (sem as ilustrações enormes de caixa). */
+.presentes{display:grid;gap:28px;align-items:center}
+.presentes-foto{border-radius:26px;overflow:hidden;box-shadow:0 30px 60px -30px rgba(56,41,31,.35)}
+.presentes-txt h2{font-size:clamp(36px,5vw,60px);text-wrap:balance}
+.presentes-txt h2 em{font-style:italic;color:var(--acc)}
+.presentes-lead{color:var(--ink2);font-size:17px;max-width:42ch;margin-top:14px!important}
+.kitlista{list-style:none;margin:26px 0 0;padding:0;border-top:1px solid var(--line)}
+.kitlista li{border-bottom:1px solid var(--line)}
+.kitl{display:grid!important;grid-template-columns:84px minmax(0,1fr) 20px;gap:16px;align-items:center;padding:16px 4px}
+.kitl-i{display:block;border-radius:16px;overflow:hidden;transition:transform .5s cubic-bezier(.16,1,.3,1)}
+.kitl-b{display:flex;flex-direction:column;gap:3px;min-width:0}
+.kitl-n{font-family:var(--serif);font-size:24px;font-weight:600;line-height:1.1}
+.kitl-s{color:var(--ink2);font-size:14px;line-height:1.45;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.kitl-p{display:flex;align-items:center;gap:10px;font-weight:500;font-size:15px;margin-top:2px}
+.kitl-esg{font-size:11px;font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:var(--ink2);border:1px solid var(--line);border-radius:999px;padding:2px 9px}
+.kitl-seta{color:var(--ink2);transition:transform .3s cubic-bezier(.16,1,.3,1),color .3s}
+.kitl:hover .kitl-seta{transform:translateX(4px);color:var(--ink)}
+.kitl:hover .kitl-i{transform:scale(1.04)}
+.kitl:focus-visible{outline:2px solid var(--ink);outline-offset:2px;border-radius:14px}
+.kitl-i .art{border-radius:inherit}
+@media (max-width:899px){
+  .presentes-foto{margin-inline:-20px;border-radius:0;box-shadow:none}
+  .presentes-foto .art{aspect-ratio:4/3!important}
+}
+@media (min-width:900px){
+  .presentes{grid-template-columns:1fr 1.05fr;gap:72px}
+  .kitl{grid-template-columns:104px minmax(0,1fr) 20px;gap:22px;padding:20px 4px}
+  .kitl-n{font-size:27px}
+}

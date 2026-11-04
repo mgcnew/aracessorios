@@ -229,6 +229,8 @@ Observações do teste:
 - **Painel conferido com login (04/11/2026):** no escuro, menus, datas e caixas de marcar seguem o tema; a confirmação abre no tema no computador e no celular (pequena, centrada), e "Cancelar" e Esc não apagam nada.
 - **Rodapé público (04/11/2026):** sem "Limpar sacola e favoritos" e "Painel da loja". A opção de limpar foi para a sacola e para os favoritos; o painel continua em `/admin`.
 - **`DESIGN.md` (04/11/2026):** sistema visual registrado com o impeccable (estrela-guia "O porta-joias de linho"; acolhida e confiante; componentes macios e discretos), com `.impeccable/design.json` ao lado. O `AGENTS.md` manda segui-lo. A paleta continua provisória (D-014).
+- **Página inicial com composição nova (04/11/2026):** Lançamentos e Mais vendidos deslizam no celular; entre eles entrou "Kits para presentear", com foto editorial (`/marca/sobre.webp`) e os kits em lista, no lugar dos três cartões grandes com ilustração de caixa. As duas vitrines de produto deixaram de ficar coladas.
+- **Fotos das peças:** a maioria das peças ainda aparece como ilustração em traço. É o que mais deixa cara de protótipo. Opções: fotos reais da cliente ou fotos ilustrativas por IA (Kairogen; gasta créditos e precisa de aprovação).
 - **Dado ruim no banco de desenvolvimento:** a foto do "Anel Duo Entrelaçado" é um folheto de Natal ("Por apenas R$ 42,99") e aparece em primeiro em Lançamentos e na loja. Trocar ou apagar pelo painel.
 
 ## Pendências que não são de código
