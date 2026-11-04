@@ -230,6 +230,9 @@ Fundo padrão inspirado no cetim preto acetinado das referências reais recebida
 ### Biblioteca de fotos do painel
 Galeria com miniaturas, nomes e busca, seguindo os cartões, campos e temas existentes. Separar a ação de retirar a foto do produto da exclusão definitiva na biblioteca. Mostrar os produtos que usam a foto e impedir sua exclusão enquanto houver vínculo (CAT-DEC-025). No computador, a Biblioteca é uma aba lateral; no celular fica em Mais. O editor abre a seleção em janela, em tela cheia no celular. Exclusão interrompida oferece Retomar exclusão.
 
+### Filtros ativos (loja)
+Cada filtro em uso (categoria, busca, "só disponíveis") vira uma etiqueta em pílula com × que o remove com um clique; "Limpar tudo" aparece com dois ou mais. O título mostra "5 de 19 peças" quando há filtro. A linha some quando não há filtro. Etiquetas quebram em linhas, nunca rolam para o lado.
+
 ### Balão de confirmação (toast)
 Cartão da loja (linho, borda areia de 1px, 18px de canto, sombra difusa; no escuro, anel de 1px na cor da borda) com miniatura da peça de 48px, título em 14,5px/500, detalhe em 13px, **uma** ação principal em pílula (cacau no claro, ouro champagne no escuro) e um fechar de 32px. Fica logo abaixo do cabeçalho (centrado no celular, à direita no computador), nunca sobre a barra de compra. Entra com um deslize curto de 380ms, sai em 200ms, some sozinho em 4,5s e fica parado enquanto o mouse ou o foco estão nele. Texto nunca quebra: título e detalhe cortam com reticências.
 
@@ -237,6 +240,8 @@ Cartão da loja (linho, borda areia de 1px, 18px de canto, sombra difusa; no esc
 Total e botão de seguir numa barra fixa (`.cart-bar`) acima da navegação de baixo, como a barra de compra do produto; o botão do resumo some para não duplicar. A linha da sacola não mostra SKU: é dado interno.
 
 ### Cartão de produto (assinatura)
+Quando a peça tem duas ou mais fotos, a segunda aparece em fade (450ms) por cima da primeira ao passar o mouse ou focar o cartão com o teclado. Ela **só é baixada na primeira intenção** (mouse ou teclado), nunca no carregamento nem no toque, para não pesar a loja.
+
 Foto 4:5 com cantos de 18px e zoom leve ao passar o mouse; coração de favoritar no canto; selo "Novo"/"Promoção" em pílula; categoria em rótulo, nome em serifa 21px e preço em sans 15px/500, com o preço antigo riscado ao lado. Esgotado ganha um véu e um selo, nunca a quantidade.
 
 ### Kits para presentear (assinatura da página inicial)

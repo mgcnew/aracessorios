@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { useState } from 'react';
 import { artOf, categoryLabel, cheapestVariant, fmt, isAvailable, type Product } from '../data/catalog';
 import { useStore } from '../store';
 import { Midia } from './Midia';
@@ -22,13 +23,21 @@ export function ProductCard({ product: p }: { product: Product }) {
   const isFav = favs.includes(p.id);
   const badge = productBadge(p);
   const href = `/produto/${p.slug}`;
+  // Segunda foto ao passar o mouse: só é baixada na primeira intenção (mouse ou teclado), para não pesar a loja.
+  const segunda = p.photos?.[1];
+  const [querSegunda, setQuerSegunda] = useState(false);
 
   return (
-    <article className="pc">
+    <article className="pc" onPointerEnter={(e) => e.pointerType === 'mouse' && setQuerSegunda(true)} onFocus={() => setQuerSegunda(true)}>
       <div className="pc-media">
         <Link className="pc-img" href={href} aria-label={`Ver ${p.name}`} tabIndex={-1}>
           <div className="pc-zoom">
             <Midia foto={p.photos?.[0]} art={artOf(p)} ratio="4 / 5" />
+            {segunda && querSegunda && (
+              <div className="pc-alt" aria-hidden="true">
+                <Midia foto={{ ...segunda, alt: '' }} art={artOf(p)} ratio="4 / 5" />
+              </div>
+            )}
           </div>
         </Link>
         {badge && <span className="pc-badge">{badge}</span>}
