@@ -210,10 +210,6 @@ html.dark .adm{--bg:#100E0D;--surf:#1F1B19;--champ:#2D2825;--ink:#F4ECE3;--ink2:
   /* Sem zoom do iPhone ao tocar num campo */
   .adm .sel,.adm .inp,.adm .fld input,.adm .auth-i{font-size:16px}
   .adm .sel{max-width:none;height:44px}
-  /* Filtros em uma linha que desliza para o lado */
-  .adm .bar[role=group]{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;margin-right:-16px;padding-right:16px}
-  .adm .bar[role=group]::-webkit-scrollbar{display:none}
-  .adm .bar[role=group] .pill{flex:0 0 auto;white-space:nowrap}
   /* Fotos: imagem à esquerda, controles à direita */
   .adm .fotos{grid-template-columns:1fr}
   .adm .foto-i{display:grid;grid-template-columns:96px minmax(0,1fr);align-items:start;gap:10px 12px}
@@ -221,8 +217,11 @@ html.dark .adm{--bg:#100E0D;--surf:#1F1B19;--champ:#2D2825;--ink:#F4ECE3;--ink2:
 }
 
 /* Tabelas viram cartões */
-@media (max-width:699px){
-  .adm .tw:has(> table.cartoes){overflow:visible;margin:0;padding:0}
+/* Tabelas viram cartões quando a área delas é estreita (<700px), não só quando a janela é: com a barra
+   lateral (900–1100px) a área da tabela é pequena mesmo numa tela grande. Assim nunca há rolagem lateral. */
+.adm .tw{container-type:inline-size}
+.adm .tw:has(> table.cartoes){overflow:visible;margin:0;padding:0}
+@container (max-width:699px){
   .adm table.cartoes{min-width:0;font-size:15px}
   .adm table.cartoes thead{display:none}
   .adm table.cartoes tbody{display:block}
@@ -256,7 +255,7 @@ html.dark .adm{--bg:#100E0D;--surf:#1F1B19;--champ:#2D2825;--ink:#F4ECE3;--ink2:
 
 /* Ajustes dos cartões e números */
 .adm .kpi strong,.adm .saldos dd{font-variant-numeric:lining-nums tabular-nums}
-@media (max-width:699px){
+@container (max-width:699px){
   /* Os dados sempre começam na linha de baixo do título */
   .adm table.cartoes tr::after{content:"";order:3;flex-basis:100%;height:0}
   .adm table.cartoes .c-forte{order:4}
@@ -266,11 +265,11 @@ html.dark .adm{--bg:#100E0D;--surf:#1F1B19;--champ:#2D2825;--ink:#F4ECE3;--ink2:
   .adm table.cartoes.toque tr{position:relative;padding-right:30px}
   .adm table.cartoes.toque .c-acao .pill{position:absolute;inset:0;width:100%;min-height:0;border:0!important;border-radius:12px;background:transparent!important;color:transparent;font-size:0;padding:0!important}
   .adm table.cartoes.toque .c-acao .pill:active{background:color-mix(in srgb,var(--champ) 45%,transparent)!important}
-  .adm table.cartoes.toque .c-acao:has(.pill)::after{content:"›";position:absolute;right:6px;top:50%;transform:translateY(-50%);font-size:28px;line-height:1;color:var(--ink2);pointer-events:none}
+  .adm table.cartoes.toque .c-acao:has(.pill)::after{content:"";position:absolute;right:10px;top:50%;width:9px;height:9px;border:solid var(--ink2);border-width:2px 2px 0 0;transform:translateY(-50%) rotate(45deg);pointer-events:none}
   .adm table.cartoes.toque .c-acao:not(:has(.pill)){flex-basis:100%;margin-left:0}
   .adm table.cartoes .c-sit .tag{font-size:12.5px;padding:2px 10px}
-  .adm .sl-mini{min-height:44px}
 }
+@media (max-width:699px){.adm .sl-mini{min-height:44px}}
 
 /* Modo noturno do painel: seleção e ação principal em dourado, aviso de demonstração discreto. */
 html.dark .adm .mi.on,html.dark .adm .pill.on{background:var(--ouro)!important;color:var(--sobre-ouro)!important;border-color:var(--ouro)!important}
@@ -318,3 +317,12 @@ html.dark .adm .btn-perigo-cheio{background:#E8907E!important;border-color:#E890
 .adm .dlg-biblioteca{width:min(1000px,calc(100vw - 32px));max-width:1000px}
 .adm .dlg-biblioteca .dlg-h{display:flex;justify-content:space-between;gap:12px}
 @media(max-width:599px){.adm .biblioteca-grid{grid-template-columns:1fr}.adm .biblioteca-card .auth-i{font-size:16px}}
+
+/* Filtro por status: pílulas no computador, menu de seleção no celular (sem rolagem lateral nem pílulas cortadas). */
+.adm .filtro-pills{display:flex;flex-wrap:wrap;gap:10px}
+.adm .filtro-sel{display:none}
+@media (max-width:899px){
+  .adm .filtro-pills{display:none}
+  .adm .filtro-sel{display:block;flex:1 1 200px}
+  .adm .filtro-sel .selecao{width:100%;max-width:none}
+}

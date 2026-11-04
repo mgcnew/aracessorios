@@ -6,6 +6,7 @@ import { SearchIcon } from '../components/Icons';
 import { Selecao } from '../components/Selecao';
 import { fmt } from '../data/catalog';
 import { Paginacao } from './Paginacao';
+import { FiltroOpcoes } from './FiltroOpcoes';
 import { ProdutoEditor } from './ProdutoEditor';
 import { useParamUrl } from './url';
 import {
@@ -177,16 +178,12 @@ export function Produtos({
             onChange={(e) => setBusca(e.target.value)}
           />
         </label>
-        {FILTROS.map(({ f, nome }) => (
-          <button
-            key={f}
-            className={`pill${filtro.status === f ? ' on' : ''}`}
-            aria-pressed={filtro.status === f}
-            onClick={() => setFiltro((x) => ({ ...x, status: f, pagina: 1 }))}
-          >
-            {nome} ({conta(f)})
-          </button>
-        ))}
+        <FiltroOpcoes
+          rotulo="Filtrar por status"
+          valor={filtro.status}
+          opcoes={FILTROS.map(({ f, nome }) => ({ value: f, label: `${nome} (${conta(f)})` }))}
+          onChange={(status) => setFiltro((x) => ({ ...x, status, pagina: 1 }))}
+        />
       </div>
 
       <section className="card">

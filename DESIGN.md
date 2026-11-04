@@ -253,6 +253,7 @@ Na página inicial, Lançamentos e Mais vendidos viram uma faixa horizontal abai
 - **Don't** usar símbolos de texto (←, →, ↗, −, +) como ícone; use os ícones desenhados de `src/components/Icons.tsx`.
 - **Don't** usar `window.confirm`/`alert` no painel; use `confirmar()` de `src/admin/confirmar.tsx`.
 - **Don't** usar `<select>` nativo; use `Selecao`.
+- **Don't** fazer faixa ou tabela que role para o lado no painel: filtros de uma escolha viram `FiltroOpcoes` (dropdown abaixo de 900px) e tabelas viram cartões pela largura da própria área (`.tw`, container query de 700px).
 - **Don't** usar urgência artificial (contador, "últimas unidades") nem promessas que a cliente não confirmou; use `[A DEFINIR]` fora da vitrine.
 - **Don't** deixar animação de entrada "presa" com `fill-mode: forwards`/`both`: ela quebra os elementos fixos no celular.
 - **Don't** usar branco puro, preto puro ou cinza neutro.
