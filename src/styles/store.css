@@ -22,7 +22,6 @@ body{margin:0;background:#FDF6F0}
 .ar h1,.ar h2,.ar h3,.ar p{margin:0}
 .wrap{max-width:1240px;margin:0 auto;padding:0 20px}
 @media (min-width:900px){.wrap{padding:0 40px}}
-.demo-banner{background:var(--ink);color:var(--champ);font-size:12.5px;letter-spacing:.04em;text-align:center;padding:9px 16px;line-height:1.35}
 .hdr{position:sticky;top:0;z-index:50;background:var(--glass);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
 .hdr-in{display:flex;align-items:center;justify-content:space-between;gap:16px;height:var(--h);max-width:1240px;margin:0 auto;padding:0 20px}
 @media (min-width:900px){.hdr-in{padding:0 40px;gap:32px}}
@@ -277,7 +276,6 @@ body{margin:0;background:#FDF6F0}
 
 /* Modo noturno: o que no claro é cacau (cor invertida) vira dourado champagne no escuro,
    em vez de um creme forte que ofusca. Contraste do texto sobre o dourado: 9,3:1. */
-.ar.dark .demo-banner{background:var(--surf);color:var(--acc);border-bottom:1px solid var(--line)}
 .ar.dark .btn-p,.ar.dark .btn-p[disabled]:hover{background:var(--ouro)!important;color:var(--sobre-ouro)!important}
 .ar.dark .pill.on{border-color:var(--ouro)!important;background:var(--ouro)!important;color:var(--sobre-ouro)!important}
 .ar.dark .cnt{background:var(--ouro);color:var(--sobre-ouro)}

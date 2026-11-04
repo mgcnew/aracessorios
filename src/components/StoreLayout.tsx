@@ -41,9 +41,6 @@ export function StoreLayout({ children }: { children: ReactNode }) {
       <a className="skip" href="#conteudo">
         Pular para o conteúdo
       </a>
-      <div className="demo-banner" role="note">
-        Protótipo de demonstração · produtos, preços e dados fictícios — nenhuma compra é realizada
-      </div>
       <header className="hdr">
         <div className="hdr-in">
           <Link className="logo-btn" href="/" aria-label="AR Acessórios — ir para o início">
@@ -122,12 +119,11 @@ export function StoreLayout({ children }: { children: ReactNode }) {
               </ul>
             </nav>
           </div>
-          {/* O aviso completo fica na faixa do topo (brief: visível em todas as páginas); aqui, uma linha. */}
           <div className="foot-b">
-            <span>© AR Acessórios · Protótipo: produtos e preços fictícios, nenhuma compra é realizada.</span>
+            <span>© AR Acessórios</span>
             <span className="foot-acoes">
               <button className="lnk" onClick={clearDemo}>
-                Limpar dados de demonstração
+                Limpar sacola e favoritos
               </button>
               <Link href="/admin">Painel da loja</Link>
             </span>

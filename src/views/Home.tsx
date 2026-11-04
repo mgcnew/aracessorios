@@ -38,7 +38,7 @@ export function Home({ catalogo: { categories, products } }: { catalogo: Catalog
       <div className="wrap">
         <section className="hero" aria-label="Destaque">
           <div>
-            <span className="eyebrow">Nova coleção · demonstração</span>
+            <span className="eyebrow">Nova coleção</span>
             <h1>
               Brilho <em>delicado</em> para os seus dias
             </h1>

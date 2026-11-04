@@ -79,6 +79,7 @@ Os IDs antigos foram mantidos para rastreabilidade com o pacote anterior (v2.1, 
 |---|---|---|---|
 | UI-DEC-001 | Frontend **demonstrativo**: paleta marfim, champagne e rosé dourado, inspirada na referência visual. Logo inalterada. | Decidido (só para a demo) | Paleta do site real (D-014) |
 | UI-DEC-002 | A referência visual inspira composição e experiência mobile; não copiar marca, textos, imagens ou preços dela. | Decidido | — |
+| UI-DEC-003 | Sem aviso de protótipo nas páginas de navegação (faixa do topo, rodapé, hero, produto). O aviso fica onde há tentativa de compra: sacola e checkout continuam demonstrativos e com a compra travada (D-017). A nota de texto ilustrativo da página Sobre continua. Decidido pelo responsável em 04/11/2026. *(Substitui o "aviso visível em todas as páginas" do brief.)* | Decidido | — |
 
 ---
 

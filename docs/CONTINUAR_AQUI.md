@@ -189,6 +189,10 @@ Conferido em 360 e 390 px: sem rolagem lateral, nenhuma tabela rolando, sem camp
 
 Tokens novos em `.ar.dark` (vitrine) e `.adm.dark` (painel): base carvão quente com degraus visíveis (página `#100E0D`, cartão `#1F1B19`, destaque `#2D2825`, campo `#2A2522`, borda `#4A423C`). O que no claro é cacau invertido vira dourado champagne `#D9B384` com texto `#1A1511` (9,3:1). Todo texto ≥ 5:1. A faixa de aviso deixou de ser creme. A paleta definitiva continua pendente (D-014).
 
+## Sem aviso de protótipo na navegação (04/11/2026, UI-DEC-003)
+
+A pedido do responsável, saíram a faixa do topo, a frase do rodapé, "demonstração" no hero e no produto e "Promoção ilustrativa". Também saiu "(dados demonstrativos)" do campo Material dos 19 produtos (banco `ar-acessorios-dev`, `supabase/seed.sql` e `src/data/demo-catalog.ts`). **Continuam:** os avisos na sacola e no checkout (compra travada, D-017) e a nota de texto ilustrativo na página Sobre. O site segue fora dos buscadores (`robots: noindex`).
+
 ## Pendências que não são de código
 
 | Item | Onde |
