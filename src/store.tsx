@@ -1,6 +1,7 @@
 'use client';
 
 import { usePathname } from 'next/navigation';
+import type { ArtProps, Foto } from './data/catalog';
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, useSyncExternalStore, type ReactNode } from 'react';
 
 export interface CartLine {
@@ -64,6 +65,21 @@ export function useTheme() {
   return { dark, toggleDark };
 }
 
+/** O balão que aparece depois de uma ação (ex.: peça na sacola). */
+export interface Aviso {
+  titulo: string;
+  detalhe?: string;
+  /** Miniatura da peça: foto, ou a ilustração quando ainda não há foto. */
+  foto?: Foto | null;
+  art?: ArtProps;
+  acao?: { rotulo: string; href: string };
+}
+export interface AvisoAtivo extends Aviso {
+  /** Muda a cada aviso, para a animação de entrada recomeçar quando dois seguem juntos. */
+  id: number;
+  saindo: boolean;
+}
+
 interface StoreValue {
   favs: string[];
   cart: CartLine[];
@@ -72,8 +88,12 @@ interface StoreValue {
   setLineQty: (key: string, qty: number) => void;
   removeLine: (key: string) => void;
   clearDemo: () => void;
-  toast: string | null;
-  showToast: (msg: string) => void;
+  toast: AvisoAtivo | null;
+  showToast: (aviso: Aviso | string) => void;
+  /** Segura o aviso enquanto o mouse ou o foco estão nele; `soltarToast` retoma a contagem. */
+  segurarToast: () => void;
+  soltarToast: () => void;
+  fecharToast: () => void;
   dark: boolean;
   toggleDark: () => void;
 }
@@ -85,7 +105,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   const [cart, setCart] = useState<CartLine[]>([]);
   // Só grava no navegador depois de ler o que já estava salvo, para não apagar a sacola.
   const [loaded, setLoaded] = useState(false);
-  const [toast, setToast] = useState<string | null>(null);
+  const [toast, setToast] = useState<AvisoAtivo | null>(null);
   const timer = useRef<number | undefined>(undefined);
   const { dark, toggleDark } = useTheme();
   const pathname = usePathname();
@@ -106,11 +126,30 @@ export function StoreProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => () => window.clearTimeout(timer.current), []);
 
-  const showToast = useCallback((msg: string) => {
-    setToast(msg);
+  // Some em duas etapas: marca "saindo" (a transição de saída roda) e só depois tira da tela.
+  const iniciarSaida = useCallback(() => {
     window.clearTimeout(timer.current);
-    timer.current = window.setTimeout(() => setToast(null), 3800);
+    setToast((t) => (t ? { ...t, saindo: true } : t));
+    timer.current = window.setTimeout(() => setToast(null), 220);
   }, []);
+  const agendar = useCallback(
+    (ms: number) => {
+      window.clearTimeout(timer.current);
+      timer.current = window.setTimeout(iniciarSaida, ms);
+    },
+    [iniciarSaida],
+  );
+  const showToast = useCallback(
+    (aviso: Aviso | string) => {
+      const a = typeof aviso === 'string' ? { titulo: aviso } : aviso;
+      setToast({ ...a, id: Date.now(), saindo: false });
+      agendar(4500);
+    },
+    [agendar],
+  );
+  const segurarToast = useCallback(() => window.clearTimeout(timer.current), []);
+  const soltarToast = useCallback(() => agendar(2500), [agendar]);
+  const fecharToast = iniciarSaida;
 
   const value = useMemo<StoreValue>(
     () => ({
@@ -134,10 +173,13 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       },
       toast,
       showToast,
+      segurarToast,
+      soltarToast,
+      fecharToast,
       dark,
       toggleDark,
     }),
-    [favs, cart, toast, showToast, dark, toggleDark],
+    [favs, cart, toast, showToast, segurarToast, soltarToast, fecharToast, dark, toggleDark],
   );
 
   return <StoreContext.Provider value={value}>{children}</StoreContext.Provider>;

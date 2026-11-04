@@ -83,7 +83,13 @@ export function ProductPage({ productId }: { productId: string }) {
   const add = () => {
     if (!cur.avail) return;
     addToCart(p.id, cur.key, qty);
-    showToast('Adicionado à sacola');
+    showToast({
+      titulo: 'Adicionado à sacola',
+      detalhe: [p.name, cur.label !== 'Único' ? cur.label : null].filter(Boolean).join(' · '),
+      foto: fotos[0] ?? null,
+      art,
+      acao: { rotulo: 'Ver sacola', href: '/sacola' },
+    });
   };
 
   return (
