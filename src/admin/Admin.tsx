@@ -88,6 +88,7 @@ export function Admin({
     setCatalogo(c);
     carregarEstoque().then((r) => r.ok && setLinhas(r.dados));
   };
+  const arquivados = new Set(catalogo.produtos.filter((p) => p.status === 'arquivado').map((p) => p.id));
   const setOrderStatus = (id: number, status: OrderStatus) =>
     setOrders((os) => os.map((o) => (o.id === id ? { ...o, status } : o)));
 
@@ -146,9 +147,9 @@ export function Admin({
           </span>
         )}
         {view === 'overview' && (
-          <Overview linhas={linhas} orders={orders} goOrders={() => setView('orders')} goStock={() => setView('stock')} />
+          <Overview linhas={linhas} arquivados={arquivados} orders={orders} goOrders={() => setView('orders')} goStock={() => setView('stock')} />
         )}
-        {view === 'stock' && <Estoque linhas={linhas} setLinhas={setLinhas} erroCarga={erroEstoque} />}
+        {view === 'stock' && <Estoque linhas={linhas} setLinhas={setLinhas} erroCarga={erroEstoque} arquivados={arquivados} />}
         {view === 'products' && <Produtos catalogo={catalogo} erroCarga={erroCatalogo} aoMudar={aoMudarCatalogo} />}
         {view === 'orders' && <Orders orders={orders} setStatus={setOrderStatus} />}
         {view === 'perms' && <Permissions />}
@@ -227,16 +228,18 @@ function MaisOpcoes({
 
 function Overview({
   linhas,
+  arquivados,
   orders,
   goOrders,
   goStock,
 }: {
   linhas: LinhaEstoque[];
+  arquivados: Set<string>;
   orders: AdminOrder[];
   goOrders: () => void;
   goStock: () => void;
 }) {
-  const low = linhas.filter((l) => l.abaixo_do_minimo);
+  const low = linhas.filter((l) => l.abaixo_do_minimo && !arquivados.has(l.product_id));
   const revenue = orders.filter((o) => PAID.includes(o.status)).reduce((s, o) => s + o.total, 0);
   const kpis = [
     { label: 'Aguardando pagamento', value: orders.filter((o) => o.status === 'Aguardando pagamento').length, note: 'pedidos' },

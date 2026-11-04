@@ -126,7 +126,6 @@ html.dark .ar .logo-img{box-shadow:0 0 0 1px #4a423c}
 .pdp{display:grid;gap:28px;padding-bottom:50px}
 @media (min-width:900px){.pdp{grid-template-columns:1.1fr 1fr;gap:72px;align-items:start}
 .pdp-info{position:sticky;top:calc(var(--h) + 24px)}}
-.gal-main{border-radius:26px;overflow:hidden}
 .gal-t{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-top:10px}
 .gal-t button{border-radius:14px;overflow:hidden;border:2px solid transparent!important;display:block}
 .gal-t button.on{border-color:var(--ink)!important}
@@ -317,3 +316,37 @@ html.dark .ar .btn-p:hover:not([disabled]){background:var(--hov)!important}
   .promessas li:first-child{padding-left:0}
   .promessas li+li{border-top:0;border-left:1px solid var(--line)}
 }
+
+/* Galeria do produto: faixa que desliza (celular) e miniaturas com zoom ao passar o mouse (computador). */
+.gal{min-width:0}
+.gal-main{display:flex;border-radius:26px;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;overscroll-behavior-x:contain;scrollbar-width:none}
+.gal-main::-webkit-scrollbar{display:none}
+.gal-main:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
+.gal-slide{flex:0 0 100%;scroll-snap-align:start;scroll-snap-stop:always;position:relative;overflow:hidden;border-radius:inherit}
+.gal-pontos{display:flex;justify-content:center;gap:7px;margin-top:14px}
+.gal-pontos i{width:6px;height:6px;border-radius:999px;background:var(--line);transition:width .3s cubic-bezier(.16,1,.3,1),background-color .3s}
+.gal-pontos i.on{width:20px;background:var(--ink2)}
+@media (max-width:899px){
+  .gal{margin-inline:-20px}
+  .gal-main{border-radius:0}
+  .gal-t{display:none}
+}
+@media (min-width:900px){
+  .gal-main{overflow:hidden}
+  .gal-pontos{display:none}
+}
+@media (hover:hover) and (pointer:fine){
+  .zoomavel{cursor:zoom-in}
+  .zoomavel img{transition:transform .4s cubic-bezier(.16,1,.3,1);transform-origin:var(--zx,50%) var(--zy,50%)}
+  .zoomavel:hover img{transform:scale(1.9)}
+}
+
+/* Informações que abrem e fecham (cuidados, entrega, trocas); seta desenhada, sem o marcador do navegador. */
+.acc details{border-bottom:1px solid var(--line)}
+.acc summary{list-style:none;display:flex;align-items:center;justify-content:space-between;gap:16px;min-height:52px;cursor:pointer;font-size:15px;font-weight:500;letter-spacing:.02em}
+.acc summary::-webkit-details-marker{display:none}
+.acc summary::after{content:"";flex:none;width:8px;height:8px;margin-right:6px;border:solid var(--ink2);border-width:0 1.5px 1.5px 0;transform:translateY(-2px) rotate(45deg);transition:transform .25s cubic-bezier(.16,1,.3,1)}
+.acc details[open] summary::after{transform:translateY(2px) rotate(-135deg)}
+.acc summary:hover::after{border-color:var(--ink)}
+.acc summary:focus-visible{outline:2px solid var(--ink);outline-offset:2px;border-radius:6px}
+.acc details p{color:var(--ink2);font-size:15px;line-height:1.6;padding:0 0 18px;max-width:60ch;white-space:pre-line}

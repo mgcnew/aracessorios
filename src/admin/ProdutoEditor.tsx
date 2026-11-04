@@ -155,7 +155,20 @@ function Status({ p, aoMudar, voltar }: { p: ProdutoPainel; aoMudar: AoMudar; vo
           </button>
         )}
         {p.status !== 'arquivado' && (
-          <button className="btn" disabled={pendente} onClick={() => ir('arquivado', 'Produto arquivado.')}>
+          <button
+            className="btn"
+            disabled={pendente}
+            onClick={async () => {
+              if (
+                await confirmar({
+                  titulo: `Arquivar "${p.name}"?`,
+                  texto: 'Sai da vitrine e do estoque do dia a dia; o histórico fica guardado. Dá para ativar de novo depois.',
+                  confirmar: 'Arquivar',
+                })
+              )
+                ir('arquivado', 'Produto arquivado.');
+            }}
+          >
             Arquivar
           </button>
         )}
@@ -559,7 +572,7 @@ function Pecas({ p, v, catalogo, aoMudar }: { p: ProdutoPainel; v: VariacaoPaine
       <h3 className="dlg-s">Peças do kit</h3>
       <p className="note" style={{ marginBottom: 10 }}>
         {travado
-          ? 'A composição fica travada depois que o kit sai do rascunho (Q-CAT-03 em aberto). Para mudar, arquive e crie outro kit.'
+          ? 'A composição só muda com o kit em rascunho (Q-CAT-03 em aberto). Para mudar, use “Tirar da loja” acima: o kit sai da vitrine enquanto você edita.'
           : 'Quantas unidades de cada peça formam um kit. A disponibilidade do kit vem do estoque delas.'}
       </p>
       <div className="pecas">

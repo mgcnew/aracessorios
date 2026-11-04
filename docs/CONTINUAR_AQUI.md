@@ -201,12 +201,12 @@ Roteiro dos Passos 3 a 6 feito no `ar-acessorios-dev`, entrando com `acess.ar05@
 - "Produto Teste Claude" (`AR-TST999-OURO`): **arquivado** (tem movimentação, não pode ser apagado), saldo zerado, sem fotos e sem arquivos no Storage.
 - "Kit Teste Claude" (kit composto): apagado.
 
-Observações para decidir (nada foi mudado no código):
-- Mensagem "Ajuste registrada": o correto é "registrado" (`src/admin/Estoque.tsx`).
-- Promoção em variação esgotada: a vitrine mostra o preço promocional, mas esconde o preço riscado e "Promoção válida até…" (`cur.avail` em `src/views/ProductPage.tsx`). Está assim desde o primeiro commit.
-- Kit composto: voltar para rascunho ("Tirar da loja") libera de novo as peças, enquanto a mensagem do painel diz "arquive e crie outro kit". Isso é coerente com Q-CAT-03 ("só em rascunho"), mas deixa mudar a composição de um kit que já esteve à venda.
-- Produto arquivado continua na aba Estoque (ex.: `AR-TST999-OURO`).
-- "Arquivar" não pede confirmação; "Apagar rascunho" e "Apagar foto" pedem.
+Observações do teste:
+- ~~Mensagem "Ajuste registrada"~~: corrigida para "Ajuste registrado" (04/11/2026).
+- Promoção em variação esgotada: a vitrine mostra o preço promocional, mas esconde o preço riscado e "Promoção válida até…" (`cur.avail` em `src/views/ProductPage.tsx`). Está assim desde o primeiro commit. **Em aberto:** decidir se fica assim.
+- Kit composto: voltar para rascunho ("Tirar da loja") libera de novo as peças. A mensagem do painel agora diz exatamente isso (04/11/2026). **Em aberto (Q-CAT-03):** isso deixa mudar a composição de um kit que já esteve à venda.
+- ~~Produto arquivado continua na aba Estoque~~: agora fica escondido por padrão, com o botão "Mostrar arquivados (n)"; a visão geral também ignora arquivados (04/11/2026).
+- ~~"Arquivar" não pede confirmação~~: agora pede (04/11/2026).
 
 ## Auditoria visual (04/11/2026, skill impeccable)
 
@@ -222,6 +222,10 @@ Observações para decidir (nada foi mudado no código):
   - no celular, os botões do destaque ficam lado a lado e a foto aparece na primeira tela;
   - entrou uma faixa com os três compromissos que já estavam na página Sobre;
   - os símbolos de texto usados como ícone (←, →, ↗, −, +) viraram ícones desenhados.
+- **Página de produto (04/11/2026):**
+  - no celular, a galeria ocupa a largura toda, desliza com o dedo e mostra pontos de posição;
+  - no computador, tem miniaturas e zoom que acompanha o mouse nas fotos;
+  - os blocos "Cuidados com a peça" (campo Cuidados do cadastro, hoje vazio em todos os produtos), "Entrega" e "Trocas" abrem e fecham e só aparecem com texto. Os textos de entrega e trocas ficam em `src/data/infoLoja.ts`, vazios até a cliente responder (D-010, D-015).
 - **Painel conferido com login (04/11/2026):** no escuro, menus, datas e caixas de marcar seguem o tema; a confirmação abre no tema no computador e no celular (pequena, centrada), e "Cancelar" e Esc não apagam nada.
 - **Dado ruim no banco de desenvolvimento:** a foto do "Anel Duo Entrelaçado" é um folheto de Natal ("Por apenas R$ 42,99") e aparece em primeiro em Lançamentos e na loja. Trocar ou apagar pelo painel.
 
