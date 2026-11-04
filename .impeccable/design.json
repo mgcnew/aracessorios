@@ -154,21 +154,6 @@
           "#F6F2EF"
         ]
       },
-      "preto-logo": {
-        "role": "neutral",
-        "displayName": "Preto da logo",
-        "canonical": "#141414",
-        "tonalRamp": [
-          "#262626",
-          "#424242",
-          "#5E5E5E",
-          "#7A7A7A",
-          "#969696",
-          "#B2B2B2",
-          "#D1D1D1",
-          "#F2F2F2"
-        ]
-      },
       "carvao": {
         "role": "neutral",
         "displayName": "Carvão",

@@ -1,11 +1,21 @@
 import Image from 'next/image';
 import type { CSSProperties, ReactNode } from 'react';
-import logo from '../assets/logo-ar.jpg';
+import logoClaro from '../assets/logo-ar-claro.png';
+import logoEscuro from '../assets/logo-ar-escuro.png';
 import { MinusIcon, PlusIcon } from './Icons';
 
-/** Logo oficial da marca (D-004), aplicada sobre o próprio fundo preto. */
+/**
+ * Logo oficial da marca (D-004), sem redesenho: a mesma arte com o fundo preto tirado,
+ * como nas embalagens. Dourado mais fundo no claro (dourado sobre creme) e o dourado
+ * original no escuro. Arquivos gerados de docs/assets/logo_ar_original.jpg.
+ */
 export function LogoMark() {
-  return <Image className="logo-img" src={logo} alt="AR Acessórios" width={52} height={52} priority />;
+  return (
+    <span className="logo-img">
+      <Image className="logo-claro" src={logoClaro} alt="AR Acessórios" sizes="72px" priority />
+      <Image className="logo-escuro" src={logoEscuro} alt="" aria-hidden="true" sizes="72px" priority />
+    </span>
+  );
 }
 
 export function SectionHead({ title, id, action }: { title: string; id: string; action?: ReactNode }) {
