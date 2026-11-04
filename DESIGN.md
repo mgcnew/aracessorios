@@ -213,6 +213,7 @@ Formas macias e discretas. Pílula (999px) para tudo que se toca em linha: botõ
 ### Inputs / Fields
 - **Style:** busca e filtros em pílula de 48px sobre linho; formulários com 12px de canto sobre areia.
 - **Focus:** a borda vira cacau.
+- **Foco em campos em pílula:** o anel de foco fica no campo inteiro (borda cacau + 1px extra), nunca no `<input>` de dentro; o input interno não tem contorno próprio (`base.css`).
 - **Menus de seleção:** nunca `<select>` nativo (a lista aberta do navegador não aceita o tema). Use `Selecao` (`src/components/Selecao.tsx`): botão com o estilo do campo e seta que gira; lista em linho com cantos de 14px, borda areia, sombra difusa, opção ativa em champagne, ✓ caramelo na escolhida, opções de 40px (46px no toque). Abre para cima quando falta espaço; teclado completo (setas, Home/End, letras, Enter, Esc).
 - **Controles nativos:** caixas de marcar (cantos de 6px) e rádios desenhados, em cacau ou ouro quando marcados (`src/styles/base.css`).
 

@@ -41,6 +41,11 @@ html.dark .selecao-lista{box-shadow:0 0 0 1px var(--line),0 18px 40px -12px rgba
 @keyframes selecao-in-cima{from{opacity:0;transform:translateY(4px)}}
 @media (prefers-reduced-motion:reduce){.selecao-lista{animation:none}.selecao-seta{transition:none}}
 
+/* Campos em pílula (busca da loja e do painel, prefixo do endereço): o anel de foco fica no campo inteiro.
+   Sem isto, o <input> de dentro desenhava a própria caixa quadrada dentro da pílula (borda dupla). */
+:is(.ar,.adm) :is(.srch,.fld,.pre-i) input:focus-visible{outline:none}
+:is(.ar,.adm) :is(.srch,.fld,.pre-i):focus-within{border-color:var(--ink);box-shadow:0 0 0 1px var(--ink)}
+
 /* Caixas de marcar e rádios desenhados com os tokens (no escuro o nativo sumia no fundo) */
 :is(.ar,.adm) input:is([type=checkbox],[type=radio]){appearance:none;-webkit-appearance:none;flex:none;width:20px;height:20px;margin:0;border:1.5px solid var(--ink2);background:var(--surf);display:inline-grid;place-content:center;cursor:pointer;transition:background-color .15s,border-color .15s}
 :is(.ar,.adm) input[type=checkbox]{border-radius:6px}

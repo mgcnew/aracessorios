@@ -1,9 +1,17 @@
 // Prepara as fotos no navegador antes do envio: duas versões menores, em WebP
 // (ou JPEG, se o navegador não gerar WebP). Redesenhar a imagem num canvas
 // descarta os dados escondidos do arquivo original, como a localização GPS.
+//
+// Cada versão tem um orçamento de bytes: a qualidade começa alta e só desce até a foto caber.
+// Foto simples fica quase intacta; foto pesada (ex.: 4 MB gerada por IA) cai para ~200 KB.
 
-export const TAMANHO_GRANDE = 1600;
+// A grande aparece na página do produto (até ~570 px de largura, ~1140 px em tela de alta densidade).
+export const TAMANHO_GRANDE = 1400;
 export const TAMANHO_PEQUENO = 600;
+const ORCAMENTO_GRANDE = 220 * 1024;
+const ORCAMENTO_PEQUENO = 60 * 1024;
+// Abaixo de 0,6 o banho dourado e as pérolas começam a perder detalhe.
+const QUALIDADES = [0.82, 0.74, 0.66, 0.6];
 const LIMITE_BUCKET = 5 * 1024 * 1024; // igual ao limite do bucket "produtos"
 const LIMITE_ORIGINAL = 30 * 1024 * 1024;
 
@@ -37,14 +45,18 @@ function desenhar(img: ImageBitmap, lado: number): HTMLCanvasElement {
   return canvas;
 }
 
-async function codificar(canvas: HTMLCanvasElement, preferirWebp: boolean) {
-  for (const qualidade of [0.85, 0.75, 0.6]) {
+async function codificar(canvas: HTMLCanvasElement, preferirWebp: boolean, orcamento: number) {
+  let melhor: Blob | null = null;
+  for (const qualidade of QUALIDADES) {
     let blob = preferirWebp ? await paraBlob(canvas, 'image/webp', qualidade) : null;
     // Alguns navegadores (Safari antigo) devolvem PNG quando não sabem gerar WebP.
     if (!blob || blob.type !== 'image/webp') blob = await paraBlob(canvas, 'image/jpeg', qualidade);
     if (!blob) throw new Error('Não foi possível preparar a foto.');
-    if (blob.size <= LIMITE_BUCKET) return blob;
+    melhor = blob;
+    if (blob.size <= orcamento) return blob;
   }
+  // Passou do orçamento mesmo na menor qualidade: vale se ainda cabe no limite do bucket.
+  if (melhor && melhor.size <= LIMITE_BUCKET) return melhor;
   throw new Error('A foto ficou grande demais mesmo reduzida. Tente outra.');
 }
 
@@ -60,9 +72,9 @@ export async function prepararFoto(arquivo: File): Promise<FotoPronta> {
   }
   try {
     if (Math.min(img.width, img.height) < 400) throw new Error(`"${arquivo.name}" é pequena demais (mínimo de 400 px no menor lado).`);
-    const grande = await codificar(desenhar(img, TAMANHO_GRANDE), true);
+    const grande = await codificar(desenhar(img, TAMANHO_GRANDE), true, ORCAMENTO_GRANDE);
     const webp = grande.type === 'image/webp';
-    const pequena = await codificar(desenhar(img, TAMANHO_PEQUENO), webp);
+    const pequena = await codificar(desenhar(img, TAMANHO_PEQUENO), webp, ORCAMENTO_PEQUENO);
     return {
       grande,
       pequena,
