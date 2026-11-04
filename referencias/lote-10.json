@@ -1,0 +1,74 @@
+{
+  "canvasId": "4c77fe33-c1bc-4b7e-8d1b-65f4a31a5882",
+  "totalFotosSolicitadas": 10,
+  "resolucao": "1K",
+  "primeiraEdicao": "referencias/primeira-edicao.json",
+  "status": "1 foto gerada; outras 9 selecionadas localmente; envio bloqueado pela revisao automatica ate autorizacao especifica dos arquivos",
+  "tetoPropostoRestantes": 945,
+  "orcamentoRestantes": "a consultar depois do envio autorizado; 105 por foto e apenas teto proposto",
+  "itens": [
+    {
+      "foto": "002",
+      "arquivo": "referencias/originais/002.jpeg",
+      "categoria": "brincos",
+      "descricaoVisual": "Par circular dourado com centro perolado",
+      "status": "nao enviada"
+    },
+    {
+      "foto": "008",
+      "arquivo": "referencias/originais/008.jpeg",
+      "categoria": "brincos",
+      "descricaoVisual": "Par prateado com leque e centro perolado",
+      "status": "nao enviada"
+    },
+    {
+      "foto": "026",
+      "arquivo": "referencias/originais/026.jpeg",
+      "categoria": "brincos",
+      "descricaoVisual": "Par dourado gota em camadas",
+      "status": "nao enviada"
+    },
+    {
+      "foto": "005",
+      "arquivo": "referencias/originais/005.jpeg",
+      "categoria": "aneis",
+      "descricaoVisual": "Anel dourado geométrico",
+      "status": "nao enviada"
+    },
+    {
+      "foto": "025",
+      "arquivo": "referencias/originais/025.jpeg",
+      "categoria": "aneis",
+      "descricaoVisual": "Anel dourado oval alongado",
+      "status": "nao enviada"
+    },
+    {
+      "foto": "001",
+      "arquivo": "referencias/originais/001.jpeg",
+      "categoria": "colares",
+      "descricaoVisual": "Colar bordô com contas",
+      "status": "nao enviada"
+    },
+    {
+      "foto": "043",
+      "arquivo": "referencias/originais/043.jpeg",
+      "categoria": "pulseiras",
+      "descricaoVisual": "Pulseiras douradas de folhas",
+      "status": "nao enviada"
+    },
+    {
+      "foto": "013",
+      "arquivo": "referencias/originais/013.jpeg",
+      "categoria": "conjuntos",
+      "descricaoVisual": "Conjunto dourado circular texturizado",
+      "status": "nao enviada"
+    },
+    {
+      "foto": "040",
+      "arquivo": "referencias/originais/040.jpeg",
+      "categoria": "conjuntos",
+      "descricaoVisual": "Conjunto prateado gota clara",
+      "status": "nao enviada"
+    }
+  ]
+}

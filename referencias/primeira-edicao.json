@@ -1,0 +1,22 @@
+{
+  "canvasId": "4c77fe33-c1bc-4b7e-8d1b-65f4a31a5882",
+  "canvasUrl": "https://dreamina.capcut.com/ai-tool/ai-canvas/4c77fe33-c1bc-4b7e-8d1b-65f4a31a5882",
+  "fotoOriginal": "referencias/originais/021.jpeg",
+  "status": "geracao concluida; inspecionada; aguarda avaliacao do responsavel; nao publicada",
+  "modeloPlanejado": "gpt_image_2",
+  "modo": "i2i",
+  "proporcao": "4:5",
+  "resolucao": "1K",
+  "quantidade": 1,
+  "prompt": "Editar a foto real de referência para fotografia de catálogo de semijoias. Preservar exatamente o par de brincos dourados em forma de gota: mesma silhueta, volume convexo, bordas, proporções, tamanho relativo e tonalidade do acabamento. Não acrescentar pedras, recortes ou fechos visíveis; não transformar o desenho. Remover apenas a cartela de papel e sua impressão, sem reproduzir ou redesenhar a logo. Apresentar as duas peças inteiras lado a lado sobre tecido preto acetinado, inspirado no tecido real da própria referência, com dobras naturais largas e brilho suave, sem aparência de veludo ou couro. Composição vertical 4:5, margens generosas para não cortar as peças, par ocupando aproximadamente 65 por cento da altura, vista próxima da foto original. Luz difusa de estúdio, reflexos limpos e controlados que revelem o volume original, preservando o acabamento real. Sem reflexo de telefone ou pessoa. Sem texto, etiquetas, marcas dágua, mãos ou acessórios adicionais. Resultado fotográfico realista para e-commerce. A fidelidade do produto é prioridade sobre embelezamento.",
+  "referenciaNodeId": "node_e49rpw042m",
+  "referenciaResourceId": "27a1eccd-e2f9-4cb0-b049-c54b197c1ff2",
+  "edicaoNodeId": "node_td3kyj56v9",
+  "orcamentoMaximoCreditos": 105,
+  "orcamentoRequestId": "20261105002936519B88F30C5048446FEA",
+  "submitId": "d904617c-134e-41b7-88f2-6d003f7a00de",
+  "resourceId": "d2e78490-f8de-497d-821b-e870b2425524",
+  "arquivoGerado": "referencias/geradas/021-brincos-gota-cetim-preto.png",
+  "sha256": "321e2c3e035a8efd8e33da2916f50c14394e122989ba6acc0956821b39f286a6",
+  "avaliacao": "Cartela removida e formato geral preservado. Ainda há reflexos do ambiente/telefone e pequeno selo AI no canto; não considerar pronta para publicação."
+}
