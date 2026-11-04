@@ -248,5 +248,114 @@ begin
   end;
 end $$;
 
+-- Biblioteca: acesso, reutilização, preservação e exclusão retomável.
+insert into public.media_assets(name,default_alt,storage_path) values ('Privada','Foto privada','biblioteca-teste/privada.webp');
+set local role anon;
+do $$ begin
+  begin
+    perform 1 from public.media_assets;
+    insert into resultados(teste,ok) values ('visitante não lê biblioteca', false);
+  exception when insufficient_privilege then
+    insert into resultados(teste,ok) values ('visitante não lê biblioteca', true);
+  end;
+end $$;
+reset role;
+set local role authenticated;
+select set_config('request.jwt.claims', '{"role":"authenticated","sub":"22222222-2222-2222-2222-222222222222"}', true);
+do $$ begin
+  begin
+    insert into public.media_assets(name,default_alt,storage_path) values ('Invasão','Invasão','invasao/teste.webp');
+    insert into resultados(teste,ok) values ('cliente não cadastra mídia',false);
+  exception when insufficient_privilege then
+    insert into resultados(teste,ok) values ('cliente não cadastra mídia',true);
+  end;
+  insert into resultados(teste,ok) select 'cliente não lê biblioteca existente', count(*)=0 from public.media_assets;
+  begin
+    update public.media_assets set deleting=true;
+    insert into resultados(teste,ok) values ('cliente não altera estado de exclusão',false);
+  exception when insufficient_privilege then
+    insert into resultados(teste,ok) values ('cliente não altera estado de exclusão',true);
+  end;
+  begin
+    perform public.iniciar_exclusao_midia(gen_random_uuid());
+    insert into resultados(teste,ok) values ('cliente não inicia exclusão',false);
+  exception when insufficient_privilege then
+    insert into resultados(teste,ok) values ('cliente não inicia exclusão',true);
+  end;
+end $$;
+reset role;
+set local role authenticated;
+select set_config('request.jwt.claims', '{"role":"authenticated","sub":"11111111-1111-1111-1111-111111111111"}', true);
+do $$
+declare p1 uuid; p2 uuid; mid uuid; caminho text := 'biblioteca-teste/foto.webp'; n integer; j integer;
+begin
+  insert into public.products(name,slug) values ('Foto teste 1','foto-teste-1') returning id into p1;
+  insert into public.products(name,slug) values ('Foto teste 2','foto-teste-2') returning id into p2;
+  insert into public.product_images(product_id,storage_path,alt,is_cover) values (p1,caminho,'Detalhe real',true);
+  select id into mid from public.media_assets where storage_path=caminho;
+  insert into resultados(teste,ok) values ('foto do produto entra na biblioteca',mid is not null);
+  insert into public.product_images(product_id,storage_path,alt,is_cover) values (p2,caminho,'Outra descrição',true);
+  select count(*) into n from public.product_images where storage_path=caminho;
+  insert into resultados(teste,ok) values ('mesma mídia pode ser usada em dois produtos',n=2);
+  begin
+    perform public.iniciar_exclusao_midia(mid);
+    insert into resultados(teste,ok) values ('foto em uso não pode ser excluída',false);
+  exception when check_violation then
+    insert into resultados(teste,ok) values ('foto em uso não pode ser excluída',true);
+  end;
+  insert into storage.objects(bucket_id,name) values ('produtos',caminho),('produtos','biblioteca-teste/foto-p.webp');
+  delete from storage.objects where bucket_id='produtos' and name in (caminho,'biblioteca-teste/foto-p.webp');
+  get diagnostics n=row_count;
+  insert into resultados(teste,ok) values ('Storage preserva grande e pequena registradas',n=0);
+  begin
+    update storage.objects set name='biblioteca-teste/adulterada.webp' where bucket_id='produtos' and name=caminho;
+    get diagnostics n=row_count;
+    insert into resultados(teste,ok) values ('Storage não substitui mídia registrada',n=0);
+  exception when insufficient_privilege then
+    insert into resultados(teste,ok) values ('Storage não substitui mídia registrada',true);
+  end;
+  delete from public.product_images where product_id=p1;
+  delete from public.products where id=p2;
+  select count(*) into n from public.media_assets where id=mid;
+  insert into resultados(teste,ok) values ('retirar vínculo e apagar rascunho preservam biblioteca',n=1);
+  perform public.iniciar_exclusao_midia(mid);
+  perform public.iniciar_exclusao_midia(mid);
+  insert into resultados(teste,ok) values ('iniciar exclusão aceita retomada',true);
+  begin
+    insert into public.product_images(product_id,storage_path,alt) values (p1,caminho,'Tentativa');
+    insert into resultados(teste,ok) values ('mídia em exclusão não recebe vínculo',false);
+  exception when check_violation then
+    insert into resultados(teste,ok) values ('mídia em exclusão não recebe vínculo',true);
+  end;
+  begin
+    perform public.finalizar_exclusao_midia(mid);
+    insert into resultados(teste,ok) values ('não finaliza enquanto houver arquivo',false);
+  exception when check_violation then
+    insert into resultados(teste,ok) values ('não finaliza enquanto houver arquivo',true);
+  end;
+  delete from storage.objects where bucket_id='produtos' and name=caminho;
+  begin
+    perform public.finalizar_exclusao_midia(mid);
+    insert into resultados(teste,ok) values ('falha parcial preserva registro para retomar',false);
+  exception when check_violation then
+    insert into resultados(teste,ok) values ('falha parcial preserva registro para retomar',true);
+  end;
+  delete from storage.objects where bucket_id='produtos' and name='biblioteca-teste/foto-p.webp';
+  perform public.finalizar_exclusao_midia(mid);
+  perform public.finalizar_exclusao_midia(mid);
+  select count(*) into n from public.media_assets where id=mid;
+  insert into resultados(teste,ok) values ('finaliza só sem arquivos e aceita repetição',n=0);
+  for j in 1..12 loop
+    insert into public.product_images(product_id,storage_path,alt) values (p1,'limite/'||j||'.webp','Foto '||j);
+  end loop;
+  begin
+    insert into public.product_images(product_id,storage_path,alt) values (p1,'limite/13.webp','Foto excedente');
+    insert into resultados(teste,ok) values ('banco impede mais de 12 fotos',false);
+  exception when check_violation then
+    insert into resultados(teste,ok) values ('banco impede mais de 12 fotos',true);
+  end;
+end $$;
+reset role;
+
 select n, teste, ok, detalhe from resultados order by n;
 rollback;

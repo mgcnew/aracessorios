@@ -394,7 +394,19 @@
         "name": "computador",
         "value": "900px"
       }
-    ]
+    ],
+    "productPhotography": {
+      "decision": "UI-DEC-004",
+      "background": "Cetim preto acetinado inspirado nas fotos reais, com brilho suave e dobras naturais.",
+      "fidelity": "Preservar formato, banho, pedras, fechos e proporções. Comparar a edição com o original antes de publicar.",
+      "references": "referencias/galeria.html"
+    },
+    "photoLibrary": {
+      "decision": "CAT-DEC-025",
+      "navigation": "Aba lateral no computador; opção Biblioteca de fotos no menu Mais do celular.",
+      "selection": "Janela no editor, em tela cheia no celular.",
+      "deletion": "Impedir exclusão em uso; oferecer Retomar exclusão após falha."
+    }
   },
   "components": [
     {

@@ -27,14 +27,17 @@ function altValido(alt: string): { erro: string } | { alt: string } {
 
 /**
  * Registra no banco uma foto que o navegador acabou de enviar ao Storage.
- * Se o registro falhar, apaga os arquivos enviados para não sobrar foto órfã.
+ * Fotos já guardadas na biblioteca são preservadas se o vínculo falhar.
  */
 export async function registrarFoto(productId: string, caminho: string, alt: string) {
-  // Caminho fora do padrão: recusa sem apagar nada (não é um arquivo que este painel enviou).
-  if (!CAMINHO_OK.test(caminho) || !caminho.startsWith(`${productId}/`)) return falha('Caminho da foto inválido.');
+  // Caminho fora do padrão: recusa sem apagar nada. Mídia existente pode vir de outro produto.
+  if (!CAMINHO_OK.test(caminho)) return falha('Caminho da foto inválido.');
 
   const db = await supabaseServidor();
-  const removerArquivos = () => db.storage.from(BUCKET_FOTOS).remove([caminho, caminhoPequeno(caminho)]);
+  const removerArquivos = async () => {
+    const existe = await db.from('media_assets').select('id').eq('storage_path', caminho).maybeSingle();
+    if (!existe.error && !existe.data) await db.storage.from(BUCKET_FOTOS).remove([caminho, caminhoPequeno(caminho)]);
+  };
 
   const a = altValido(alt);
   if ('erro' in a) {
@@ -98,32 +101,29 @@ export async function ordenarFotos(productId: string, ids: string[]) {
   return recarregar(productId);
 }
 
-/** Apaga o registro e os dois arquivos. Se era a capa, a próxima foto vira capa. */
+/** Retira só o vínculo; o arquivo continua na biblioteca. */
 export async function apagarFoto(fotoId: string) {
   const db = await supabaseServidor();
-  const { data, error } = await db.from('product_images').delete().eq('id', fotoId).select('product_id, storage_path, is_cover');
+  const { data: foto, error } = await db.from('product_images').delete().eq('id', fotoId).select('product_id, is_cover').single();
   if (error) return falha(mensagemDoBanco(error));
-  const foto = data?.[0];
-  if (!foto) return falha('Foto não encontrada.');
-
-  const caminhos = [foto.storage_path, caminhoPequeno(foto.storage_path)];
-  const arquivos = await db.storage.from(BUCKET_FOTOS).remove(caminhos);
-
+  updateTag(TAG_CATALOGO);
   if (foto.is_cover) {
-    const proxima = await db
-      .from('product_images')
-      .select('id')
-      .eq('product_id', foto.product_id)
-      .order('position')
-      .limit(1);
-    if (proxima.data?.[0]) await db.from('product_images').update({ is_cover: true }).eq('id', proxima.data[0].id);
+    const proxima = await db.from('product_images').select('id').eq('product_id', foto.product_id).order('position').limit(1);
+    if (proxima.error) return falha(mensagemDoBanco(proxima.error));
+    if (proxima.data[0]) {
+      const capa = await db.from('product_images').update({ is_cover: true }).eq('id', proxima.data[0].id);
+      if (capa.error) return falha(mensagemDoBanco(capa.error));
+    }
   }
-  const r = await recarregar(foto.product_id);
-  // O registro já saiu: devolve a lista atualizada e, se sobrou arquivo, um aviso (remove() não dá erro quando não acha).
-  const saiu = arquivos.data?.length ?? 0;
-  const aviso =
-    arquivos.error || saiu < caminhos.length
-      ? `Foto tirada do produto, mas ${caminhos.length - saiu} arquivo(s) ficaram no armazenamento${arquivos.error ? `: ${arquivos.error.message}` : ''}.`
-      : undefined;
-  return r.ok ? { ok: true as const, dados: { ...r.dados, aviso } } : r;
+  return recarregar(foto.product_id);
+}
+
+/** Reutiliza uma imagem já registrada, mantendo descrição/capa/ordem por produto. */
+export async function vincularMidia(productId: string, midiaId: string) {
+  const db = await supabaseServidor();
+  const { data: admin } = await db.rpc('is_admin');
+  if (admin !== true) return falha('Acesso restrito ao painel.');
+  const midia = await db.from('media_assets').select('storage_path, default_alt').eq('id', midiaId).eq('deleting', false).single();
+  if (midia.error) return falha(mensagemDoBanco(midia.error));
+  return registrarFoto(productId, midia.data.storage_path, midia.data.default_alt);
 }

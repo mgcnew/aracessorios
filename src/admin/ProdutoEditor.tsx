@@ -182,7 +182,7 @@ function Status({ p, aoMudar, voltar }: { p: ProdutoPainel; aoMudar: AoMudar; vo
               if (
                 await confirmar({
                   titulo: `Apagar "${p.name}"?`,
-                  texto: 'O produto e todas as variações saem do cadastro. Isso não pode ser desfeito.',
+                  texto: 'O produto e todas as variações saem do cadastro. As fotos continuam na biblioteca. Isso não pode ser desfeito.',
                   confirmar: 'Apagar rascunho',
                   perigo: true,
                 })

@@ -2,6 +2,24 @@
 
 **Última atualização:** 04/11/2026. Atualize este arquivo no fim de cada sessão: risque o que terminou e escreva onde parou.
 
+## Fotos reais e biblioteca (04/11/2026)
+
+- [x] Quatro ZIPs e a foto avulsa organizados: 58 arquivos distintos, com SHA-256 e rastreio de origem em `referencias/inventario.json`. Algumas peças se repetem entre os arquivos.
+- [x] Miniaturas numeradas em `referencias/galeria.html`; originais preservados em `referencias/originais/`, ignorada pelo Git. Não apagar os ZIPs de Downloads: originais ainda não estão na biblioteca.
+- [x] Padrão aprovado: cetim preto acetinado das fotos reais (UI-DEC-004), preservando os detalhes da peça.
+- [x] Biblioteca independente aprovada (CAT-DEC-025); plano, arquivos, riscos e testes em `docs/frontend/BIBLIOTECA_FOTOS.md`.
+- [x] SQL da base preparado em `supabase/migrations/20261104090000_biblioteca_fotos_base.sql`; **aplicado manualmente pelo responsável**, que informou resultado 2 fotos nos produtos, 2 na biblioteca e 0 sem biblioteca.
+- [x] Biblioteca implementada: aba no computador e em Mais no celular; busca/paginação (20), envio, nome/descrição, indicação de produtos em uso e seleção no editor. Retirar foto e apagar rascunho preservam a biblioteca.
+- [x] TypeScript e build passaram. Migrações e suíte SQL executadas em Postgres embarcado (PGlite), com Auth/Storage simulados; **52 testes passando**, incluindo acesso, reutilização, limite de 12, preservação e exclusão retomável; acrescentados à suíte da CI.
+- [ ] **Aplicar manualmente somente o SQL adicional** `supabase/migrations/20261104091000_biblioteca_fotos_operacoes.sql` (a base 090000 já foi aplicada). Nenhuma aplicação remota feita pelo agente.
+- [x] Galeria testada no Chromium com ações/dados simulados: busca, paginação, edição, seleção e bloqueios; temas claro/escuro em 360, 390 e 1440 px sem overflow nem erros JS. Não substitui o teste com Supabase.
+- [ ] Testar com login real: aba Biblioteca, envio, editar nome/descrição, selecionar a mesma foto em dois produtos, retirar de um, exclusão bloqueada em uso e exclusão após retirar todos os vínculos. Conferir temas e celular. Concorrência real entre duas sessões ainda precisa ser testada.
+- Tipos da biblioteca em `src/lib/database-biblioteca.types.ts` como complemento explícito: `database.types.ts` gerado não foi editado. Regenerar tipos completos no Supabase após aplicar o SQL adicional e substituir o complemento.
+- [ ] Escolher referência de fundo, consultar custo Dreamina e aprovar créditos antes da primeira edição; comparar com a peça real antes de gerar um lote.
+- Combinado com o responsável: commit e push ao concluir cada etapa. Branch atual: `desempenho`. `.claude/` já estava não rastreada; não foi incluída.
+- Validação desta sessão: Node 22 oficial instalado apenas em `/tmp` (checksum conferido). PGlite e seu ambiente de teste também somente em `/tmp`; dependências do projeto não foram alteradas. Docker/psql indisponíveis.
+- Nenhuma geração paga, envio ao Supabase ou alteração de banco foi realizada nesta etapa.
+
 ## Onde paramos
 
 | Parte | Situação |

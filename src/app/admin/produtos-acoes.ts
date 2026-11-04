@@ -22,7 +22,6 @@ import {
 } from '../../admin/produtos';
 import { updateTag } from 'next/cache';
 import { TAG_CATALOGO } from '../../lib/cache';
-import { BUCKET_FOTOS, caminhoPequeno } from '../../lib/fotos';
 import { supabaseServidor } from '../../lib/supabase/server';
 
 export type Resultado<T> = { ok: true; dados: T } | { ok: false; erro: string };
@@ -295,7 +294,6 @@ export async function mudarStatus(id: string, status: StatusProduto) {
 /** Só rascunho pode ser apagado (regra do banco); o resto é arquivado. */
 export async function apagarProduto(id: string) {
   const db = await supabaseServidor();
-  const fotos = await db.from('product_images').select('storage_path').eq('product_id', id);
   const { data, error } = await db.from('products').delete().eq('id', id).eq('status', 'rascunho').select('id');
   if (error) {
     if (error.code === '23503')
@@ -303,14 +301,8 @@ export async function apagarProduto(id: string) {
     return falha(mensagemDoBanco(error));
   }
   if (!data || data.length === 0) return falha('Só produtos em rascunho podem ser apagados. Arquive o produto.');
-  // O banco apagou os registros das fotos; os arquivos saem do Storage aqui.
-  const caminhos = (fotos.data ?? []).flatMap((f) => [f.storage_path, caminhoPequeno(f.storage_path)]);
-  let sobrou = 0;
-  if (caminhos.length) {
-    const r = await db.storage.from(BUCKET_FOTOS).remove(caminhos);
-    sobrou = caminhos.length - (r.data?.length ?? 0);
-  }
-  return depois(null, sobrou ? `Produto apagado, mas ${sobrou} arquivo(s) de foto ficaram no armazenamento.` : null, id);
+  // Só os vínculos saem com o rascunho; a biblioteca preserva os arquivos.
+  return depois(null, null, id);
 }
 
 // Variações ----------------------------------------------------------------------
