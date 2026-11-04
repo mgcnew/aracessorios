@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { Art } from '../components/Art';
+import { Midia } from '../components/Midia';
 
 const PILLARS = [
   { n: '01', title: 'Acabamento cuidadoso', text: 'Peças pensadas para combinar entre si e compor com o seu dia a dia.' },
@@ -26,7 +26,13 @@ export function About() {
           </p>
         </div>
         <div className="rounded">
-          <Art cat="kit" tone="gold" gem bg={1} ratio="1 / 1.05" />
+          {/* Foto ilustrativa gerada por IA para o protótipo; trocar pela foto real da marca. */}
+          <Midia
+            foto={{ src: '/marca/sobre.webp', thumb: '/marca/sobre.webp', alt: 'Colar, brincos de pérola e anel dourados sobre linho, com flores secas' }}
+            tamanho="g"
+            art={{ cat: 'kit', tone: 'gold', gem: true, bg: 1 }}
+            ratio="1 / 1.05"
+          />
         </div>
       </div>
       <div className="pillars">

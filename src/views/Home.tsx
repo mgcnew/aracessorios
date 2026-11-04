@@ -1,5 +1,4 @@
 import Link from 'next/link';
-import { Art } from '../components/Art';
 import { Midia } from '../components/Midia';
 import { ProductGrid } from '../components/ProductCard';
 import { SectionHead } from '../components/ui';
@@ -11,6 +10,22 @@ const HERO = {
   pulseira: { src: '/hero/pulseira.webp', thumb: '/hero/pulseira.webp', alt: 'Pulseira dourada fina com pontos de brilho no pulso, sobre linho claro' },
   brincos: { src: '/hero/brincos.webp', thumb: '/hero/brincos.webp', alt: 'Par de brincos em ouro rosé com pérolas em gota, sobre seda champagne' },
   anel: { src: '/hero/anel.webp', thumb: '/hero/anel.webp', alt: 'Anel solitário dourado com zircônia, em um pratinho de cerâmica' },
+};
+
+// Fotos ilustrativas das categorias (geradas por IA para o protótipo). Categoria sem foto aqui mostra a ilustração.
+const fotoCat = (slug: string, alt: string) => ({ src: `/categorias/${slug}.webp`, thumb: `/categorias/${slug}.webp`, alt });
+const FOTO_CATEGORIA: Record<string, { src: string; thumb: string; alt: string }> = {
+  brincos: fotoCat('brincos', 'Brincos em ouro rosé com pérolas'),
+  colares: fotoCat('colares', 'Colar dourado fino com ponto de luz'),
+  pulseiras: fotoCat('pulseiras', 'Pulseira dourada fina no pulso'),
+  aneis: fotoCat('aneis', 'Anel solitário dourado'),
+  tornozeleiras: fotoCat('tornozeleiras', 'Tornozeleira dourada com pingentes de concha'),
+  piercings: fotoCat('piercings', 'Piercings dourados em um pratinho de cerâmica'),
+};
+const FOTO_EMBALAGEM = {
+  src: '/marca/embalagem.webp',
+  thumb: '/marca/embalagem.webp',
+  alt: 'Caixa de presente clara com laço rosé e colar dourado, ao lado de um cartão',
 };
 
 export function Home({ catalogo: { categories, products } }: { catalogo: Catalogo }) {
@@ -60,7 +75,7 @@ export function Home({ catalogo: { categories, products } }: { catalogo: Catalog
           {categories.map((c, i) => (
             <Link key={c.id} className="ctile" href={catalogHref({ cat: c.id })} aria-label={`Ver ${c.name}`}>
               <div className="ctile-i">
-                <Art cat={artCatOf(c.id)} tone={CATEGORY_TONE[c.id] ?? 'gold'} gem bg={i % 4} />
+                <Midia foto={FOTO_CATEGORIA[c.id] ?? null} art={{ cat: artCatOf(c.id), tone: CATEGORY_TONE[c.id] ?? 'gold', gem: true, bg: i % 4 }} />
               </div>
               <span>{c.name}</span>
             </Link>
@@ -140,8 +155,8 @@ export function Home({ catalogo: { categories, products } }: { catalogo: Catalog
               </Link>
             </div>
           </div>
-          <div className="rounded" aria-label="Espaço para foto das embalagens da marca">
-            <Art cat="kit" tone="rose" gem bg={0} ratio="6 / 5" />
+          <div className="rounded">
+            <Midia foto={FOTO_EMBALAGEM} tamanho="g" art={{ cat: 'kit', tone: 'rose', gem: true, bg: 0 }} ratio="6 / 5" />
           </div>
         </div>
       </section>
