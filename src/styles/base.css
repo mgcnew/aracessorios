@@ -10,22 +10,36 @@ html.dark{color-scheme:dark;background:#100E0D;scrollbar-color:#4A423C #100E0D}
 html.dark body{background:#100E0D}
 
 :is(.ar,.adm){
-  --chev:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5l5 5 5-5' fill='none' stroke='%236B4E3D' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
   --marca:var(--ink);--sobre-marca:var(--bg);
   caret-color:var(--acc);
   scrollbar-color:var(--line) transparent;
 }
 html.dark :is(.ar,.adm){
-  --chev:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5l5 5 5-5' fill='none' stroke='%23C9BDB1' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
   --marca:#D9B384;--sobre-marca:#1A1511;
 }
 :is(.ar,.adm) ::selection{background:color-mix(in srgb,var(--rose) 45%,transparent);color:var(--ink)}
 
-/* Menus de seleção: seta própria e lista na paleta */
-:is(.ar,.adm) select{appearance:none;-webkit-appearance:none;background-image:var(--chev)!important;background-repeat:no-repeat!important;background-position:right 16px center!important;padding-right:42px!important;cursor:pointer}
-:is(.ar,.adm) select:hover{border-color:var(--ink2)}
-:is(.ar,.adm) select option,:is(.ar,.adm) select optgroup{background:var(--surf);color:var(--ink)}
-:is(.ar,.adm) select:disabled{cursor:not-allowed;opacity:.7}
+/* Menu de seleção próprio (src/components/Selecao.tsx): a lista aberta do <select> nativo não aceita CSS. */
+:is(.ar,.adm) .selecao{display:inline-flex;align-items:center;justify-content:space-between;gap:12px;text-align:left;cursor:pointer;transition:border-color .2s}
+:is(.ar,.adm) .selecao:hover:not(:disabled){border-color:var(--ink2)}
+:is(.ar,.adm) .selecao[aria-expanded=true]{border-color:var(--ink)}
+:is(.ar,.adm) .selecao:disabled{opacity:.7;cursor:not-allowed}
+.selecao-v{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.selecao-v.vazio{color:var(--ink2)}
+.selecao-seta{flex:none;color:var(--ink2);transition:transform .2s cubic-bezier(.16,1,.3,1)}
+.selecao[aria-expanded=true] .selecao-seta{transform:rotate(180deg)}
+.selecao-lista{position:fixed;z-index:200;margin:0;padding:6px;list-style:none;overflow:auto;overscroll-behavior:contain;background:var(--surf);color:var(--ink);border:1px solid var(--line);border-radius:14px;box-shadow:0 18px 40px -16px rgba(30,20,14,.35),0 2px 6px -2px rgba(30,20,14,.12);font:400 15px/1.35 var(--sans);text-align:left;animation:selecao-in .16s cubic-bezier(.16,1,.3,1)}
+.selecao-lista.cima{animation-name:selecao-in-cima}
+.selecao-lista:focus{outline:none}
+.selecao-lista li{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:40px;padding:8px 12px;border-radius:9px;cursor:pointer;letter-spacing:normal;text-transform:none}
+.selecao-lista li.ativa{background:var(--champ)}
+.selecao-lista li[aria-selected=true]{font-weight:500}
+.selecao-lista li svg{flex:none;color:var(--acc)}
+@media (pointer:coarse){.selecao-lista li{min-height:46px}}
+html.dark .selecao-lista{box-shadow:0 0 0 1px var(--line),0 18px 40px -12px rgba(0,0,0,.7)}
+@keyframes selecao-in{from{opacity:0;transform:translateY(-4px)}}
+@keyframes selecao-in-cima{from{opacity:0;transform:translateY(4px)}}
+@media (prefers-reduced-motion:reduce){.selecao-lista{animation:none}.selecao-seta{transition:none}}
 
 /* Caixas de marcar e rádios desenhados com os tokens (no escuro o nativo sumia no fundo) */
 :is(.ar,.adm) input:is([type=checkbox],[type=radio]){appearance:none;-webkit-appearance:none;flex:none;width:20px;height:20px;margin:0;border:1.5px solid var(--ink2);background:var(--surf);display:inline-grid;place-content:center;cursor:pointer;transition:background-color .15s,border-color .15s}

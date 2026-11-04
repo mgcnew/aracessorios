@@ -3,11 +3,12 @@
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { FilterIcon, SearchIcon } from '../components/Icons';
+import { Selecao } from '../components/Selecao';
 import { ProductGrid } from '../components/ProductCard';
 import { EmptyState, PageHead } from '../components/ui';
 import { useCatalogo } from '../data/CatalogoContext';
 import type { CategoryId } from '../data/catalog';
-import { catalogHref, countInCategory, filterProducts, readQuery, SORTS, type CatalogQuery, type SortValue } from '../data/catalogQuery';
+import { catalogHref, countInCategory, filterProducts, readQuery, SORTS, type CatalogQuery } from '../data/catalogQuery';
 
 /** Catálogo: categoria vem do caminho (/loja/brincos); busca, ordem e disponibilidade, do endereço. */
 export function Catalog({ cat }: { cat: CategoryId | 'all' }) {
@@ -96,16 +97,7 @@ export function Catalog({ cat }: { cat: CategoryId | 'all' }) {
               <FilterIcon />
               Filtros
             </button>
-            <label style={{ display: 'contents' }}>
-              <span className="sr-only">Ordenar por</span>
-              <select className="sel" value={query.sort} onChange={(e) => go({ sort: e.target.value as SortValue })}>
-                {SORTS.map((s) => (
-                  <option key={s.value} value={s.value}>
-                    {s.label}
-                  </option>
-                ))}
-              </select>
-            </label>
+            <Selecao className="sel" aria-label="Ordenar por" value={query.sort} opcoes={SORTS} onChange={(v) => go({ sort: v })} />
           </div>
 
           {results.length > 0 ? (
