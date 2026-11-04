@@ -304,6 +304,8 @@ begin
     insert into resultados(teste,ok) values ('foto em uso não pode ser excluída',true);
   end;
   insert into storage.objects(bucket_id,name) values ('produtos',caminho),('produtos','biblioteca-teste/foto-p.webp');
+  -- O Storage real bloqueia delete direto em storage.objects (trigger protect_delete); libera só neste teste.
+  perform set_config('storage.allow_delete_query','true',true);
   delete from storage.objects where bucket_id='produtos' and name in (caminho,'biblioteca-teste/foto-p.webp');
   get diagnostics n=row_count;
   insert into resultados(teste,ok) values ('Storage preserva grande e pequena registradas',n=0);
@@ -333,6 +335,8 @@ begin
   exception when check_violation then
     insert into resultados(teste,ok) values ('não finaliza enquanto houver arquivo',true);
   end;
+  -- O Storage real bloqueia delete direto em storage.objects (trigger protect_delete); libera só neste teste.
+  perform set_config('storage.allow_delete_query','true',true);
   delete from storage.objects where bucket_id='produtos' and name=caminho;
   begin
     perform public.finalizar_exclusao_midia(mid);
@@ -340,6 +344,8 @@ begin
   exception when check_violation then
     insert into resultados(teste,ok) values ('falha parcial preserva registro para retomar',true);
   end;
+  -- O Storage real bloqueia delete direto em storage.objects (trigger protect_delete); libera só neste teste.
+  perform set_config('storage.allow_delete_query','true',true);
   delete from storage.objects where bucket_id='produtos' and name='biblioteca-teste/foto-p.webp';
   perform public.finalizar_exclusao_midia(mid);
   perform public.finalizar_exclusao_midia(mid);
