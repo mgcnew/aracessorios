@@ -39,12 +39,12 @@ const exploreLink = (
 );
 
 export function Cart() {
-  const { setLineQty, removeLine } = useStore();
+  const { setLineQty, removeLine, clearDemo } = useStore();
   const { lines, subtotal, itemCount } = useCartLines();
 
   return (
     <div className="wrap fade">
-      <PageHead eyebrow="Sua sacola" title="Sacola" />
+      <PageHead title="Sacola" />
       {lines.length > 0 ? (
         <div className="cart-l">
           <div>
@@ -99,6 +99,9 @@ export function Cart() {
               <span>{fmt(subtotal)}</span>
             </div>
             <p className="note">Valores ilustrativos para apresentação. Nenhuma compra é realizada.</p>
+            <button className="lnk limpar" onClick={clearDemo}>
+              Limpar sacola e favoritos deste aparelho
+            </button>
             <Link className="btn btn-p" href="/checkout" style={{ marginTop: 6 }}>
               Ver prévia do checkout
             </Link>
@@ -143,7 +146,7 @@ export function Checkout() {
         Demonstração — nenhuma compra ou pagamento será realizado
       </div>
       <div className="wrap fade">
-        <PageHead eyebrow="Prévia não operacional" title="Checkout" />
+        <PageHead title="Checkout" />
         {lines.length > 0 ? (
           <div className="cart-l">
             <div>

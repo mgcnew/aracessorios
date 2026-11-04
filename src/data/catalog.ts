@@ -67,6 +67,8 @@ export interface Product {
   desc: string;
   short?: string;
   material: string;
+  /** Cuidados com a peça (campo "Cuidados" do cadastro); vazio não aparece. */
+  care?: string;
   kind: ProductKind;
   isKit: boolean;
   variants: Variant[];

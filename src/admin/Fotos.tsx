@@ -7,6 +7,8 @@ import { supabaseNavegador } from '../lib/supabase/browser';
 import { prepararFoto } from './fotos';
 import { useAcao } from './Produtos';
 import type { CatalogoPainel, FotoPainel, ProdutoPainel } from './produtos';
+import { confirmar } from './confirmar';
+import { SetaIcon } from '../components/Icons';
 
 const MAX_FOTOS = 12;
 
@@ -113,8 +115,8 @@ export function Fotos({ p, aoMudar }: { p: ProdutoPainel; aoMudar: (c: CatalogoP
               ocupado={ocupado}
               mover={mover}
               capa={() => acao.rodar(() => definirCapa(f.id), aoMudar)}
-              apagar={() => {
-                if (window.confirm('Apagar esta foto? Ela sai da loja e do armazenamento.'))
+              apagar={async () => {
+                if (await confirmar({ titulo: 'Apagar esta foto?', texto: 'Ela sai da loja e do armazenamento.', confirmar: 'Apagar foto', perigo: true }))
                   acao.rodar(
                     () => apagarFoto(f.id),
                     (c) => {
@@ -184,11 +186,23 @@ function FotoItem({
         {/* A capa fica sempre em primeiro; as setas ordenam as demais. */}
         {i > 0 && (
           <>
-            <button className="pill" disabled={ocupado || i === 1} onClick={() => mover(i, -1)} aria-label="Mover para a esquerda">
-              ←
+            <button
+              className="pill dica-cima"
+              disabled={ocupado || i === 1}
+              onClick={() => mover(i, -1)}
+              aria-label="Mover para a esquerda"
+              data-dica="Mover para a esquerda"
+            >
+              <SetaIcon dir="esq" />
             </button>
-            <button className="pill" disabled={ocupado || i === total - 1} onClick={() => mover(i, 1)} aria-label="Mover para a direita">
-              →
+            <button
+              className="pill dica-cima"
+              disabled={ocupado || i === total - 1}
+              onClick={() => mover(i, 1)}
+              aria-label="Mover para a direita"
+              data-dica="Mover para a direita"
+            >
+              <SetaIcon />
             </button>
           </>
         )}

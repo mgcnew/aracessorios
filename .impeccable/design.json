@@ -1,0 +1,520 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-11-04T13:24:31+00:00",
+  "title": "Design System: AR Acessórios",
+  "extensions": {
+    "colorMeta": {
+      "marfim": {
+        "role": "neutral",
+        "displayName": "Marfim",
+        "canonical": "#FDF6F0",
+        "tonalRamp": [
+          "#442409",
+          "#753E10",
+          "#A75916",
+          "#D8731D",
+          "#E69046",
+          "#EDAE78",
+          "#F4CEAE",
+          "#FCF2E8"
+        ]
+      },
+      "linho": {
+        "role": "neutral",
+        "displayName": "Linho",
+        "canonical": "#FFF9F4",
+        "tonalRamp": [
+          "#4C2300",
+          "#853C00",
+          "#BD5600",
+          "#F56F00",
+          "#FF8D2E",
+          "#FFAC66",
+          "#FFCDA3",
+          "#FFF1E5"
+        ]
+      },
+      "champagne": {
+        "role": "neutral",
+        "displayName": "Champagne",
+        "canonical": "#EAD9C6",
+        "tonalRamp": [
+          "#382715",
+          "#614424",
+          "#8A6133",
+          "#B37E42",
+          "#C79966",
+          "#D6B48F",
+          "#E6D2BC",
+          "#F8F3EC"
+        ]
+      },
+      "campo-areia": {
+        "role": "neutral",
+        "displayName": "Areia",
+        "canonical": "#F4EBE2",
+        "tonalRamp": [
+          "#372615",
+          "#604224",
+          "#895E34",
+          "#B17A43",
+          "#C59667",
+          "#D5B290",
+          "#E6D1BC",
+          "#F8F2ED"
+        ]
+      },
+      "borda-areia": {
+        "role": "neutral",
+        "displayName": "Borda areia",
+        "canonical": "#E8DAD0",
+        "tonalRamp": [
+          "#332419",
+          "#593F2C",
+          "#7F593E",
+          "#A47350",
+          "#BA9073",
+          "#CDAE98",
+          "#E1CEC1",
+          "#F7F2EE"
+        ]
+      },
+      "rose-dourado": {
+        "role": "secondary",
+        "displayName": "Rosé dourado",
+        "canonical": "#C89F7A",
+        "tonalRamp": [
+          "#362516",
+          "#5E4127",
+          "#855C37",
+          "#AD7848",
+          "#C2946B",
+          "#D2B193",
+          "#E4D0BE",
+          "#F8F2ED"
+        ]
+      },
+      "caramelo": {
+        "role": "secondary",
+        "displayName": "Caramelo",
+        "canonical": "#8A5A38",
+        "tonalRamp": [
+          "#362316",
+          "#5E3E26",
+          "#865836",
+          "#AE7247",
+          "#C38F6A",
+          "#D3AD92",
+          "#E5CEBE",
+          "#F8F1ED"
+        ]
+      },
+      "cacau": {
+        "role": "primary",
+        "displayName": "Cacau",
+        "canonical": "#38291F",
+        "tonalRamp": [
+          "#31241B",
+          "#553E2F",
+          "#795943",
+          "#9E7357",
+          "#B49078",
+          "#C8AE9D",
+          "#DECEC4",
+          "#F6F2EF"
+        ]
+      },
+      "cacau-claro": {
+        "role": "neutral",
+        "displayName": "Cacau claro",
+        "canonical": "#6B4E3D",
+        "tonalRamp": [
+          "#31241C",
+          "#543E30",
+          "#785845",
+          "#9C7259",
+          "#B38F7A",
+          "#C7AD9E",
+          "#DECEC5",
+          "#F6F1EF"
+        ]
+      },
+      "cacau-hover": {
+        "role": "primary",
+        "displayName": "Cacau hover",
+        "canonical": "#4D3A2C",
+        "tonalRamp": [
+          "#31251C",
+          "#544030",
+          "#785A45",
+          "#9C7559",
+          "#B3927A",
+          "#C7AF9E",
+          "#DECFC5",
+          "#F6F2EF"
+        ]
+      },
+      "preto-logo": {
+        "role": "neutral",
+        "displayName": "Preto da logo",
+        "canonical": "#141414",
+        "tonalRamp": [
+          "#262626",
+          "#424242",
+          "#5E5E5E",
+          "#7A7A7A",
+          "#969696",
+          "#B2B2B2",
+          "#D1D1D1",
+          "#F2F2F2"
+        ]
+      },
+      "carvao": {
+        "role": "neutral",
+        "displayName": "Carvão",
+        "canonical": "#100E0D",
+        "tonalRamp": [
+          "#2A2522",
+          "#49403B",
+          "#685B55",
+          "#87766E",
+          "#A1938C",
+          "#BAB0AB",
+          "#D6D0CC",
+          "#F4F2F1"
+        ]
+      },
+      "carvao-cartao": {
+        "role": "neutral",
+        "displayName": "Carvão cartão",
+        "canonical": "#1F1B19",
+        "tonalRamp": [
+          "#2A2522",
+          "#49403B",
+          "#685B54",
+          "#88766D",
+          "#A2938B",
+          "#BBB0AA",
+          "#D6CFCC",
+          "#F4F2F1"
+        ]
+      },
+      "carvao-destaque": {
+        "role": "neutral",
+        "displayName": "Carvão destaque",
+        "canonical": "#2D2825",
+        "tonalRamp": [
+          "#2A2523",
+          "#49413C",
+          "#685C55",
+          "#86776E",
+          "#A1948C",
+          "#BAB1AB",
+          "#D6D0CD",
+          "#F3F2F1"
+        ]
+      },
+      "carvao-campo": {
+        "role": "neutral",
+        "displayName": "Carvão campo",
+        "canonical": "#2A2522",
+        "tonalRamp": [
+          "#2A2522",
+          "#49413B",
+          "#685C54",
+          "#87776E",
+          "#A1948B",
+          "#BBB0AA",
+          "#D6D0CC",
+          "#F4F2F1"
+        ]
+      },
+      "carvao-borda": {
+        "role": "neutral",
+        "displayName": "Carvão borda",
+        "canonical": "#4A423C",
+        "tonalRamp": [
+          "#2A2622",
+          "#49413B",
+          "#685D54",
+          "#87796E",
+          "#A1958C",
+          "#BAB1AB",
+          "#D6D0CC",
+          "#F4F2F1"
+        ]
+      },
+      "pergaminho": {
+        "role": "neutral",
+        "displayName": "Pergaminho",
+        "canonical": "#F4ECE3",
+        "tonalRamp": [
+          "#372716",
+          "#5F4425",
+          "#876135",
+          "#B07E45",
+          "#C49969",
+          "#D4B491",
+          "#E5D2BD",
+          "#F8F3ED"
+        ]
+      },
+      "pergaminho-suave": {
+        "role": "neutral",
+        "displayName": "Pergaminho suave",
+        "canonical": "#C9BDB1",
+        "tonalRamp": [
+          "#2D261F",
+          "#4E4236",
+          "#705E4D",
+          "#917A64",
+          "#A99683",
+          "#C0B3A5",
+          "#D9D1C9",
+          "#F5F2F0"
+        ]
+      },
+      "ouro-champagne": {
+        "role": "primary",
+        "displayName": "Ouro champagne",
+        "canonical": "#D9B384",
+        "tonalRamp": [
+          "#3A2812",
+          "#65461F",
+          "#90642D",
+          "#BB813A",
+          "#CE9C5F",
+          "#DBB78A",
+          "#E9D4B9",
+          "#F9F3EC"
+        ]
+      },
+      "sobre-ouro": {
+        "role": "neutral",
+        "displayName": "Sobre-ouro",
+        "canonical": "#1A1511",
+        "tonalRamp": [
+          "#2E251E",
+          "#504134",
+          "#725C4B",
+          "#947861",
+          "#AC9481",
+          "#C3B1A2",
+          "#DBD0C7",
+          "#F5F2F0"
+        ]
+      },
+      "disponivel": {
+        "role": "tertiary",
+        "displayName": "Disponível",
+        "canonical": "#5E7A4E",
+        "tonalRamp": [
+          "#242F1E",
+          "#3E5134",
+          "#59734A",
+          "#73955F",
+          "#90AD7F",
+          "#AEC3A2",
+          "#CEDBC7",
+          "#F1F5EF"
+        ]
+      },
+      "esgotado": {
+        "role": "tertiary",
+        "displayName": "Esgotado",
+        "canonical": "#9B4A3B",
+        "tonalRamp": [
+          "#371A15",
+          "#602E25",
+          "#894134",
+          "#B15543",
+          "#C57668",
+          "#D59B90",
+          "#E6C3BD",
+          "#F8EEED"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display",
+        "purpose": "Título do topo da página inicial."
+      },
+      "headline": {
+        "displayName": "Título de seção",
+        "purpose": "Títulos de seção e de página."
+      },
+      "title": {
+        "displayName": "Nome da peça",
+        "purpose": "Nomes nos cartões, títulos de cartão e janela."
+      },
+      "body": {
+        "displayName": "Texto",
+        "purpose": "Descrições e textos de apoio."
+      },
+      "label": {
+        "displayName": "Rótulo",
+        "purpose": "Categoria, atributo da variação, cabeçalhos de tabela."
+      }
+    },
+    "shadows": [
+      {
+        "name": "foto-topo",
+        "value": "0 30px 60px -30px rgba(56,41,31,.35)",
+        "purpose": "Foto principal do destaque."
+      },
+      {
+        "name": "foto-flutuante",
+        "value": "0 18px 36px -16px rgba(56,41,31,.4)",
+        "purpose": "Fotos menores sobrepostas no destaque."
+      },
+      {
+        "name": "elevacao-hover",
+        "value": "0 18px 30px -18px rgba(56,41,31,.45)",
+        "purpose": "Círculos de categoria ao passar o mouse."
+      },
+      {
+        "name": "aviso",
+        "value": "0 18px 40px -12px rgba(56,41,31,.5)",
+        "purpose": "Aviso 'Adicionado à sacola'."
+      }
+    ],
+    "motion": [
+      {
+        "name": "saida-suave",
+        "value": "cubic-bezier(.16,1,.3,1)",
+        "purpose": "Entradas, zoom, dicas e janelas."
+      },
+      {
+        "name": "hover-foto",
+        "value": "transform .6s cubic-bezier(.2,.7,.2,1)",
+        "purpose": "Zoom leve do cartão de produto."
+      },
+      {
+        "name": "entrada-pagina",
+        "value": "fin .45s cubic-bezier(.16,1,.3,1) backwards",
+        "purpose": "Entrada das páginas; sempre backwards."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "celular-estreito",
+        "value": "519px"
+      },
+      {
+        "name": "tabela-cartoes",
+        "value": "699px"
+      },
+      {
+        "name": "computador",
+        "value": "900px"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Botão primário",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Ação principal (Explorar a loja, Adicionar à sacola).",
+      "html": "<button class=\"ds-btn-p\">Adicionar à sacola</button>",
+      "css": ".ds-btn-p{font-family:Jost,system-ui,sans-serif;display:inline-flex;align-items:center;justify-content:center;min-height:48px;padding:0 30px;border-radius:999px;font-size:15px;font-weight:500;letter-spacing:.05em;cursor:pointer;transition:background .25s,color .25s;background:#38291F;color:#FDF6F0;border:0}.ds-btn-p:hover{background:#4D3A2C}.ds-btn-p:focus-visible{outline:2px solid #38291F;outline-offset:2px}"
+    },
+    {
+      "name": "Botão secundário",
+      "kind": "button",
+      "refersTo": "button-secondary",
+      "description": "Ação de apoio ao lado da principal.",
+      "html": "<button class=\"ds-btn-s\">Conhecer os kits</button>",
+      "css": ".ds-btn-s{font-family:Jost,system-ui,sans-serif;display:inline-flex;align-items:center;justify-content:center;min-height:48px;padding:0 30px;border-radius:999px;font-size:15px;font-weight:500;letter-spacing:.05em;cursor:pointer;transition:background .25s,color .25s;background:transparent;color:#38291F;border:1px solid #38291F}.ds-btn-s:hover{background:#EAD9C6}.ds-btn-s:focus-visible{outline:2px solid #38291F;outline-offset:2px}"
+    },
+    {
+      "name": "Pílula de variação",
+      "kind": "chip",
+      "refersTo": "pill",
+      "description": "Escolha de banho/tamanho; selecionada em cacau, esgotada riscada.",
+      "html": "<div class=\"ds-pills\"><button class=\"ds-pill on\">Ouro 18k</button><button class=\"ds-pill\">Rosé</button><button class=\"ds-pill off\">Ródio</button></div>",
+      "css": ".ds-pills{display:flex;gap:8px;flex-wrap:wrap}.ds-pill{font-family:Jost,system-ui,sans-serif;min-height:44px;padding:0 18px;border:1px solid #E8DAD0;border-radius:999px;background:#FFF9F4;color:#38291F;font-size:15px;cursor:pointer;transition:border-color .2s,background .2s}.ds-pill:hover{border-color:#38291F}.ds-pill.on{background:#38291F;border-color:#38291F;color:#FDF6F0}.ds-pill.off{background:transparent;color:#7D6757;text-decoration:line-through}.ds-pill:focus-visible{outline:2px solid #38291F;outline-offset:2px}"
+    },
+    {
+      "name": "Busca",
+      "kind": "input",
+      "refersTo": "input-search",
+      "description": "Campo de busca em pílula com ícone.",
+      "html": "<label class=\"ds-busca\"><svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.6\" stroke-linecap=\"round\"><circle cx=\"11\" cy=\"11\" r=\"6.5\"/><path d=\"M20 20l-4.2-4.2\"/></svg><input placeholder=\"Buscar joias\"></label>",
+      "css": ".ds-busca{display:flex;align-items:center;gap:10px;height:48px;padding:0 18px;background:#FFF9F4;border:1px solid #E8DAD0;border-radius:999px;color:#38291F;font-family:Jost,system-ui,sans-serif}.ds-busca:focus-within{border-color:#38291F}.ds-busca input{border:0;background:none;font:inherit;color:inherit;width:100%;outline:none}.ds-busca input::placeholder{color:#6B4E3D}"
+    },
+    {
+      "name": "Cartão de produto",
+      "kind": "card",
+      "refersTo": "card",
+      "description": "Foto 4:5, categoria, nome em serifa e preço.",
+      "html": "<a class=\"ds-pc\" href=\"#\"><span class=\"ds-pc-m\"><span class=\"ds-pc-b\">Novo</span></span><span class=\"ds-pc-c\">Brincos</span><span class=\"ds-pc-n\">Brinco Gota Aurora</span><span class=\"ds-pc-p\">R$ 89,90</span></a>",
+      "css": ".ds-pc{display:flex;flex-direction:column;gap:4px;width:220px;color:#38291F;text-decoration:none;font-family:Jost,system-ui,sans-serif}.ds-pc-m{position:relative;display:block;aspect-ratio:4/5;border-radius:18px;background:#EAD9C6;margin-bottom:8px;overflow:hidden;transition:transform .6s cubic-bezier(.2,.7,.2,1)}.ds-pc:hover .ds-pc-m{transform:translateY(-2px)}.ds-pc-b{position:absolute;left:12px;top:14px;background:#FFF9F4;color:#6B4E3D;font-size:11px;font-weight:500;letter-spacing:.12em;text-transform:uppercase;padding:5px 10px;border-radius:999px}.ds-pc-c{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:#6B4E3D}.ds-pc-n{font-family:'Cormorant Garamond',Georgia,serif;font-size:21px;font-weight:600;line-height:1.15}.ds-pc-p{font-size:15px;font-weight:500}"
+    },
+    {
+      "name": "Navegação de baixo (celular)",
+      "kind": "nav",
+      "refersTo": "",
+      "description": "Quatro destinos com ícone e rótulo; o ativo ganha traço rosé.",
+      "html": "<nav class=\"ds-bnav\"><a class=\"on\" href=\"#\">Início</a><a href=\"#\">Loja</a><a href=\"#\">Favoritos</a><a href=\"#\">Sobre</a></nav>",
+      "css": ".ds-bnav{display:grid;grid-template-columns:repeat(4,1fr);width:360px;background:rgba(255,249,244,.97);border-top:1px solid #E8DAD0;padding:6px 8px;font-family:Jost,system-ui,sans-serif}.ds-bnav a{position:relative;display:flex;align-items:center;justify-content:center;min-height:52px;font-size:12px;color:#6B4E3D;text-decoration:none;border-radius:14px}.ds-bnav a.on{color:#38291F;font-weight:500}.ds-bnav a.on::before{content:'';position:absolute;top:-7px;width:26px;height:2px;background:#C89F7A;border-radius:2px}.ds-bnav a:focus-visible{outline:2px solid #38291F;outline-offset:2px}"
+    },
+    {
+      "name": "Dica (tooltip)",
+      "kind": "custom",
+      "refersTo": "tooltip",
+      "description": "Rótulo de botão só com ícone, no tema; só com mouse ou teclado.",
+      "html": "<span class=\"ds-dica\">Favoritos</span>",
+      "css": ".ds-dica{display:inline-block;background:#38291F;color:#FDF6F0;font:500 12.5px/1.2 Jost,system-ui,sans-serif;letter-spacing:.02em;padding:7px 11px;border-radius:8px;box-shadow:0 8px 20px -8px rgba(30,20,14,.45)}"
+    }
+  ],
+  "narrative": {
+    "northStar": "O porta-joias de linho",
+    "overview": "A loja é um porta-joias aberto sobre a mesa: fundo claro e quente como linho cru, luz natural, peças pousadas com cuidado. A cliente deve se sentir acolhida e confiante. É um luxo acessível, que não intimida: delicado sem ser frágil, próximo sem ser casual. Quem fala é a peça; a interface fica em volta dela como um forro macio.",
+    "keyCharacteristics": [
+      "Fundo marfim quente, nunca branco puro; carvão quente no escuro, nunca preto puro.",
+      "Serifa (Cormorant Garamond) para nomes e títulos; sans (Jost) para todo o resto.",
+      "Formas macias: pílulas nos controles, cantos generosos nos cartões, círculos nas categorias.",
+      "Sombras raras e difusas; a profundidade vem de camadas de tom.",
+      "O tema (claro/noturno) vale para tudo, inclusive o que o navegador desenha."
+    ],
+    "rules": [
+      {
+        "name": "The Um Só Dourado Rule",
+        "body": "Só existe um acento quente por tela: o caramelo no claro e o ouro champagne no escuro. O resto é neutro. A raridade do dourado é o que o faz parecer joia.",
+        "section": "colors"
+      },
+      {
+        "name": "The Tema Inteiro Rule",
+        "body": "O modo vive em <html class=\"dark\"> com color-scheme. Menus, calendário, caixas de marcar, rolagem, dicas e confirmações seguem o tema; nada pode aparecer com a cara padrão do navegador.",
+        "section": "colors"
+      },
+      {
+        "name": "The Título Sem Sobretítulo Rule",
+        "body": "Nenhum texto pequeno em maiúsculas acima de título. O título fala sozinho. Rótulo em maiúsculas só para dado (categoria, atributo, coluna).",
+        "section": "typography"
+      },
+      {
+        "name": "The Plano em Repouso Rule",
+        "body": "Cartões e campos não têm sombra. Sombra só para foto em destaque, elemento flutuante ou resposta ao mouse.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "**Do** usar marfim (#FDF6F0) como fundo e cacau (#38291F) como texto; no escuro, carvão (#100E0D) e pergaminho (#F4ECE3).",
+      "**Do** guardar o dourado (caramelo #8A5A38 no claro, ouro #D9B384 no escuro) para link, seleção e ação principal.",
+      "**Do** manter toque mínimo de 44px e campos com 16px de fonte no celular.",
+      "**Do** aplicar o tema a tudo que o navegador desenha, com `color-scheme` e os estilos de `base.css`.",
+      "**Do** mostrar só \"disponível\" ou \"esgotado\" para a cliente, nunca a quantidade (CAT-DEC-024)."
+    ],
+    "donts": [
+      "**Don't** colocar sobretítulo em maiúsculas acima de título nem numerar seções (01/02/03).",
+      "**Don't** usar símbolos de texto (←, →, ↗, −, +) como ícone; use os ícones desenhados de `src/components/Icons.tsx`.",
+      "**Don't** usar `window.confirm`/`alert` no painel; use `confirmar()` de `src/admin/confirmar.tsx`.",
+      "**Don't** usar urgência artificial (contador, \"últimas unidades\") nem promessas que a cliente não confirmou; use `[A DEFINIR]` fora da vitrine.",
+      "**Don't** deixar animação de entrada \"presa\" com `fill-mode: forwards`/`both`: ela quebra os elementos fixos no celular.",
+      "**Don't** usar branco puro, preto puro ou cinza neutro."
+    ]
+  }
+}

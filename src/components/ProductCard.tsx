@@ -38,8 +38,9 @@ export function ProductCard({ product: p }: { product: Product }) {
           </div>
         )}
         <button
-          className="pc-fav"
+          className="pc-fav dica-esq"
           onClick={() => toggleFav(p.id)}
+          data-dica={isFav ? 'Remover dos favoritos' : 'Favoritar'}
           aria-pressed={isFav}
           aria-label={isFav ? `Remover ${p.name} dos favoritos` : `Adicionar ${p.name} aos favoritos`}
         >

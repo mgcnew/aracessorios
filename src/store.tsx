@@ -1,7 +1,7 @@
 'use client';
 
 import { usePathname } from 'next/navigation';
-import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, useSyncExternalStore, type ReactNode } from 'react';
 
 export interface CartLine {
   key: string;
@@ -31,28 +31,35 @@ function write(key: string, value: string) {
   }
 }
 
-function preferredDark(): boolean {
-  try {
-    const t = window.localStorage.getItem(THEME_KEY);
-    if (t) return t === 'dark';
-  } catch {
-    /* segue para a preferência do sistema */
-  }
-  return !!window.matchMedia?.('(prefers-color-scheme: dark)').matches;
+/*
+ * Tema claro/noturno compartilhado entre loja e painel. Mora na classe `dark` do <html>,
+ * posta antes da primeira pintura pelo script de src/app/layout.tsx; o CSS lê dali.
+ */
+const ouvintesTema = new Set<() => void>();
+const lerTema = () => document.documentElement.classList.contains('dark');
+const assinarTema = (f: () => void) => {
+  ouvintesTema.add(f);
+  return () => ouvintesTema.delete(f);
+};
+
+function aplicarTema(dark: boolean) {
+  const raiz = document.documentElement;
+  raiz.classList.toggle('dark', dark);
+  raiz.style.colorScheme = dark ? 'dark' : 'light';
+  // A barra do navegador no celular segue o tema escolhido, não só o do aparelho.
+  document.querySelectorAll('meta[name="theme-color"]').forEach((m) => {
+    m.setAttribute('content', dark ? '#100E0D' : '#FDF6F0');
+    m.removeAttribute('media');
+  });
+  ouvintesTema.forEach((f) => f());
 }
 
-/**
- * Tema claro/noturno compartilhado entre loja e painel.
- * Começa claro no servidor e aplica a preferência salva assim que a página carrega.
- */
 export function useTheme() {
-  const [dark, setDark] = useState(false);
-  useEffect(() => setDark(preferredDark()), []);
+  const dark = useSyncExternalStore(assinarTema, lerTema, () => false);
   const toggleDark = useCallback(() => {
-    setDark((d) => {
-      write(THEME_KEY, d ? 'light' : 'dark');
-      return !d;
-    });
+    const novo = !lerTema();
+    write(THEME_KEY, novo ? 'dark' : 'light');
+    aplicarTema(novo);
   }, []);
   return { dark, toggleDark };
 }

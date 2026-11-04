@@ -1,7 +1,8 @@
 import Link from 'next/link';
 import { Midia } from '../components/Midia';
 
-const PILLARS = [
+// Também aparecem na página inicial (faixa abaixo do destaque).
+export const PILLARS = [
   { n: '01', title: 'Acabamento cuidadoso', text: 'Peças pensadas para combinar entre si e compor com o seu dia a dia.' },
   { n: '02', title: 'Embalagem para presente', text: 'Uma apresentação delicada, pronta para surpreender quem recebe.' },
   { n: '03', title: 'Atendimento próximo', text: 'Ajuda na escolha da peça certa para cada ocasião.' },
@@ -12,8 +13,7 @@ export function About() {
     <div className="wrap fade" style={{ paddingBottom: 20 }}>
       <div className="split sec">
         <div className="prose">
-          <span className="eyebrow">Sobre a AR Acessórios</span>
-          <h1 className="h-serif" style={{ fontSize: 'clamp(42px,6vw,76px)', marginTop: 12 }}>
+          <h1 className="h-serif" style={{ fontSize: 'clamp(42px,6vw,76px)' }}>
             Delicadeza em cada detalhe
           </h1>
           <p>
@@ -38,7 +38,6 @@ export function About() {
       <div className="pillars">
         {PILLARS.map((p) => (
           <div key={p.n} className="pillar">
-            <span className="eyebrow">{p.n}</span>
             <h3>{p.title}</h3>
             <p>{p.text}</p>
           </div>

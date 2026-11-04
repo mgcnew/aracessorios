@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from 'next';
 import { Cormorant_Garamond, Jost } from 'next/font/google';
 import type { ReactNode } from 'react';
+import '../styles/base.css';
 import '../styles/store.css';
 import '../styles/admin.css';
 
@@ -32,9 +33,17 @@ export const viewport: Viewport = {
   ],
 };
 
+// Aplica o tema antes da primeira pintura: sem piscar claro no modo noturno, e com
+// `color-scheme` certo para tudo que o navegador desenha (menus, calendário, rolagem).
+// Mesma regra de `aplicarTema` em src/store.tsx.
+const TEMA_INICIAL = `(function(){try{var t=localStorage.getItem('ar_demo_theme');var d=t?t==='dark':matchMedia('(prefers-color-scheme: dark)').matches;var r=document.documentElement;r.classList.toggle('dark',d);r.style.colorScheme=d?'dark':'light';if(t)document.querySelectorAll('meta[name="theme-color"]').forEach(function(m){m.setAttribute('content',d?'#100E0D':'#FDF6F0');m.removeAttribute('media')})}catch(e){}})()`;
+
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang="pt-BR" className={`${serif.variable} ${sans.variable}`}>
+    <html lang="pt-BR" className={`${serif.variable} ${sans.variable}`} suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: TEMA_INICIAL }} />
+      </head>
       <body>{children}</body>
     </html>
   );

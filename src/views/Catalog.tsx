@@ -33,7 +33,7 @@ export function Catalog({ cat }: { cat: CategoryId | 'all' }) {
 
   return (
     <div className="wrap fade">
-      <PageHead eyebrow="Loja" title={title}>
+      <PageHead title={title}>
         <p role="status">{results.length === 1 ? '1 peça' : `${results.length} peças`}</p>
       </PageHead>
 

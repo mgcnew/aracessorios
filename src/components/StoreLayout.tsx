@@ -29,7 +29,7 @@ function activeNav(pathname: string): NavKey | null {
 export function StoreLayout({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
-  const { dark, toggleDark, favs, cart, toast, clearDemo } = useStore();
+  const { dark, toggleDark, favs, cart, toast } = useStore();
   const { categories } = useCatalogo();
   const [search, setSearch] = useState('');
   const active = activeNav(pathname);
@@ -37,7 +37,7 @@ export function StoreLayout({ children }: { children: ReactNode }) {
   const isProduct = pathname.startsWith('/produto/');
 
   return (
-    <div className={`ar${isProduct ? ' r-product' : ''}${dark ? ' dark' : ''}`}>
+    <div className={`ar${isProduct ? ' r-product' : ''}`}>
       <a className="skip" href="#conteudo">
         Pular para o conteúdo
       </a>
@@ -65,17 +65,23 @@ export function StoreLayout({ children }: { children: ReactNode }) {
               <SearchIcon />
               <input type="search" placeholder="Buscar joias" aria-label="Buscar joias" value={search} onChange={(e) => setSearch(e.target.value)} />
             </form>
-            <Link className="ib ib-m" href="/loja" aria-label="Buscar na loja">
+            <Link className="ib ib-m" href="/loja" aria-label="Buscar na loja" data-dica="Buscar">
               <SearchIcon size={22} />
             </Link>
-            <button className="ib" onClick={toggleDark} aria-pressed={dark} aria-label={dark ? 'Ativar modo claro' : 'Ativar modo noturno'}>
+            <button
+              className="ib"
+              onClick={toggleDark}
+              aria-pressed={dark}
+              aria-label={dark ? 'Ativar modo claro' : 'Ativar modo noturno'}
+              data-dica={dark ? 'Modo claro' : 'Modo noturno'}
+            >
               {dark ? <SunIcon /> : <MoonIcon />}
             </button>
-            <Link className="ib" href="/favoritos" aria-label={`Favoritos (${favs.length})`}>
+            <Link className="ib" href="/favoritos" aria-label={`Favoritos (${favs.length})`} data-dica="Favoritos">
               <HeartIcon />
               {favs.length > 0 && <span className="cnt">{favs.length}</span>}
             </Link>
-            <Link className="ib" href="/sacola" aria-label={`Sacola (${cartCount} itens)`}>
+            <Link className="ib dica-esq" href="/sacola" aria-label={`Sacola (${cartCount} itens)`} data-dica="Sacola">
               <BagIcon />
               {cartCount > 0 && <span className="cnt">{cartCount}</span>}
             </Link>
@@ -119,14 +125,9 @@ export function StoreLayout({ children }: { children: ReactNode }) {
               </ul>
             </nav>
           </div>
+          {/* Sem itens de bastidor no rodapé público: o painel fica em /admin e "limpar" fica na sacola. */}
           <div className="foot-b">
-            <span>© AR Acessórios</span>
-            <span className="foot-acoes">
-              <button className="lnk" onClick={clearDemo}>
-                Limpar sacola e favoritos
-              </button>
-              <Link href="/admin">Painel da loja</Link>
-            </span>
+            <span>© {new Date().getFullYear()} AR Acessórios</span>
           </div>
         </div>
       </footer>

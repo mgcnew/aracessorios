@@ -1,14 +1,16 @@
 'use client';
 
 import Link from 'next/link';
-import { useState } from 'react';
+import { useRef, useState, type PointerEvent } from 'react';
 import { Art } from '../components/Art';
 import { Midia } from '../components/Midia';
 import { HeartIcon } from '../components/Icons';
 import { ProductGrid } from '../components/ProductCard';
 import { SectionHead, Stepper } from '../components/ui';
 import { useCatalogo } from '../data/CatalogoContext';
+import { catalogHref } from '../data/catalogQuery';
 import { artOf, categoryLabel, fmt, type Product } from '../data/catalog';
+import { INFO_LOJA } from '../data/infoLoja';
 import { MAX_QTY, useStore } from '../store';
 
 const GALLERY = [
@@ -47,6 +49,22 @@ export function ProductPage({ productId }: { productId: string }) {
   const unitWord = p.unit;
   const art = artOf(p, cur);
   const fotos = p.photos ?? [];
+  const total = fotos.length > 0 ? fotos.length : GALLERY.length;
+  const faixa = useRef<HTMLDivElement>(null);
+
+  const irPara = (i: number) => {
+    setGal(i);
+    const el = faixa.current;
+    // Troca na hora (miniaturas só existem no computador; no celular quem desliza é o dedo).
+    if (el) el.scrollTo({ left: i * el.clientWidth, behavior: 'auto' });
+  };
+  // Zoom acompanha o mouse (só em telas com mouse; ver .zoomavel no CSS).
+  const moverZoom = (e: PointerEvent<HTMLDivElement>) => {
+    if (e.pointerType !== 'mouse') return;
+    const r = e.currentTarget.getBoundingClientRect();
+    e.currentTarget.style.setProperty('--zx', `${((e.clientX - r.left) / r.width) * 100}%`);
+    e.currentTarget.style.setProperty('--zy', `${((e.clientY - r.top) / r.height) * 100}%`);
+  };
 
   const details = [
     { k: 'Material', v: p.material },
@@ -54,6 +72,13 @@ export function ProductPage({ productId }: { productId: string }) {
     { k: 'Unidade', v: `Vendido por ${unitWord}` },
     { k: 'SKU', v: cur.sku },
   ];
+
+  // Blocos que abrem e fecham; só aparecem com texto (cadastro ou src/data/infoLoja.ts).
+  const informacoes = [
+    { t: 'Cuidados com a peça', x: p.care },
+    { t: 'Entrega', x: INFO_LOJA.entrega },
+    { t: 'Trocas', x: INFO_LOJA.trocas },
+  ].filter((b): b is { t: string; x: string } => !!b.x);
 
   const add = () => {
     if (!cur.avail) return;
@@ -68,48 +93,68 @@ export function ProductPage({ productId }: { productId: string }) {
         <span aria-hidden="true">/</span>
         <Link href="/loja">Loja</Link>
         <span aria-hidden="true">/</span>
-        <span>{p.name}</span>
+        {!p.isKit && p.catIds[0] && (
+          <>
+            <Link href={catalogHref({ cat: p.catIds[0] })}>{categoryLabel(p)}</Link>
+            <span aria-hidden="true">/</span>
+          </>
+        )}
+        <span aria-current="page">{p.name}</span>
       </nav>
 
       <div className="pdp">
-        <div>
-          {fotos.length > 0 ? (
+        <div className="gal">
+          {/* Celular: desliza com o dedo (pontos embaixo). Computador: miniaturas e zoom ao passar o mouse na foto. */}
+          <div
+            className="gal-main"
+            ref={faixa}
+            role="region"
+            aria-roledescription="carrossel"
+            aria-label={`Imagens de ${p.name}`}
+            tabIndex={0}
+            onScroll={(e) => {
+              const el = e.currentTarget;
+              const i = Math.round(el.scrollLeft / el.clientWidth);
+              if (i !== gal && i >= 0 && i < total) setGal(i);
+            }}
+          >
+            {fotos.length > 0
+              ? fotos.map((f, i) => (
+                  <div
+                    key={f.src}
+                    className="gal-slide zoomavel"
+                    role="group"
+                    aria-roledescription="imagem"
+                    aria-label={`${i + 1} de ${total}`}
+                    onPointerMove={moverZoom}
+                  >
+                    <Midia foto={f} tamanho="g" art={art} ratio="1 / 1.05" prioridade={i === 0} />
+                  </div>
+                ))
+              : GALLERY.map((g, i) => (
+                  <div key={i} className="gal-slide" role="group" aria-roledescription="imagem" aria-label={`${i + 1} de ${total}`}>
+                    <Art {...art} bg={g.bg} rot={g.rot} ratio="1 / 1.05" />
+                  </div>
+                ))}
+          </div>
+          {total > 1 && (
             <>
-              <div className="gal-main">
-                <Midia foto={fotos[Math.min(gal, fotos.length - 1)]} tamanho="g" art={art} ratio="1 / 1.05" prioridade />
-              </div>
-              {fotos.length > 1 && (
-                <div className="gal-t">
-                  {fotos.map((f, i) => (
-                    <button
-                      key={f.src}
-                      className={gal === i ? 'on' : ''}
-                      onClick={() => setGal(i)}
-                      aria-label={`Ver foto ${i + 1} de ${fotos.length}`}
-                      aria-pressed={gal === i}
-                    >
-                      <Midia foto={{ ...f, alt: '' }} art={art} />
-                    </button>
-                  ))}
-                </div>
-              )}
-            </>
-          ) : (
-            <>
-              <div className="gal-main">
-                <Art {...art} bg={GALLERY[gal].bg} rot={GALLERY[gal].rot} ratio="1 / 1.05" />
-              </div>
               <div className="gal-t">
-                {GALLERY.map((g, i) => (
+                {(fotos.length > 0 ? fotos : GALLERY).map((item, i) => (
                   <button
                     key={i}
                     className={gal === i ? 'on' : ''}
-                    onClick={() => setGal(i)}
-                    aria-label={`Ver imagem ${i + 1} de 4`}
+                    onClick={() => irPara(i)}
+                    aria-label={`Ver imagem ${i + 1} de ${total}`}
                     aria-pressed={gal === i}
                   >
-                    <Art {...art} bg={g.bg} rot={g.rot} />
+                    {'src' in item ? <Midia foto={{ ...item, alt: '' }} art={art} /> : <Art {...art} bg={item.bg} rot={item.rot} />}
                   </button>
+                ))}
+              </div>
+              <div className="gal-pontos" aria-hidden="true">
+                {Array.from({ length: total }, (_, i) => (
+                  <i key={i} className={gal === i ? 'on' : ''} />
                 ))}
               </div>
             </>
@@ -117,7 +162,6 @@ export function ProductPage({ productId }: { productId: string }) {
         </div>
 
         <div className="pdp-info">
-          <span className="eyebrow">{categoryLabel(p)}</span>
           <h1>{p.name}</h1>
           <div className="price">
             <strong>{fmt(cur.price)}</strong>
@@ -212,11 +256,22 @@ export function ProductPage({ productId }: { productId: string }) {
               </div>
             ))}
           </dl>
+
+          {informacoes.length > 0 && (
+            <div className="acc">
+              {informacoes.map((b) => (
+                <details key={b.t}>
+                  <summary>{b.t}</summary>
+                  <p>{b.x}</p>
+                </details>
+              ))}
+            </div>
+          )}
         </div>
       </div>
 
       <section className="sec" style={{ paddingTop: 20 }} aria-labelledby="h-rel">
-        <SectionHead eyebrow="Combina com" title="Você também pode gostar" id="h-rel" />
+        <SectionHead title="Você também pode gostar" id="h-rel" />
         <ProductGrid products={relatedTo(p, products)} />
       </section>
     </div>

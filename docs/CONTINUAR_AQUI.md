@@ -1,6 +1,6 @@
 # Continuar aqui
 
-**Última atualização:** 03/11/2026. Atualize este arquivo no fim de cada sessão: risque o que terminou e escreva onde parou.
+**Última atualização:** 04/11/2026. Atualize este arquivo no fim de cada sessão: risque o que terminou e escreva onde parou.
 
 ## Onde paramos
 
@@ -10,9 +10,9 @@
 | Banco `ar-acessorios-dev` (Supabase, São Paulo, ref `pmhipriryqsblhonysay`) | Pronto: 4 migrações, carga de demonstração (19 produtos, 73 variações, 3 kits) e **35 testes passando** |
 | Admin do painel | `acess.ar05@gmail.com` criado e liberado em `admin_members` |
 | Vitrine (Next.js) | **Testada contra o banco em 03/11/2026**: todos os itens do Passo 2 passaram |
-| Login do painel | **Parcialmente testado contra o banco** (falta entrar com a senha real): `/admin/entrar`, proteção de `/admin`, "acesso não autorizado", botão Sair |
-| Painel `/admin` — Estoque | **Ligado ao banco** (aba Estoque e "Estoque baixo" da visão geral). Falta testar entrando com a conta real |
-| Painel `/admin` — Produtos | **Cadastro e fotos ligados ao banco**. Falta testar entrando com a conta real |
+| Login do painel | **Testado com a conta real em 04/11/2026** (entrar, sessão ao recarregar). Faltam: conta fora de `admin_members`, botão Sair e conferir cadastro público desligado |
+| Painel `/admin` — Estoque | **Testado com a conta real em 04/11/2026**. Falta só o teste de dois ajustes simultâneos |
+| Painel `/admin` — Produtos | **Cadastro e fotos testados com a conta real em 04/11/2026**. Faltam: reordenar com 3+ fotos e envio pelo celular |
 | Painel `/admin` — Pedidos | Ainda demonstração com dados fixos de `src/admin/seed.ts`; não salva nada |
 | CI (GitHub Actions) | `.github/workflows/ci.yml`: build e tipos; banco local com migrações, carga e os testes (`scripts/testar-banco.sh`) |
 | Fases | Fase 1 e Fase 2 autorizadas em 03/11/2026 (ver `AGENTS.md`) |
@@ -70,7 +70,7 @@ Conferido: `/admin` sem sessão redireciona para o login; a tela funciona a 390 
 
 Falta conferir com a rede liberada:
 
-- [ ] Entrar com `acess.ar05@gmail.com` abre o painel; recarregar mantém a sessão
+- [x] Entrar com `acess.ar05@gmail.com` abre o painel; recarregar mantém a sessão (04/11/2026)
 - [x] Senha errada mostra "E-mail ou senha incorretos." (testado contra o banco)
 - [ ] Conta que não está em `admin_members` vê "Acesso não autorizado"
 - [ ] "Sair" volta para o login e `/admin` deixa de abrir
@@ -95,12 +95,12 @@ Conferido nesta sessão (página de teste temporária com dados copiados do banc
 
 Falta conferir entrando com `acess.ar05@gmail.com` (precisa da senha, então fica com o responsável):
 
-- [ ] Aba Estoque lista as 73 variações (as de kit composto com "—" no saldo)
-- [ ] Entrada de 3 em uma variação: saldo sobe 3, aparece no histórico com o motivo
-- [ ] Ajuste −1: saldo desce 1
-- [ ] Ajuste que deixaria o saldo negativo: aparece "Estoque insuficiente…" e nada muda
-- [ ] Contagem: saldo passa a ser o número contado
-- [ ] A vitrine reflete a mudança (ex.: entrada na Argola Lunar Ródio G faz ela deixar de aparecer esgotada)
+- [x] Aba Estoque lista as 73 variações (as de kit composto com "—" no saldo)
+- [x] Entrada de 3 em uma variação: saldo sobe 3, aparece no histórico com o motivo
+- [x] Ajuste −1: saldo desce 1
+- [x] Ajuste que deixaria o saldo negativo: aparece "Estoque insuficiente…" e nada muda
+- [x] Contagem: saldo passa a ser o número contado
+- [x] A vitrine reflete a mudança (ex.: entrada na Argola Lunar Ródio G faz ela deixar de aparecer esgotada)
 - [ ] Teste de dois ajustes simultâneos no mesmo SKU (duas abas)
 
 ## Passo 5 — Cadastro de produtos ✅ escrito (03/11/2026), sem fotos
@@ -124,16 +124,16 @@ Conferido nesta sessão, numa página de teste temporária já apagada (produtos
 
 Falta conferir entrando com `acess.ar05@gmail.com`:
 
-- [ ] Criar "Produto Teste" (rascunho): não aparece em `/loja`
-- [ ] Marcar uma categoria e salvar; editar descrição e salvar
-- [ ] Criar variação: aparece na aba Estoque com saldo 0
-- [ ] SKU repetido (ex.: `AR-BRC002-OURO-P`) mostra "Esse SKU já está em uso…"
-- [ ] Ativar: aparece na vitrine como esgotado; dar entrada no Estoque: fica disponível
-- [ ] Promoção com datas de hoje: vitrine mostra preço riscado e "Promoção válida até…"
-- [ ] Kit composto em rascunho: escolher peças, salvar, ativar; depois de ativo, peças travadas
-- [ ] Arquivar: some da vitrine
-- [ ] Apagar um rascunho sem movimentação de estoque (variação com entrada registrada não deixa apagar: arquive)
-- [ ] Ao final, arquivar ou apagar os produtos de teste
+- [x] Criar "Produto Teste" (rascunho): não aparece em `/loja`
+- [x] Marcar uma categoria e salvar; editar descrição e salvar
+- [x] Criar variação: aparece na aba Estoque com saldo 0
+- [x] SKU repetido (ex.: `AR-BRC002-OURO-P`) mostra "Esse SKU já está em uso…"
+- [x] Ativar: aparece na vitrine como esgotado; dar entrada no Estoque: fica disponível
+- [x] Promoção com datas de hoje: vitrine mostra preço riscado e "Promoção válida até…"
+- [x] Kit composto em rascunho: escolher peças, salvar, ativar; depois de ativo, peças travadas
+- [x] Arquivar: some da vitrine
+- [x] Apagar um rascunho sem movimentação de estoque (variação com entrada registrada não deixa apagar: arquive)
+- [x] Ao final, arquivar ou apagar os produtos de teste
 
 ## Passo 6 — Fotos dos produtos ✅ escrito (03/11/2026)
 
@@ -157,10 +157,11 @@ Conferido nesta sessão (páginas de teste temporárias, já apagadas; imagens s
 
 Falta conferir entrando com `acess.ar05@gmail.com`:
 
-- [ ] Enviar 2 fotos num produto: aparecem no painel, a primeira vira capa
-- [ ] A vitrine mostra a capa no cartão e as duas na página do produto
-- [ ] Trocar a capa, reordenar, editar a descrição
-- [ ] Apagar uma foto: some da vitrine **e do Storage** (conferir no painel do Supabase → Storage → produtos)
+- [x] Enviar 2 fotos num produto: aparecem no painel, a primeira vira capa
+- [x] A vitrine mostra a capa no cartão e as duas na página do produto
+- [x] Trocar a capa e editar a descrição
+- [ ] Reordenar (as setas só funcionam com 3 fotos ou mais)
+- [x] Apagar uma foto: some da vitrine **e do Storage** (conferir no painel do Supabase → Storage → produtos)
 - [ ] Enviar pelo celular (foto da câmera)
 
 ## Teste de ponta a ponta no Supabase local (03/11/2026)
@@ -193,6 +194,43 @@ Tokens novos em `.ar.dark` (vitrine) e `.adm.dark` (painel): base carvão quente
 
 A pedido do responsável, saíram a faixa do topo, a frase do rodapé, "demonstração" no hero e no produto e "Promoção ilustrativa". Também saiu "(dados demonstrativos)" do campo Material dos 19 produtos (banco `ar-acessorios-dev`, `supabase/seed.sql` e `src/data/demo-catalog.ts`). **Continuam:** os avisos na sacola e no checkout (compra travada, D-017) e a nota de texto ilustrativo na página Sobre. O site segue fora dos buscadores (`robots: noindex`).
 
+## Teste do painel com a conta real (04/11/2026)
+
+Roteiro dos Passos 3 a 6 feito no `ar-acessorios-dev`, entrando com `acess.ar05@gmail.com` (marcado acima). Dados de teste:
+- Argola Lunar Ródio G: entrada +3, ajuste −1, ajuste −5 recusado, contagem 0. O saldo voltou ao original (0), e as três movimentações ficam no histórico.
+- "Produto Teste Claude" (`AR-TST999-OURO`): **arquivado** (tem movimentação, não pode ser apagado), saldo zerado, sem fotos e sem arquivos no Storage.
+- "Kit Teste Claude" (kit composto): apagado.
+
+Observações do teste:
+- ~~Mensagem "Ajuste registrada"~~: corrigida para "Ajuste registrado" (04/11/2026).
+- Promoção em variação esgotada: a vitrine mostra o preço promocional, mas esconde o preço riscado e "Promoção válida até…" (`cur.avail` em `src/views/ProductPage.tsx`). Está assim desde o primeiro commit. **Em aberto:** decidir se fica assim.
+- Kit composto: voltar para rascunho ("Tirar da loja") libera de novo as peças. A mensagem do painel agora diz exatamente isso (04/11/2026). **Em aberto (Q-CAT-03):** isso deixa mudar a composição de um kit que já esteve à venda.
+- ~~Produto arquivado continua na aba Estoque~~: agora fica escondido por padrão, com o botão "Mostrar arquivados (n)"; a visão geral também ignora arquivados (04/11/2026).
+- ~~"Arquivar" não pede confirmação~~: agora pede (04/11/2026).
+
+## Auditoria visual (04/11/2026, skill impeccable)
+
+- **Tema na raiz:** a classe `dark` agora fica no `<html>`, aplicada por um script antes da primeira pintura (`src/app/layout.tsx`), sem piscar claro. Ela vem junto com `color-scheme`, para que menus abertos, calendário, barras de rolagem e preenchimento automático sigam o tema, e com a cor da barra do celular. O CSS usa `html.dark .ar` / `html.dark .adm`.
+- **Controles do navegador no tema** (`src/styles/base.css`): menus de seleção com seta própria, caixas de marcar e rádios desenhados (no escuro os nativos sumiam no fundo), ícone do calendário, campo de busca sem o "x" cinza, preenchimento automático, seleção de texto e barras de rolagem.
+- **Dicas (tooltips) no tema:** `data-dica` nos botões só com ícone (cabeçalho, favoritar no cartão, setas das fotos). Só aparecem com mouse ou teclado.
+- **Confirmações do painel:** `window.confirm`/`alert` trocados por `src/admin/confirmar.tsx` (apagar foto, variação e rascunho).
+- **Defeito corrigido:** no celular, a barra fixa "Adicionar à sacola" da página de produto ficava fora da tela, porque a animação de entrada (`.fade`, fill `both`) deixava um `transform` aplicado. Agora a animação usa `backwards`.
+- **Vitrine:**
+  - saíram os sobretítulos em maiúsculas antes dos títulos e os números 01/02/03 da página Sobre;
+  - os cartões de kit não mostram mais "Kit com estoque próprio"/"Kit composto" (termos internos);
+  - a categoria foi para a trilha do produto (Início / Loja / Brincos / peça);
+  - no celular, os botões do destaque ficam lado a lado e a foto aparece na primeira tela;
+  - entrou uma faixa com os três compromissos que já estavam na página Sobre;
+  - os símbolos de texto usados como ícone (←, →, ↗, −, +) viraram ícones desenhados.
+- **Página de produto (04/11/2026):**
+  - no celular, a galeria ocupa a largura toda, desliza com o dedo e mostra pontos de posição;
+  - no computador, tem miniaturas e zoom que acompanha o mouse nas fotos;
+  - os blocos "Cuidados com a peça" (campo Cuidados do cadastro, hoje vazio em todos os produtos), "Entrega" e "Trocas" abrem e fecham e só aparecem com texto. Os textos de entrega e trocas ficam em `src/data/infoLoja.ts`, vazios até a cliente responder (D-010, D-015).
+- **Painel conferido com login (04/11/2026):** no escuro, menus, datas e caixas de marcar seguem o tema; a confirmação abre no tema no computador e no celular (pequena, centrada), e "Cancelar" e Esc não apagam nada.
+- **Rodapé público (04/11/2026):** sem "Limpar sacola e favoritos" e "Painel da loja". A opção de limpar foi para a sacola e para os favoritos; o painel continua em `/admin`.
+- **`DESIGN.md` (04/11/2026):** sistema visual registrado com o impeccable (estrela-guia "O porta-joias de linho"; acolhida e confiante; componentes macios e discretos), com `.impeccable/design.json` ao lado. O `AGENTS.md` manda segui-lo. A paleta continua provisória (D-014).
+- **Dado ruim no banco de desenvolvimento:** a foto do "Anel Duo Entrelaçado" é um folheto de Natal ("Por apenas R$ 42,99") e aparece em primeiro em Lançamentos e na loja. Trocar ou apagar pelo painel.
+
 ## Pendências que não são de código
 
 | Item | Onde |
@@ -204,4 +242,4 @@ A pedido do responsável, saíram a faixa do topo, a frase do rodapé, "demonstr
 
 ## Como pedir na próxima sessão
 
-> Leia o AGENTS.md e o docs/CONTINUAR_AQUI.md e continue do Passo 1 (depois: testar login, estoque e cadastro com a conta real, Passos 3 a 5; depois enviar fotos de demonstração).
+> Leia o AGENTS.md e o docs/CONTINUAR_AQUI.md e continue do Passo 1 (depois: decidir as observações do teste de 04/11/2026; itens restantes dos Passos 3, 4 e 6; depois enviar fotos de demonstração).

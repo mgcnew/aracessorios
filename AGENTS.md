@@ -10,6 +10,7 @@ Projeto: loja virtual **própria** da AR Acessórios (semijoias, B2C, estoque pr
    - catálogo e estoque: [`docs/modulos/01_CATALOGO_ESTOQUE.md`](docs/modulos/01_CATALOGO_ESTOQUE.md)
    - pedidos e pagamentos: [`docs/modulos/02_PEDIDOS_PAGAMENTOS.md`](docs/modulos/02_PEDIDOS_PAGAMENTOS.md)
    - protótipo visual: [`docs/frontend/BRIEF_FRONTEND.md`](docs/frontend/BRIEF_FRONTEND.md)
+   - sistema visual (cores, fontes, formas, componentes e regras): [`DESIGN.md`](DESIGN.md); qualquer mudança visual segue e atualiza esse arquivo
 
 ## Regras
 - **Decidido** é regra. **Proposto** e **Em aberto** não são: não implemente como se fossem.
@@ -47,3 +48,13 @@ npm run dev        # servidor local (http://localhost:3000)
 npm run typecheck
 npm run build      # build de produção, gera as páginas estáticas
 ```
+
+<!-- BEGIN:nextjs-agent-rules -->
+
+## This is NOT the Next.js you know
+
+This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` (resolved from this file's directory; in monorepos the `next` package may not be visible from the repo root) before writing any code. Heed deprecation notices.
+
+This block is written and re-added by `next dev` — verify at `node_modules/next/dist/server/lib/generate-agent-files.js`. Removing it from a diff only re-creates the uncommitted change; committing it with your work keeps the tree clean.
+
+<!-- END:nextjs-agent-rules -->

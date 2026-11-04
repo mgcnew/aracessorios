@@ -50,7 +50,7 @@ export const getCatalogo = cache(async (): Promise<Catalogo> => {
     db
       .from('products')
       .select(
-        `id, slug, name, short_description, description, material, kind, sale_unit, is_new, is_featured,
+        `id, slug, name, short_description, description, material, care_info, kind, sale_unit, is_new, is_featured,
          product_categories ( categories ( slug, name, position ) ),
          product_variants ( id, sku, attributes, price_cents, promo_price_cents, promo_starts_at, promo_ends_at, position, active ),
          product_images ( storage_path, alt, position, is_cover )`,
@@ -126,6 +126,7 @@ export const getCatalogo = cache(async (): Promise<Catalogo> => {
       desc: p.description,
       short: p.short_description || undefined,
       material: p.material,
+      care: p.care_info || undefined,
       kind,
       isKit: kind !== 'simple',
       variants,

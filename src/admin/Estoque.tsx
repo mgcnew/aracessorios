@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState, useTransition } from 'react';
 import { historicoVariacao, movimentarEstoque } from '../app/admin/estoque-acoes';
-import { SearchIcon } from '../components/Icons';
+import { MinusIcon, PlusIcon, SearchIcon } from '../components/Icons';
 import { norm } from '../data/catalog';
 import {
   NOME_TIPO,
@@ -34,23 +34,29 @@ export function Estoque({
   linhas,
   setLinhas,
   erroCarga,
+  arquivados,
 }: {
   linhas: LinhaEstoque[];
   setLinhas: (l: LinhaEstoque[]) => void;
   erroCarga: string | null;
+  /** Produtos arquivados: ficam fora da lista até a pessoa pedir para ver. */
+  arquivados: Set<string>;
 }) {
   const [busca, setBusca] = useState('');
   const [soBaixo, setSoBaixo] = useState(false);
+  const [verArquivados, setVerArquivados] = useState(false);
   const [aberta, setAberta] = useState<LinhaEstoque | null>(null);
   const [aviso, setAviso] = useState<string | null>(null);
 
   const nq = norm(busca.trim());
+  const qtdArquivadas = linhas.filter((l) => arquivados.has(l.product_id)).length;
   const visiveis = linhas.filter(
     (l) =>
+      (verArquivados || !arquivados.has(l.product_id)) &&
       (!soBaixo || l.abaixo_do_minimo) &&
       (!nq || norm(`${l.product_name} ${l.sku} ${descreverVariacao(l.attributes)}`).includes(nq)),
   );
-  const baixo = linhas.filter((l) => l.abaixo_do_minimo).length;
+  const baixo = linhas.filter((l) => l.abaixo_do_minimo && (verArquivados || !arquivados.has(l.product_id))).length;
 
   return (
     <>
@@ -84,6 +90,11 @@ export function Estoque({
         <button className={`pill${soBaixo ? ' on' : ''}`} aria-pressed={soBaixo} onClick={() => setSoBaixo((v) => !v)}>
           Só no mínimo ou esgotado ({baixo})
         </button>
+        {qtdArquivadas > 0 && (
+          <button className={`pill${verArquivados ? ' on' : ''}`} aria-pressed={verArquivados} onClick={() => setVerArquivados((v) => !v)}>
+            Mostrar arquivados ({qtdArquivadas})
+          </button>
+        )}
       </div>
 
       <section className="card">
@@ -114,6 +125,7 @@ export function Estoque({
                         {variacao && `${variacao} · `}
                         {l.sku}
                         {kit && ' · kit composto'}
+                        {arquivados.has(l.product_id) && ' · arquivado'}
                       </div>
                     </td>
                     <td className="num c-dado" data-label="Saldo">{kit ? '—' : l.on_hand}</td>
@@ -235,7 +247,7 @@ function Movimentar({
       setValor('');
       setMotivo('');
       const nova = r.dados.find((n) => n.variant_id === linha.variant_id);
-      const texto = `${conf.nome} registrada em ${linha.product_name}${variacao ? ` (${variacao})` : ''}. Saldo agora: ${nova?.on_hand ?? '—'}.`;
+      const texto = `${conf.nome} ${op === 'ajuste' ? 'registrado' : 'registrada'} em ${linha.product_name}${variacao ? ` (${variacao})` : ''}. Saldo agora: ${nova?.on_hand ?? '—'}.`;
       setFeito(texto);
       concluir(r.dados, texto);
     });
@@ -310,7 +322,7 @@ function Movimentar({
           )}
           <span className="qtd-l">
             <button type="button" className="qtd-b" onClick={() => passo(-1)} aria-label="Diminuir quantidade">
-              −
+              <MinusIcon size={20} />
             </button>
             <input
               className="auth-i qtd-i"
@@ -323,7 +335,7 @@ function Movimentar({
               aria-label={op === 'ajuste' ? `Quantidade a ${sinal}` : conf.campo}
             />
             <button type="button" className="qtd-b" onClick={() => passo(1)} aria-label="Aumentar quantidade">
-              +
+              <PlusIcon size={20} />
             </button>
           </span>
         </div>
