@@ -62,7 +62,6 @@ export function Cart() {
                     <span className="line-v">
                       {variant.label} · {fmt(variant.price)}
                     </span>
-                    <span className="line-s">SKU {variant.sku}</span>
                     <div className="line-f">
                       <Stepper
                         label={`Quantidade de ${product.name}`}
@@ -109,6 +108,15 @@ export function Cart() {
               Continuar explorando
             </Link>
           </aside>
+          <div className="cart-bar">
+            <div>
+              <span>Total ilustrativo</span>
+              <strong>{fmt(subtotal)}</strong>
+            </div>
+            <Link className="btn btn-p" href="/checkout">
+              Ver prévia do checkout
+            </Link>
+          </div>
         </div>
       ) : (
         <EmptyState

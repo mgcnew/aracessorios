@@ -168,3 +168,16 @@ export const ConversaIcon = ({ size = 24, ...p }: IconProps) => (
     <path d="M9 11.5h.01M12.5 11.5h.01M16 11.5h.01" strokeWidth={2.2} />
   </svg>
 );
+
+export const SinoIcon = ({ size = 22, ...p }: IconProps) => (
+  <svg {...base(size, p)} strokeLinecap="round" strokeLinejoin="round">
+    <path d="M6 16.5V11a6 6 0 1112 0v5.5l1.5 2h-15zM10 20.5a2.2 2.2 0 004 0" />
+  </svg>
+);
+
+/** O ícone "Compartilhar" do Safari (caixa com seta para cima), usado no passo a passo de instalar o painel. */
+export const CompartilharIcon = ({ size = 18, ...p }: IconProps) => (
+  <svg {...base(size, p)} strokeLinecap="round" strokeLinejoin="round">
+    <path d="M12 15V4M8.5 7.5L12 4l3.5 3.5M7 10.5H6a1.5 1.5 0 00-1.5 1.5v6.5A1.5 1.5 0 006 20h12a1.5 1.5 0 001.5-1.5V12A1.5 1.5 0 0018 10.5h-1" />
+  </svg>
+);

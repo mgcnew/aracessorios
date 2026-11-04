@@ -233,6 +233,12 @@ Galeria com miniaturas, nomes e busca, seguindo os cartões, campos e temas exis
 ### Filtros ativos (loja)
 Cada filtro em uso (categoria, busca, "só disponíveis") vira uma etiqueta em pílula com × que o remove com um clique; "Limpar tudo" aparece com dois ou mais. O título mostra "5 de 19 peças" quando há filtro. A linha some quando não há filtro. Etiquetas quebram em linhas, nunca rolam para o lado.
 
+### Balão de confirmação (toast)
+Cartão da loja (linho, borda areia de 1px, 18px de canto, sombra difusa; no escuro, anel de 1px na cor da borda) com miniatura da peça de 48px, título em 14,5px/500, detalhe em 13px, **uma** ação principal em pílula (cacau no claro, ouro champagne no escuro) e um fechar de 32px. Fica logo abaixo do cabeçalho (centrado no celular, à direita no computador), nunca sobre a barra de compra. Entra com um deslize curto de 380ms, sai em 200ms, some sozinho em 4,5s e fica parado enquanto o mouse ou o foco estão nele. Texto nunca quebra: título e detalhe cortam com reticências.
+
+### Sacola no celular
+Total e botão de seguir numa barra fixa (`.cart-bar`) acima da navegação de baixo, como a barra de compra do produto; o botão do resumo some para não duplicar. A linha da sacola não mostra SKU: é dado interno.
+
 ### Cartão de produto (assinatura)
 Quando a peça tem duas ou mais fotos, a segunda aparece em fade (450ms) por cima da primeira ao passar o mouse ou focar o cartão com o teclado. Ela **só é baixada na primeira intenção** (mouse ou teclado), nunca no carregamento nem no toque, para não pesar a loja.
 
@@ -258,6 +264,8 @@ Na página inicial, Lançamentos e Mais vendidos viram uma faixa horizontal abai
 - **Don't** usar símbolos de texto (←, →, ↗, −, +) como ícone; use os ícones desenhados de `src/components/Icons.tsx`.
 - **Don't** usar `window.confirm`/`alert` no painel; use `confirmar()` de `src/admin/confirmar.tsx`.
 - **Don't** usar `<select>` nativo; use `Selecao`.
+- **Don't** repetir a cor de fundo de um botão no fundo do cartão onde ele mora (o botão some): cada superfície define a cor da própria ação. Vale para o balão e para qualquer cartão novo.
+- **Don't** mostrar dado interno ao cliente (SKU, termos de kit/estoque) fora da página do produto.
 - **Don't** fazer faixa ou tabela que role para o lado no painel: filtros de uma escolha viram `FiltroOpcoes` (dropdown abaixo de 900px) e tabelas viram cartões pela largura da própria área (`.tw`, container query de 700px).
 - **Don't** usar urgência artificial (contador, "últimas unidades") nem promessas que a cliente não confirmou; use `[A DEFINIR]` fora da vitrine.
 - **Don't** deixar animação de entrada "presa" com `fill-mode: forwards`/`both`: ela quebra os elementos fixos no celular.

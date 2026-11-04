@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from 'next';
 import { Cormorant_Garamond, Jost } from 'next/font/google';
 import type { ReactNode } from 'react';
+import { RegistrarSW } from '../components/RegistrarSW';
 import '../styles/base.css';
 import '../styles/store.css';
 import '../styles/admin.css';
@@ -20,6 +21,11 @@ export const metadata: Metadata = {
   description: 'Semijoias delicadas para o dia a dia e para presentear.',
   // Protótipo com dados fictícios: fora dos buscadores até o lançamento.
   robots: { index: false, follow: false },
+  // PWA da loja: instalável na tela inicial (o painel tem o próprio manifesto em src/app/admin/layout.tsx).
+  manifest: '/manifest.webmanifest',
+  icons: { icon: '/icons/loja-192.png', apple: '/icons/loja-180.png' },
+  appleWebApp: { capable: true, title: 'AR Acessórios', statusBarStyle: 'default' },
+  other: { 'apple-mobile-web-app-capable': 'yes' },
 };
 
 export const viewport: Viewport = {
@@ -44,7 +50,10 @@ export default function RootLayout({ children }: { children: ReactNode }) {
       <head>
         <script dangerouslySetInnerHTML={{ __html: TEMA_INICIAL }} />
       </head>
-      <body>{children}</body>
+      <body>
+        {children}
+        <RegistrarSW />
+      </body>
     </html>
   );
 }

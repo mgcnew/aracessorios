@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>Sem conexão · AR Acessórios</title>
+<style>
+  :root{color-scheme:light dark;--bg:#FDF6F0;--ink:#38291F;--ink2:#6B4E3D;--line:#E8DAD0;--btn:#38291F;--btn-t:#FDF6F0}
+  @media (prefers-color-scheme:dark){:root{--bg:#100E0D;--ink:#F4ECE3;--ink2:#C9BDB1;--line:#4A423C;--btn:#D9B384;--btn-t:#1A1511}}
+  *{box-sizing:border-box}
+  body{margin:0;min-height:100vh;min-height:100dvh;display:grid;place-items:center;padding:24px;background:var(--bg);color:var(--ink);font:16px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif}
+  main{max-width:420px;text-align:center}
+  img{width:96px;height:96px;border-radius:50%;margin-bottom:20px}
+  h1{margin:0 0 10px;font:500 clamp(34px,9vw,46px)/1.05 "Cormorant Garamond",Georgia,serif}
+  p{margin:0 0 26px;color:var(--ink2)}
+  button{min-height:48px;padding:0 30px;border:0;border-radius:999px;background:var(--btn);color:var(--btn-t);font:500 15px/1 inherit;letter-spacing:.05em;cursor:pointer}
+  button:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
+</style>
+</head>
+<body>
+<main>
+  <img src="/icons/loja-192.png" alt="AR Acessórios" width="96" height="96">
+  <h1>Você está sem conexão</h1>
+  <p>Assim que a internet voltar, é só tentar de novo. Sua sacola e seus favoritos continuam guardados neste aparelho.</p>
+  <button type="button" onclick="location.reload()">Tentar de novo</button>
+</main>
+<script>addEventListener('online', function () { location.reload(); });</script>
+</body>
+</html>
