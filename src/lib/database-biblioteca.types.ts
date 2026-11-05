@@ -18,6 +18,12 @@ export type LancamentoRow = {
 };
 // Vídeo do produto (migração 20261105100000_video_produto.sql).
 export type VideoRow = { product_id: string; storage_path: string; poster_path: string; duration_ms: number; size_bytes: number; created_at: string };
+// Configurações da loja (migração 20261105110000_configuracoes_site.sql).
+export type SiteMediaRow = { slot: string; kind: 'imagem' | 'video'; storage_path: string; poster_path: string | null; alt: string; updated_at: string };
+export type SiteSettingsRow = {
+  id: true; store_name: string; legal_name: string; cnpj: string; email: string; phone: string; whatsapp: string;
+  instagram: string; address: string; hours: string; updated_at: string;
+};
 export type DatabaseComBiblioteca = Omit<Database, 'public'> & {
   public: Omit<Database['public'], 'Tables' | 'Functions'> & {
     Tables: Database['public']['Tables'] & {
@@ -49,6 +55,18 @@ export type DatabaseComBiblioteca = Omit<Database, 'public'> & {
         Row: VideoRow;
         Insert: Omit<VideoRow, 'created_at'> & Partial<Pick<VideoRow, 'created_at'>>;
         Update: Partial<VideoRow>;
+        Relationships: [];
+      };
+      site_media: {
+        Row: SiteMediaRow;
+        Insert: Omit<SiteMediaRow, 'updated_at'> & Partial<Pick<SiteMediaRow, 'updated_at'>>;
+        Update: Partial<SiteMediaRow>;
+        Relationships: [];
+      };
+      site_settings: {
+        Row: SiteSettingsRow;
+        Insert: never;
+        Update: Partial<Omit<SiteSettingsRow, 'id'>>;
         Relationships: [];
       };
       media_assets: {

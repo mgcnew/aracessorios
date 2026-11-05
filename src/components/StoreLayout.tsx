@@ -7,6 +7,7 @@ import { useCatalogo } from '../data/CatalogoContext';
 import { catalogHref } from '../data/catalogQuery';
 import { useStore } from '../store';
 import { BagIcon, CheckIcon, CrossIcon, GemIcon, HeartIcon, HomeIcon, InfoIcon, MoonIcon, SearchIcon, SunIcon } from './Icons';
+import { useEmpresa } from '../data/SiteContext';
 import { InstalarApp } from './InstalarApp';
 import { Midia } from './Midia';
 import { LogoMark } from './ui';
@@ -33,6 +34,16 @@ export function StoreLayout({ children }: { children: ReactNode }) {
   const router = useRouter();
   const { dark, toggleDark, favs, cart, toast, segurarToast, soltarToast, fecharToast } = useStore();
   const { categories } = useCatalogo();
+  const empresa = useEmpresa();
+  // Só o que foi preenchido em Configurações aparece; sem nada, o bloco some.
+  const contato = [
+    empresa.whatsapp && { chave: 'whatsapp', texto: `WhatsApp ${empresa.whatsapp}`, href: `https://wa.me/${empresa.whatsapp}`, externo: true },
+    empresa.phone && { chave: 'phone', texto: empresa.phone, href: `tel:${empresa.phone.replace(/[^\d+]/g, '')}`, externo: false },
+    empresa.email && { chave: 'email', texto: empresa.email, href: `mailto:${empresa.email}`, externo: false },
+    empresa.instagram && { chave: 'instagram', texto: `@${empresa.instagram}`, href: `https://instagram.com/${empresa.instagram}`, externo: true },
+    empresa.address && { chave: 'address', texto: empresa.address, href: null, externo: false },
+    empresa.hours && { chave: 'hours', texto: empresa.hours, href: null, externo: false },
+  ].filter((c): c is { chave: string; texto: string; href: string | null; externo: boolean } => !!c);
   const [search, setSearch] = useState('');
   const active = activeNav(pathname);
   const cartCount = cart.reduce((s, l) => s + l.qty, 0);
@@ -124,6 +135,16 @@ export function StoreLayout({ children }: { children: ReactNode }) {
                 ))}
               </ul>
             </nav>
+            {contato.length > 0 && (
+              <nav aria-labelledby="foot-contato">
+                <h4 id="foot-contato">Contato</h4>
+                <ul className="foot-contato">
+                  {contato.map((c) => (
+                    <li key={c.chave}>{c.href ? <a href={c.href} {...(c.externo ? { target: '_blank', rel: 'noopener noreferrer' } : {})}>{c.texto}</a> : <span>{c.texto}</span>}</li>
+                  ))}
+                </ul>
+              </nav>
+            )}
             <nav aria-labelledby="foot-ar">
               <h4 id="foot-ar">Institucional</h4>
               <ul className="foot-inst">
@@ -141,7 +162,11 @@ export function StoreLayout({ children }: { children: ReactNode }) {
           </div>
           {/* Sem itens de bastidor no rodapé público: o painel fica em /admin e "limpar" fica na sacola. */}
           <div className="foot-b">
-            <span>© {new Date().getFullYear()} AR Acessórios</span>
+            <span>
+              © {new Date().getFullYear()} {empresa.storeName}
+              {empresa.legalName && ` · ${empresa.legalName}`}
+              {empresa.cnpj && ` · CNPJ ${empresa.cnpj}`}
+            </span>
             <InstalarApp />
           </div>
         </div>

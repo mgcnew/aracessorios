@@ -660,5 +660,112 @@ begin
 end $$;
 reset role;
 
+-- Configurações da loja (SET-DEC-001) ----------------------------------------------------------
+-- Admin troca a imagem de um espaço, usa vídeo onde pode, edita os dados da empresa; o banco recusa caminho
+-- fora do padrão, vídeo em categoria e CNPJ/e-mail inválidos; a foto em uso não pode ser excluída da biblioteca.
+-- Visitante lê (a vitrine precisa) mas não grava; cliente logado também não grava.
+set local role authenticated;
+select set_config('request.jwt.claims', '{"role":"authenticated","sub":"11111111-1111-1111-1111-111111111111"}', true);
+do $$
+declare n int; caminho text := gen_random_uuid() || '/' || gen_random_uuid() || '.webp'; mid uuid;
+begin
+  insert into public.media_assets (name, default_alt, storage_path) values ('Foto do destaque', 'Foto do destaque', caminho) returning id into mid;
+  insert into public.site_media (slot, kind, storage_path, alt) values ('hero-principal', 'imagem', caminho, 'Pulseira dourada');
+  insert into resultados(teste, ok) values ('admin troca a imagem de um espaço da loja', true);
+
+  insert into public.site_media (slot, kind, storage_path, poster_path, alt)
+  values ('sobre', 'video', 'site/' || gen_random_uuid() || '.mp4', 'site/' || gen_random_uuid() || '.webp', 'Ateliê');
+  insert into resultados(teste, ok) values ('admin usa vídeo em um espaço que aceita vídeo', true);
+
+  begin
+    insert into public.site_media (slot, kind, storage_path, poster_path, alt)
+    values ('categoria-aneis', 'video', 'site/' || gen_random_uuid() || '.mp4', 'site/' || gen_random_uuid() || '.webp', 'Anéis');
+    insert into resultados(teste, ok) values ('banco recusa vídeo em categoria', false);
+  exception when check_violation then
+    insert into resultados(teste, ok) values ('banco recusa vídeo em categoria', true);
+  end;
+  begin
+    insert into public.site_media (slot, kind, storage_path, alt) values ('outro-lugar', 'imagem', caminho, 'x');
+    insert into resultados(teste, ok) values ('banco recusa espaço que não existe', false);
+  exception when check_violation then
+    insert into resultados(teste, ok) values ('banco recusa espaço que não existe', true);
+  end;
+  begin
+    insert into public.site_media (slot, kind, storage_path, alt) values ('embalagem', 'imagem', '../fora.webp', 'x');
+    insert into resultados(teste, ok) values ('banco recusa imagem fora do padrão de caminho', false);
+  exception when check_violation then
+    insert into resultados(teste, ok) values ('banco recusa imagem fora do padrão de caminho', true);
+  end;
+
+  update public.site_settings set legal_name = 'AR Acessórios LTDA', email = 'contato@exemplo.invalid', whatsapp = '11999990000', instagram = 'ar.acessorios', cnpj = '12.345.678/0001-90';
+  select count(*) into n from public.site_settings where whatsapp = '11999990000';
+  insert into resultados(teste, ok) values ('admin edita os dados da empresa', n = 1);
+  begin
+    update public.site_settings set cnpj = 'abc';
+    insert into resultados(teste, ok) values ('banco recusa CNPJ inválido', false);
+  exception when check_violation then
+    insert into resultados(teste, ok) values ('banco recusa CNPJ inválido', true);
+  end;
+  begin
+    update public.site_settings set email = 'sem-arroba';
+    insert into resultados(teste, ok) values ('banco recusa e-mail inválido', false);
+  exception when check_violation then
+    insert into resultados(teste, ok) values ('banco recusa e-mail inválido', true);
+  end;
+  begin
+    perform public.iniciar_exclusao_midia(mid);
+    insert into resultados(teste, ok) values ('foto usada nas configurações não pode ser excluída', false);
+  exception when check_violation then
+    insert into resultados(teste, ok) values ('foto usada nas configurações não pode ser excluída', true);
+  end;
+end $$;
+reset role;
+
+set local role anon;
+select set_config('request.jwt.claims', '{"role":"anon"}', true);
+do $$
+declare n int;
+begin
+  select count(*) into n from public.site_media;
+  insert into resultados(teste, ok, detalhe) values ('visitante lê a mídia fixa da loja', n = 2, n || ' espaços');
+  select count(*) into n from public.site_settings;
+  insert into resultados(teste, ok) values ('visitante lê os dados da empresa', n = 1);
+  begin
+    update public.site_settings set store_name = 'Invasão';
+    get diagnostics n = row_count;
+    insert into resultados(teste, ok) values ('visitante não altera os dados da empresa', n = 0);
+  exception when insufficient_privilege then
+    insert into resultados(teste, ok) values ('visitante não altera os dados da empresa', true);
+  end;
+  begin
+    delete from public.site_media;
+    get diagnostics n = row_count;
+    insert into resultados(teste, ok) values ('visitante não apaga mídia fixa', n = 0);
+  exception when insufficient_privilege then
+    insert into resultados(teste, ok) values ('visitante não apaga mídia fixa', true);
+  end;
+end $$;
+reset role;
+
+set local role authenticated;
+select set_config('request.jwt.claims', '{"role":"authenticated","sub":"22222222-2222-2222-2222-222222222222"}', true);
+do $$
+declare n int;
+begin
+  update public.site_settings set store_name = 'Invasão';
+  get diagnostics n = row_count;
+  insert into resultados(teste, ok) values ('cliente não altera os dados da empresa', n = 0);
+  delete from public.site_media;
+  get diagnostics n = row_count;
+  insert into resultados(teste, ok) values ('cliente não apaga mídia fixa', n = 0);
+  begin
+    insert into public.site_media (slot, kind, storage_path, alt) values ('embalagem', 'imagem', gen_random_uuid() || '/' || gen_random_uuid() || '.webp', 'x');
+    insert into resultados(teste, ok) values ('cliente não cadastra mídia fixa', false);
+  exception when insufficient_privilege then
+    insert into resultados(teste, ok) values ('cliente não cadastra mídia fixa', true);
+  end;
+end $$;
+reset role;
+
 select n, teste, ok, detalhe from resultados order by n;
 rollback;

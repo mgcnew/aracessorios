@@ -461,3 +461,9 @@ html.dark .ar .toast-a:hover{background:var(--hov)}
 .gal-t .gal-video img{width:100%;height:100%;object-fit:cover;display:block}
 .gal-t .gal-play{position:absolute;left:50%;top:50%;width:30px;height:30px;margin:-15px 0 0 -15px;box-shadow:none}
 .gal-t .gal-play::after{border-width:6px 0 6px 10px}
+/* Vídeo em espaço fixo (destaque, kits, embalagem, sobre) */
+.vfundo{position:absolute;inset:0}
+.vfundo video{width:100%;height:100%;object-fit:cover;display:block}
+.foot-contato li a,.foot-contato li span{min-height:0;display:inline-block;padding:3px 0;color:var(--ink);font-size:15px;line-height:1.4;overflow-wrap:anywhere}
+.foot-contato li span{color:var(--ink2)}
+@media (min-width:900px){.foot-g:has(#foot-contato){grid-template-columns:1.1fr 1.2fr 1.2fr 1fr;gap:36px}}
