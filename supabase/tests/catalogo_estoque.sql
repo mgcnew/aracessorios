@@ -649,7 +649,7 @@ begin
   insert into resultados(teste, ok, detalhe) values ('cliente logado vê só o vídeo de produto publicado', n = 1, n || ' vídeos');
   begin
     insert into public.product_videos (product_id, storage_path, poster_path, duration_ms, size_bytes)
-    values ((select id from public.products where slug = 'rascunho-de-teste'), gen_random_uuid() || '/' || gen_random_uuid() || '.mp4', gen_random_uuid() || '/' || gen_random_uuid() || '.webp', 8000, 1000);
+    values ((select id from public.products order by slug limit 1), gen_random_uuid() || '/' || gen_random_uuid() || '.mp4', gen_random_uuid() || '/' || gen_random_uuid() || '.webp', 8000, 1000);
     insert into resultados(teste, ok) values ('cliente não cadastra vídeo', false);
   exception when insufficient_privilege then
     insert into resultados(teste, ok) values ('cliente não cadastra vídeo', true);
