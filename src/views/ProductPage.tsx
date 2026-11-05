@@ -9,9 +9,9 @@ import { HeartIcon } from '../components/Icons';
 import { ProductGrid } from '../components/ProductCard';
 import { SectionHead, Stepper } from '../components/ui';
 import { useCatalogo } from '../data/CatalogoContext';
+import { useTextos } from '../data/SiteContext';
 import { catalogHref } from '../data/catalogQuery';
 import { artOf, categoryLabel, fmt, type Product } from '../data/catalog';
-import { INFO_LOJA } from '../data/infoLoja';
 import { MAX_QTY, useStore } from '../store';
 
 const GALLERY = [
@@ -39,6 +39,7 @@ function relatedTo(p: Product, all: Product[]): Product[] {
 
 export function ProductPage({ productId }: { productId: string }) {
   const { byId, products } = useCatalogo();
+  const texto = useTextos();
   const p = byId[productId];
   const { favs, toggleFav, addToCart, showToast } = useStore();
   const [sel, setSel] = useState<string[]>(() => (p.variants.find((v) => v.avail) ?? p.variants[0]).vals);
@@ -80,8 +81,8 @@ export function ProductPage({ productId }: { productId: string }) {
   // Blocos que abrem e fecham; só aparecem com texto (cadastro ou src/data/infoLoja.ts).
   const informacoes = [
     { t: 'Cuidados com a peça', x: p.care },
-    { t: 'Entrega', x: INFO_LOJA.entrega },
-    { t: 'Trocas', x: INFO_LOJA.trocas },
+    { t: 'Entrega', x: texto('produto-entrega') },
+    { t: 'Trocas', x: texto('produto-trocas') },
   ].filter((b): b is { t: string; x: string } => !!b.x);
 
   const add = () => {

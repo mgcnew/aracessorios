@@ -11,6 +11,10 @@ export interface PaginaConfiguracoes {
   categorias: CategoriaConfig[];
   /** E-mail de quem está logado no painel. */
   email: string;
+  /** Só os textos alterados pela dona (chave → texto). */
+  textos: Record<string, string>;
+  /** false enquanto a migração dos textos não foi aplicada no banco. */
+  textosPronto: boolean;
 }
 
 /** Dados da empresa como o formulário envia (texto puro; o servidor limpa e valida). */

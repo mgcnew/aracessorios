@@ -19,12 +19,14 @@ import { type DadosEmpresa, type PaginaConfiguracoes } from './configuracoes';
 import { enviarVideoSite } from './enviar-video-site';
 import { FiltroOpcoes } from './FiltroOpcoes';
 import { useAcao } from './Produtos';
+import { TextosLoja } from './TextosLoja';
 import { useSuportaVideo } from './useSuportaVideo';
 import { mb } from './video';
 
-type Secao = 'aparencia' | 'empresa' | 'conta';
+type Secao = 'aparencia' | 'textos' | 'empresa' | 'conta';
 const SECOES = [
-  { value: 'aparencia', label: 'Aparência da loja' },
+  { value: 'aparencia', label: 'Imagens e vídeos' },
+  { value: 'textos', label: 'Textos da loja' },
   { value: 'empresa', label: 'Dados da empresa' },
   { value: 'conta', label: 'Minha conta' },
 ] as const;
@@ -37,6 +39,10 @@ export function Configuracoes() {
   const [secao, setSecao] = useState<Secao>('aparencia');
   const [dados, setDados] = useState<PaginaConfiguracoes | null>(null);
   const [erro, setErro] = useState<string | null>(null);
+  const [visitouTextos, setVisitouTextos] = useState(false);
+  useEffect(() => {
+    if (secao === 'textos') setVisitouTextos(true);
+  }, [secao]);
 
   const carregar = useCallback(async () => {
     const r = await carregarConfiguracoes();
@@ -52,7 +58,7 @@ export function Configuracoes() {
     <>
       <div className="top">
         <h1 className="h1">Configurações</h1>
-        <p className="sub">Imagens e vídeos da loja, dados da empresa e a sua conta.</p>
+        <p className="sub">Imagens, vídeos e textos da loja, dados da empresa e a sua conta.</p>
       </div>
       {erro && (
         <p className="auth-err" role="alert" style={{ marginBottom: 16 }}>
@@ -63,6 +69,12 @@ export function Configuracoes() {
         <FiltroOpcoes rotulo="Seção das configurações" valor={secao} opcoes={SECOES} onChange={setSecao} />
       </div>
       {dados && secao === 'aparencia' && <Aparencia dados={dados} mudou={carregar} />}
+      {/* Fica montada depois da primeira visita: trocar de seção não perde o texto que ainda não foi salvo. */}
+      {dados && (visitouTextos || secao === 'textos') && (
+        <div hidden={secao !== 'textos'}>
+          <TextosLoja dados={dados} mudou={carregar} />
+        </div>
+      )}
       {dados && secao === 'empresa' && <Empresa dados={dados} mudou={carregar} />}
       {dados && secao === 'conta' && <Conta email={dados.email} />}
     </>

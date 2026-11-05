@@ -4,6 +4,7 @@ import { updateTag } from 'next/cache';
 import { apenasDigitos, formatarCnpj, type DadosEmpresa, type PaginaConfiguracoes } from '../../admin/configuracoes';
 import { mensagemDoBanco } from '../../admin/produtos';
 import { ESPACOS_FIXOS } from '../../data/site-espacos';
+import { limparTexto, TEXTO_POR_CHAVE } from '../../data/site-textos';
 import { TAG_CATALOGO } from '../../lib/cache';
 import { BUCKET_VIDEOS } from '../../lib/fotos';
 import { supabaseServidor } from '../../lib/supabase/server';
@@ -15,7 +16,7 @@ const CAMINHO_CAPA = /^site\/[0-9a-f-]{36}\.(webp|jpg)$/;
 
 function mensagem(erro: { code?: string; message: string }): string {
   if (erro.code === '42P01' || erro.code === 'PGRST205' || /schema cache|does not exist/i.test(erro.message))
-    return 'As configurações ainda não existem no banco. Aplique supabase/migrations/20261105110000_configuracoes_site.sql no SQL Editor.';
+    return 'As configurações ainda não existem no banco. Aplique supabase/migrations/20261105110000_configuracoes_site.sql e 20261105120000_textos_site.sql no SQL Editor.';
   return mensagemDoBanco(erro);
 }
 
@@ -42,16 +43,17 @@ async function espacoValido(db: Db, slot: string): Promise<{ video: boolean } | 
 export async function carregarConfiguracoes(): Promise<Resultado<PaginaConfiguracoes>> {
   const c = await cliente();
   if (!c.ok) return falha(c.erro);
-  const [midia, empresa, cats] = await Promise.all([
+  const [midia, empresa, cats, textos] = await Promise.all([
     c.db.from('site_media').select('*'),
     c.db.from('site_settings').select('*').maybeSingle(),
     c.db.from('categories').select('slug, name').order('position'),
+    c.db.from('site_texts').select('key, value'),
   ]);
   for (const r of [midia, empresa, cats]) if (r.error) return falha(mensagem(r.error));
   if (!empresa.data) return falha('Os dados da empresa não foram criados. Aplique a migração das configurações.');
   return {
     ok: true,
-    dados: { midia: Object.fromEntries((midia.data ?? []).map((m) => [m.slot, m])), empresa: empresa.data, categorias: cats.data ?? [], email: c.email },
+    dados: { midia: Object.fromEntries((midia.data ?? []).map((m) => [m.slot, m])), empresa: empresa.data, categorias: cats.data ?? [], email: c.email, textos: Object.fromEntries((textos.data ?? []).map((t) => [t.key, t.value])), textosPronto: !textos.error },
   };
 }
 
@@ -159,6 +161,36 @@ export async function salvarEmpresa(d: DadosEmpresa): Promise<Resultado<null>> {
     })
     .eq('id', true);
   if (error) return falha(mensagem(error));
+  updateTag(TAG_CATALOGO);
+  return { ok: true, dados: null };
+}
+
+/**
+ * Salva os textos alterados de uma vez (tudo ou nada). Texto igual ao padrão do site, ou em branco, apaga a linha:
+ * a loja volta ao padrão. Cada texto respeita o limite de caracteres de src/data/site-textos.ts.
+ */
+export async function salvarTextos(entradas: { chave: string; valor: string }[]): Promise<Resultado<null>> {
+  const c = await cliente();
+  if (!c.ok) return falha(c.erro);
+  if (!entradas.length) return falha('Nenhum texto foi alterado.');
+  const gravar: { key: string; value: string }[] = [];
+  const apagar: string[] = [];
+  for (const e of entradas) {
+    const t = TEXTO_POR_CHAVE[e.chave];
+    if (!t) return falha('Texto desconhecido.');
+    const r = limparTexto(t, e.valor);
+    if (!r.ok) return falha(r.erro);
+    if (r.valor === '' || r.valor === t.padrao) apagar.push(e.chave);
+    else gravar.push({ key: e.chave, value: r.valor });
+  }
+  if (gravar.length) {
+    const { error } = await c.db.from('site_texts').upsert(gravar, { onConflict: 'key' });
+    if (error) return falha(mensagem(error));
+  }
+  if (apagar.length) {
+    const { error } = await c.db.from('site_texts').delete().in('key', apagar);
+    if (error) return falha(mensagem(error));
+  }
   updateTag(TAG_CATALOGO);
   return { ok: true, dados: null };
 }

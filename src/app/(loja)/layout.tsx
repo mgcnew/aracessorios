@@ -13,7 +13,7 @@ export default async function LojaLayout({ children }: { children: ReactNode }) 
   const [catalogo, site] = await Promise.all([getCatalogo(), getSite()]);
   return (
     <CatalogoProvider catalogo={catalogo}>
-      <EmpresaProvider empresa={site.empresa}>
+      <EmpresaProvider empresa={site.empresa} textos={site.textos}>
         <StoreProvider>
           <StoreLayout>{children}</StoreLayout>
         </StoreProvider>

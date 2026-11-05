@@ -7,7 +7,7 @@ import { useCatalogo } from '../data/CatalogoContext';
 import { catalogHref } from '../data/catalogQuery';
 import { useStore } from '../store';
 import { BagIcon, CheckIcon, CrossIcon, GemIcon, HeartIcon, HomeIcon, InfoIcon, MoonIcon, SearchIcon, SunIcon } from './Icons';
-import { useEmpresa } from '../data/SiteContext';
+import { useEmpresa, useTextos } from '../data/SiteContext';
 import { InstalarApp } from './InstalarApp';
 import { Midia } from './Midia';
 import { LogoMark } from './ui';
@@ -35,6 +35,7 @@ export function StoreLayout({ children }: { children: ReactNode }) {
   const { dark, toggleDark, favs, cart, toast, segurarToast, soltarToast, fecharToast } = useStore();
   const { categories } = useCatalogo();
   const empresa = useEmpresa();
+  const texto = useTextos();
   // Só o que foi preenchido em Configurações aparece; sem nada, o bloco some.
   const contato = [
     empresa.whatsapp && { chave: 'whatsapp', texto: `WhatsApp ${empresa.whatsapp}`, href: `https://wa.me/${empresa.whatsapp}`, externo: true },
@@ -116,14 +117,14 @@ export function StoreLayout({ children }: { children: ReactNode }) {
 
       <main id="conteudo">{children}</main>
 
-      <footer className="foot">
+      <footer className="foot" id="rodape">
         <div className="wrap">
           <div className="foot-g">
             <div className="foot-marca">
               <Link className="logo-btn" href="/" aria-label="AR Acessórios — início">
                 <LogoMark />
               </Link>
-              <p>Semijoias delicadas para o dia a dia e para presentear.</p>
+              <p>{texto('rodape-texto')}</p>
             </div>
             <nav aria-labelledby="foot-loja">
               <h4 id="foot-loja">Loja</h4>
