@@ -13,12 +13,14 @@ import { ESPACOS_FIXOS, espacoCategoria, type EspacoSite } from '../data/site-es
 import { urlFoto, urlVideo } from '../lib/fotos';
 import type { SiteMediaRow } from '../lib/database-biblioteca.types';
 import { Biblioteca } from './Biblioteca';
+import { dicaEspaco } from './dicas-imagem';
 import { confirmar } from './confirmar';
 import { type DadosEmpresa, type PaginaConfiguracoes } from './configuracoes';
 import { enviarVideoSite } from './enviar-video-site';
 import { FiltroOpcoes } from './FiltroOpcoes';
 import { useAcao } from './Produtos';
-import { mb, suportaVideo } from './video';
+import { useSuportaVideo } from './useSuportaVideo';
+import { mb } from './video';
 
 type Secao = 'aparencia' | 'empresa' | 'conta';
 const SECOES = [
@@ -112,6 +114,7 @@ function Espaco({ e, m, mudou }: { e: EspacoSite; m: SiteMediaRow | undefined; m
   const [alt, setAlt] = useState(m?.alt ?? '');
   const entrada = useRef<HTMLInputElement>(null);
   const acao = useAcao();
+  const suporta = useSuportaVideo();
   const ocupado = progresso !== null || acao.pendente;
   const miniatura = miniaturaDe(e, m);
   const estado = m ? (m.kind === 'video' ? 'Vídeo' : 'Imagem escolhida') : e.padrao.src ? 'Padrão do site' : 'Ilustração';
@@ -147,6 +150,7 @@ function Espaco({ e, m, mudou }: { e: EspacoSite; m: SiteMediaRow | undefined; m
       <div className="espaco-txt">
         <strong style={{ fontWeight: 500 }}>{e.rotulo}</strong>
         <div className="sku">{e.onde}</div>
+        <div className="dica-tam">{dicaEspaco(e.ratio, e.video)}</div>
         <span className={`tag ${m ? 't-ok' : 't-info'}`} style={{ alignSelf: 'flex-start' }}>
           {estado}
         </span>
@@ -174,7 +178,7 @@ function Espaco({ e, m, mudou }: { e: EspacoSite; m: SiteMediaRow | undefined; m
             {m ? 'Trocar imagem' : 'Escolher imagem'}
           </button>
           {e.video && (
-            <button className="btn" disabled={ocupado || !suportaVideo()} onClick={() => entrada.current?.click()} title={suportaVideo() ? undefined : 'Este navegador não prepara vídeos'}>
+            <button className="btn" disabled={ocupado || !suporta} onClick={() => entrada.current?.click()} title={suporta ? undefined : 'Este navegador não prepara vídeos'}>
               {progresso ?? (m?.kind === 'video' ? 'Trocar vídeo' : 'Usar vídeo')}
             </button>
           )}
@@ -244,7 +248,7 @@ function EscolherImagem({ espaco, fechar, escolhida }: { espaco: EspacoSite; fec
         </button>
       </div>
       <p className="note" style={{ marginBottom: 10 }}>
-        Escolha uma foto da biblioteca ou envie uma nova. Aparece na proporção {espaco.ratio.replace(' / ', ':')}; o centro da foto é o que fica à vista.
+        Escolha uma foto da biblioteca ou envie uma nova. {dicaEspaco(espaco.ratio, false)} O centro da foto é o que fica à vista.
       </p>
       <Biblioteca selecionar={escolhida} />
     </dialog>

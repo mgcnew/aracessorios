@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { apagarFoto, definirCapa, ordenarFotos, vincularMidia, salvarAlt } from '../app/admin/fotos-acoes';
 import { urlFoto } from '../lib/fotos';
+import { DICA_FOTO_PRODUTO } from './dicas-imagem';
 import { enviarParaBiblioteca } from './enviar-foto';
 import { Biblioteca } from './Biblioteca';
 import { useAcao } from './Produtos';
@@ -73,8 +74,8 @@ export function Fotos({ p, aoMudar }: { p: ProdutoPainel; aoMudar: (c: CatalogoP
       </div>
       <p className="note" style={{ marginBottom: 10 }}>
         A primeira é a capa (cartões e sacola). As fotos são reduzidas antes do envio e perdem os dados escondidos, como a localização.
-        Foto quadrada ou em pé (4:5) fica melhor nos cartões.
       </p>
+      <p className="dica-tam">{DICA_FOTO_PRODUTO}</p>
 
       {biblioteca && <EscolherFoto fechar={() => setBiblioteca(false)} p={p} aoMudar={aoMudar} />}
       {erroEnvio.length > 0 && (

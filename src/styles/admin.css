@@ -402,3 +402,6 @@ html.dark .adm .btn-perigo-cheio{background:#E8907E!important;border-color:#E890
 .adm .espaco-acoes{display:flex;gap:8px;flex-wrap:wrap}
 .adm .empresa-form{max-width:520px}
 @media (max-width:479px){.adm .espaco{grid-template-columns:84px minmax(0,1fr)}.adm .espaco-img{width:84px}}
+/* Dica de tamanho ao lado das fotos */
+.adm .dica-tam{font-size:13px;line-height:1.45;color:var(--acc);background:var(--field);border-radius:10px;padding:8px 12px;margin:0 0 10px}
+.adm .espaco-txt .dica-tam{margin:0}
