@@ -531,7 +531,7 @@ begin
 
   -- Apagar a despesa fixa preserva o dinheiro já lançado.
   delete from public.finance_fixed_expenses where id = fixa;
-  select count(*) into n from public.finance_entries where category = 'aluguel';
+  select count(*) into n from public.finance_entries where occurred_on in ('2026-11-05', '2026-12-05');
   insert into resultados(teste, ok, detalhe) values ('apagar despesa fixa mantém os lançamentos pagos', n = 2, n || ' lançamentos');
 end $$;
 reset role;
