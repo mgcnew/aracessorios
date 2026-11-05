@@ -1,5 +1,6 @@
 import Link from 'next/link';
-import { Midia } from '../components/Midia';
+import { MidiaFixa } from '../components/MidiaFixa';
+import { midiaDoEspaco, type Site } from '../data/site';
 
 // Também aparecem na página inicial (faixa abaixo do destaque).
 export const PILLARS = [
@@ -8,7 +9,7 @@ export const PILLARS = [
   { n: '03', title: 'Atendimento próximo', text: 'Ajuda na escolha da peça certa para cada ocasião.' },
 ];
 
-export function About() {
+export function About({ site }: { site: Site }) {
   return (
     <div className="wrap fade" style={{ paddingBottom: 20 }}>
       <div className="split sec">
@@ -27,12 +28,7 @@ export function About() {
         </div>
         <div className="rounded">
           {/* Foto ilustrativa gerada por IA para o protótipo; trocar pela foto real da marca. */}
-          <Midia
-            foto={{ src: '/marca/sobre.webp', thumb: '/marca/sobre.webp', alt: 'Colar, brincos de pérola e anel dourados sobre linho, com flores secas' }}
-            tamanho="g"
-            art={{ cat: 'kit', tone: 'gold', gem: true, bg: 1 }}
-            ratio="1 / 1.05"
-          />
+          <MidiaFixa item={midiaDoEspaco(site, 'sobre')} tamanho="g" art={{ cat: 'kit', tone: 'gold', gem: true, bg: 1 }} ratio="1 / 1.05" />
         </div>
       </div>
       <div className="pillars">
