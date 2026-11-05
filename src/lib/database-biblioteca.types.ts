@@ -10,6 +10,12 @@ export type AparelhoRow = { id: string; user_id: string; endpoint: string; p256d
 export type AvisoRow = {
   id: number; kind: 'teste' | 'compra'; title: string; body: string; url: string; created_at: string; read_at: string | null;
 };
+// Financeiro do painel (migração 20261105090000_financeiro_painel.sql).
+export type DespesaFixaRow = { id: string; name: string; amount_cents: number; due_day: number; category: string; active: boolean; created_at: string };
+export type LancamentoRow = {
+  id: string; kind: 'entrada' | 'saida'; amount_cents: number; occurred_on: string; category: string; description: string;
+  fixed_expense_id: string | null; competence: string | null; created_at: string;
+};
 export type DatabaseComBiblioteca = Omit<Database, 'public'> & {
   public: Omit<Database['public'], 'Tables' | 'Functions'> & {
     Tables: Database['public']['Tables'] & {
@@ -25,6 +31,18 @@ export type DatabaseComBiblioteca = Omit<Database, 'public'> & {
         Update: Pick<AvisoRow, 'read_at'>;
         Relationships: [];
       };
+      finance_fixed_expenses: {
+        Row: DespesaFixaRow;
+        Insert: Pick<DespesaFixaRow, 'name' | 'amount_cents' | 'due_day'> & Partial<Pick<DespesaFixaRow, 'id' | 'category' | 'active' | 'created_at'>>;
+        Update: Partial<DespesaFixaRow>;
+        Relationships: [];
+      };
+      finance_entries: {
+        Row: LancamentoRow;
+        Insert: Pick<LancamentoRow, 'kind' | 'amount_cents' | 'occurred_on'> & Partial<Omit<LancamentoRow, 'kind' | 'amount_cents' | 'occurred_on'>>;
+        Update: Partial<LancamentoRow>;
+        Relationships: [];
+      };
       media_assets: {
         Row: MidiaRow;
         Insert: Pick<MidiaRow, 'name' | 'default_alt' | 'storage_path'> & Partial<Pick<MidiaRow, 'id' | 'created_at' | 'updated_at' | 'deleting'>>;
@@ -33,6 +51,7 @@ export type DatabaseComBiblioteca = Omit<Database, 'public'> & {
       };
     };
     Functions: Database['public']['Functions'] & {
+      financeiro_resumo: { Args: { p_inicio: string; p_fim: string }; Returns: { entradas: number; saidas: number }[] };
       iniciar_exclusao_midia: { Args: { p_id: string }; Returns: string };
       finalizar_exclusao_midia: { Args: { p_id: string }; Returns: undefined };
     };
