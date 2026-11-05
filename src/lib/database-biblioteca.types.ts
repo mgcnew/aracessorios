@@ -24,6 +24,7 @@ export type SiteSettingsRow = {
   id: true; store_name: string; legal_name: string; cnpj: string; email: string; phone: string; whatsapp: string;
   instagram: string; address: string; hours: string; updated_at: string;
 };
+export type SiteTextRow = { key: string; value: string; updated_at: string };
 export type DatabaseComBiblioteca = Omit<Database, 'public'> & {
   public: Omit<Database['public'], 'Tables' | 'Functions'> & {
     Tables: Database['public']['Tables'] & {
@@ -67,6 +68,12 @@ export type DatabaseComBiblioteca = Omit<Database, 'public'> & {
         Row: SiteSettingsRow;
         Insert: never;
         Update: Partial<Omit<SiteSettingsRow, 'id'>>;
+        Relationships: [];
+      };
+      site_texts: {
+        Row: SiteTextRow;
+        Insert: Pick<SiteTextRow, 'key' | 'value'>;
+        Update: Partial<Pick<SiteTextRow, 'value'>>;
         Relationships: [];
       };
       media_assets: {

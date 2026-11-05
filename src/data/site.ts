@@ -8,6 +8,7 @@ import { urlFoto, urlVideo } from '../lib/fotos';
 import { supabasePublico } from '../lib/supabase/public';
 import type { Foto } from './catalog';
 import { ESPACOS_FIXOS, PADRAO_CATEGORIA } from './site-espacos';
+import { TEXTO_POR_CHAVE, type TextosSite } from './site-textos';
 
 export interface MidiaFixa {
   kind: 'imagem' | 'video';
@@ -33,15 +34,18 @@ export interface Empresa {
 export interface Site {
   midia: Record<string, MidiaFixa>;
   empresa: Empresa;
+  /** Só os textos que a dona alterou; o que falta usa o padrão (`textoDe`). */
+  textos: TextosSite;
 }
 
 export const EMPRESA_PADRAO: Empresa = { storeName: 'AR Acessórios', legalName: '', cnpj: '', email: '', phone: '', whatsapp: '', instagram: '', address: '', hours: '' };
 
 async function lerSite(): Promise<Site> {
   const db = supabasePublico();
-  const [midia, empresa] = await Promise.all([
+  const [midia, empresa, textos] = await Promise.all([
     db.from('site_media').select('slot, kind, storage_path, poster_path, alt'),
     db.from('site_settings').select('store_name, legal_name, cnpj, email, phone, whatsapp, instagram, address, hours').maybeSingle(),
+    db.from('site_texts').select('key, value'),
   ]);
   // Sem a migração das configurações as tabelas não existem: a loja segue com as imagens padrão.
   const linhas = midia.error ? [] : (midia.data ?? []);
@@ -55,6 +59,7 @@ async function lerSite(): Promise<Site> {
           : { kind: 'imagem' as const, src: urlFoto(m.storage_path, 'g'), thumb: urlFoto(m.storage_path, 'p'), alt: m.alt },
       ]),
     ),
+    textos: Object.fromEntries((textos.error ? [] : (textos.data ?? [])).filter((t) => t.key in TEXTO_POR_CHAVE).map((t) => [t.key, t.value])),
     empresa: e
       ? { storeName: e.store_name, legalName: e.legal_name, cnpj: e.cnpj, email: e.email, phone: e.phone, whatsapp: e.whatsapp, instagram: e.instagram, address: e.address, hours: e.hours }
       : EMPRESA_PADRAO,

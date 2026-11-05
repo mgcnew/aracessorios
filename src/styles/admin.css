@@ -405,3 +405,45 @@ html.dark .adm .btn-perigo-cheio{background:#E8907E!important;border-color:#E890
 /* Dica de tamanho ao lado das fotos */
 .adm .dica-tam{font-size:13px;line-height:1.45;color:var(--acc);background:var(--field);border-radius:10px;padding:8px 12px;margin:0 0 10px}
 .adm .espaco-txt .dica-tam{margin:0}
+
+/* Textos da loja (Configurações) */
+.adm .textos-card{margin-bottom:18px}
+.adm .textos-cab{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:14px}
+.adm .textos-cab h2{margin:0 0 4px}
+.adm .textos-cab .note{margin:0}
+.adm .textos-corpo{display:grid;gap:18px}
+@media (min-width:900px){.adm .textos-corpo.com-mapa{grid-template-columns:200px minmax(0,1fr);align-items:start}}
+.adm .mapa{display:flex;flex-wrap:wrap;gap:6px}
+.adm .mapa-t{flex:0 0 100%}
+@media (min-width:900px){.adm .mapa-r{border-radius:10px}.adm .mapa{flex-direction:column;flex-wrap:nowrap;position:sticky;top:12px}.adm .mapa-t{flex:none}}
+.adm .mapa-t{font-size:12.5px;letter-spacing:.04em;text-transform:uppercase;color:var(--ink2);margin-bottom:2px}
+.adm .mapa-r{display:flex;align-items:center;justify-content:space-between;gap:8px;min-height:44px;padding:8px 14px;border:1px dashed var(--line);border-radius:999px;background:var(--bg);color:var(--ink2);font:inherit;font-size:13.5px;text-align:left;cursor:pointer;transition:background .2s,border-color .2s,color .2s}
+.adm .mapa-r:hover{border-color:var(--acc);color:var(--ink)}
+.adm .mapa-r.on{background:var(--acc);border:1px solid var(--acc);color:var(--surf)}
+.adm .mapa-r i{width:8px;height:8px;border-radius:50%;background:var(--warnt);flex:none}
+.adm .mapa-r.on i{background:var(--surf)}
+.adm .mapa-r:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+.adm .textos-campos{display:flex;flex-direction:column;gap:16px;min-width:0}
+.adm .regiao{margin:0;padding:14px;border:1px solid var(--line);border-radius:16px;background:var(--bg);display:flex;flex-direction:column;gap:14px;min-width:0;transition:border-color .2s,box-shadow .2s}
+.adm .regiao.on{border-color:var(--acc);box-shadow:0 0 0 3px color-mix(in srgb,var(--acc) 22%,transparent)}
+.adm .regiao legend{padding:0 8px;font-family:var(--serif);font-size:18px;font-weight:600;display:flex;flex-direction:column;gap:0}
+.adm .regiao-onde{font-family:inherit;font-size:11.5px;font-weight:400;letter-spacing:.06em;text-transform:uppercase;color:var(--acc)}
+.adm .regiao-ver{align-self:flex-start;font-size:13.5px;color:var(--acc);text-decoration:underline;text-underline-offset:3px}
+.adm .texto{display:flex;flex-direction:column;gap:6px;padding-left:12px;border-left:3px solid transparent;transition:border-color .2s}
+.adm .texto.mudou{border-left-color:var(--warnt)}
+.adm .texto.salvou{border-left-color:var(--okt)}
+.adm .texto-cab{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
+.adm .texto-cab label{font-size:14px;font-weight:500;color:var(--ink)}
+.adm textarea.texto-i{height:auto;min-height:88px;padding:12px 14px;line-height:1.5;resize:vertical}
+.adm .texto-pe{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+.adm .texto-dica{font-size:13px;color:var(--ink2);line-height:1.4}
+.adm .contador{font-size:13px;font-variant-numeric:tabular-nums;color:var(--ink2);white-space:nowrap;flex:none}
+.adm .contador.perto{color:var(--warnt);font-weight:600}
+.adm .contador.cheio{color:var(--badt);font-weight:600}
+.adm .texto-previa{margin:0;padding:10px 14px;border-radius:12px;background:var(--field);font-family:var(--serif);font-size:20px;line-height:1.25;display:flex;flex-direction:column;gap:2px}
+.adm .texto-previa .previa-l{font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink2);font-family:var(--sans,inherit)}
+.adm .texto-previa .previa-t{display:block}
+.adm .texto-previa em{font-style:italic;color:var(--acc)}
+.adm .texto-rest{align-self:flex-start;min-height:36px;font-size:13px}
+.adm .t-neutro{background:var(--field);color:var(--ink2)}
+.adm .vh{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}

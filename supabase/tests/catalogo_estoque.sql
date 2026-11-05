@@ -767,5 +767,85 @@ begin
 end $$;
 reset role;
 
+-- Textos da loja (SET-DEC-002): admin grava e apaga; vazio, grande demais e chave fora do formato são recusados;
+-- visitante lê, visitante e cliente logado não gravam.
+set local role authenticated;
+select set_config('request.jwt.claims', '{"role":"authenticated","sub":"11111111-1111-1111-1111-111111111111"}', true);
+do $$
+declare n int;
+begin
+  insert into public.site_texts (key, value) values ('sobre-titulo', 'Delicadeza em cada detalhe');
+  update public.site_texts set value = 'Brilho em cada detalhe' where key = 'sobre-titulo';
+  select count(*) into n from public.site_texts where key = 'sobre-titulo' and value = 'Brilho em cada detalhe';
+  insert into resultados(teste, ok) values ('admin grava e altera um texto da loja', n = 1);
+  begin
+    insert into public.site_texts (key, value) values ('rodape-texto', '   ');
+    insert into resultados(teste, ok) values ('texto da loja em branco é recusado', false);
+  exception when check_violation then
+    insert into resultados(teste, ok) values ('texto da loja em branco é recusado', true);
+  end;
+  begin
+    insert into public.site_texts (key, value) values ('rodape-texto', repeat('a', 601));
+    insert into resultados(teste, ok) values ('texto da loja acima de 600 caracteres é recusado', false);
+  exception when check_violation then
+    insert into resultados(teste, ok) values ('texto da loja acima de 600 caracteres é recusado', true);
+  end;
+  begin
+    insert into public.site_texts (key, value) values ('Chave Inválida!', 'x');
+    insert into resultados(teste, ok) values ('chave de texto fora do formato é recusada', false);
+  exception when check_violation then
+    insert into resultados(teste, ok) values ('chave de texto fora do formato é recusada', true);
+  end;
+end $$;
+reset role;
+
+set local role anon;
+select set_config('request.jwt.claims', '{"role":"anon"}', true);
+do $$
+declare n int;
+begin
+  select count(*) into n from public.site_texts;
+  insert into resultados(teste, ok) values ('visitante lê os textos da loja', n = 1);
+  begin
+    delete from public.site_texts;
+    get diagnostics n = row_count;
+    insert into resultados(teste, ok) values ('visitante não apaga textos da loja', n = 0);
+  exception when insufficient_privilege then
+    insert into resultados(teste, ok) values ('visitante não apaga textos da loja', true);
+  end;
+end $$;
+reset role;
+
+set local role authenticated;
+select set_config('request.jwt.claims', '{"role":"authenticated","sub":"22222222-2222-2222-2222-222222222222"}', true);
+do $$
+declare n int;
+begin
+  update public.site_texts set value = 'Invasão';
+  get diagnostics n = row_count;
+  insert into resultados(teste, ok) values ('cliente não altera textos da loja', n = 0);
+  delete from public.site_texts;
+  get diagnostics n = row_count;
+  insert into resultados(teste, ok) values ('cliente não apaga textos da loja', n = 0);
+  begin
+    insert into public.site_texts (key, value) values ('rodape-texto', 'x');
+    insert into resultados(teste, ok) values ('cliente não cadastra texto da loja', false);
+  exception when insufficient_privilege then
+    insert into resultados(teste, ok) values ('cliente não cadastra texto da loja', true);
+  end;
+end $$;
+reset role;
+
+set local role authenticated;
+select set_config('request.jwt.claims', '{"role":"authenticated","sub":"11111111-1111-1111-1111-111111111111"}', true);
+do $$
+declare n int;
+begin
+  delete from public.site_texts where key = 'sobre-titulo';
+  get diagnostics n = row_count;
+  insert into resultados(teste, ok) values ('admin apaga um texto e a loja volta ao padrão', n = 1);
+end $$;
+reset role;
+
 select n, teste, ok, detalhe from resultados order by n;
 rollback;

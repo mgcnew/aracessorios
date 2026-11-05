@@ -9,12 +9,14 @@ import { midiaDoEspaco, type Site } from '../data/site';
 import { slotCategoria } from '../data/site-espacos';
 import { catalogHref } from '../data/catalogQuery';
 import { ConversaIcon, GemIcon, PresenteIcon, SetaIcon } from '../components/Icons';
-import { PILLARS } from './About';
+import { Destaque } from '../components/Destaque';
+import { pilaresDe, textoDe } from '../data/site-textos';
 
 const ICONE_PILAR = [GemIcon, PresenteIcon, ConversaIcon];
 
 export function Home({ catalogo: { categories, products }, site }: { catalogo: Catalogo; site: Site }) {
   const m = (slot: string) => midiaDoEspaco(site, slot);
+  const t = (chave: string) => textoDe(site.textos, chave);
   const newest = products.filter((p) => p.isNew).slice(0, 4);
   const best = products.filter((p) => p.best).slice(0, 4);
   const kits = products.filter((p) => p.isKit);
@@ -25,11 +27,9 @@ export function Home({ catalogo: { categories, products }, site }: { catalogo: C
         <section className="hero" aria-label="Destaque">
           <div>
             <h1>
-              Brilho <em>delicado</em> para os seus dias
+              <Destaque texto={t('inicio-titulo')} />
             </h1>
-            <p className="lead">
-              Semijoias de acabamento refinado para compor o seu estilo — do básico de todo dia aos presentes que ficam na memória.
-            </p>
+            <p className="lead">{t('inicio-lead')}</p>
             <div className="hero-cta">
               <Link className="btn btn-p" href="/loja">
                 Explorar a loja
@@ -56,7 +56,7 @@ export function Home({ catalogo: { categories, products }, site }: { catalogo: C
 
       <div className="wrap">
         <ul className="promessas" aria-label="O que você encontra na AR">
-          {PILLARS.map((p, i) => {
+          {pilaresDe(site.textos).map((p, i) => {
             const Icone = ICONE_PILAR[i];
             return (
               <li key={p.n}>
@@ -72,7 +72,7 @@ export function Home({ catalogo: { categories, products }, site }: { catalogo: C
       </div>
 
       <section className="wrap sec" aria-labelledby="h-cats">
-        <SectionHead title="Escolha o seu estilo" id="h-cats" />
+        <SectionHead title={t('inicio-estilos-titulo')} id="h-cats" />
         <div className="ctiles">
           {categories.map((c, i) => (
             <Link key={c.id} className="ctile" href={catalogHref({ cat: c.id })} aria-label={`Ver ${c.name}`}>
@@ -87,7 +87,7 @@ export function Home({ catalogo: { categories, products }, site }: { catalogo: C
 
       <section className="wrap" aria-labelledby="h-new">
         <SectionHead
-          title="Lançamentos"
+          title={t('inicio-lancamentos-titulo')}
           id="h-new"
           action={
             <Link className="lnk" href={catalogHref({ sort: 'novos' })}>
@@ -106,9 +106,9 @@ export function Home({ catalogo: { categories, products }, site }: { catalogo: C
           </div>
           <div className="presentes-txt">
             <h2 id="h-kits" className="h-serif">
-              Kits para <em>presentear</em>
+              <Destaque texto={t('inicio-kits-titulo')} />
             </h2>
-            <p className="presentes-lead">Conjuntos pensados para combinar entre si, prontos para entregar a quem você gosta.</p>
+            <p className="presentes-lead">{t('inicio-kits-texto')}</p>
             <ul className="kitlista">
               {kits.map((k) => {
                 const href = `/produto/${k.slug}`;
@@ -139,7 +139,7 @@ export function Home({ catalogo: { categories, products }, site }: { catalogo: C
 
       <section className="wrap" aria-labelledby="h-best">
         <SectionHead
-          title="Mais vendidos"
+          title={t('inicio-vendidos-titulo')}
           id="h-best"
           action={
             <Link className="lnk" href="/loja">
@@ -154,12 +154,9 @@ export function Home({ catalogo: { categories, products }, site }: { catalogo: C
         <div className="inst split">
           <div>
             <h2 id="h-inst" className="h-serif" style={{ fontSize: 'clamp(34px,4.8vw,56px)' }}>
-              Feita para ser presenteada
+              {t('inicio-marca-titulo')}
             </h2>
-            <p>
-              Cada peça é pensada para acompanhar momentos do dia a dia e também os que merecem ser lembrados — com embalagem
-              cuidadosa e acabamento delicado.
-            </p>
+            <p>{t('inicio-marca-texto')}</p>
             <div style={{ marginTop: 26 }}>
               <Link className="btn btn-p" href="/sobre">
                 Conheça a marca
