@@ -475,5 +475,110 @@ begin
 end $$;
 reset role;
 
+-- Financeiro do painel (FIN-DEC-001) ---------------------------------------------------------
+-- Admin lança entrada e saída, cadastra despesa fixa e a paga uma vez por mês; o banco recusa valor
+-- zerado, pagamento em dobro no mesmo mês e pagamento de despesa fixa como entrada. Cliente e visitante não acessam.
+set local role authenticated;
+select set_config('request.jwt.claims', '{"role":"authenticated","sub":"11111111-1111-1111-1111-111111111111"}', true);
+do $$
+declare n int; fixa uuid; r boolean;
+begin
+  insert into public.finance_entries (kind, amount_cents, occurred_on, category, description)
+  values ('entrada', 15990, '2026-11-03', 'venda', 'Venda no balcão'), ('saida', 4500, '2026-11-04', 'embalagem', 'Caixinhas');
+  select count(*) into n from public.finance_entries;
+  insert into resultados(teste, ok) values ('admin lança entrada e saída', n = 2);
+
+  insert into public.finance_fixed_expenses (name, amount_cents, due_day, category)
+  values ('Aluguel', 120000, 5, 'aluguel') returning id into fixa;
+  insert into public.finance_entries (kind, amount_cents, occurred_on, category, fixed_expense_id, competence)
+  values ('saida', 120000, '2026-11-05', 'aluguel', fixa, '2026-11-01');
+  insert into resultados(teste, ok) values ('admin paga despesa fixa do mês', true);
+
+  begin
+    insert into public.finance_entries (kind, amount_cents, occurred_on, fixed_expense_id, competence)
+    values ('saida', 120000, '2026-11-06', fixa, '2026-11-01');
+    insert into resultados(teste, ok) values ('banco impede pagar a mesma despesa fixa duas vezes no mês', false);
+  exception when unique_violation then
+    insert into resultados(teste, ok) values ('banco impede pagar a mesma despesa fixa duas vezes no mês', true);
+  end;
+  insert into public.finance_entries (kind, amount_cents, occurred_on, fixed_expense_id, competence)
+  values ('saida', 120000, '2026-12-05', fixa, '2026-12-01');
+  insert into resultados(teste, ok) values ('a mesma despesa fixa pode ser paga em outro mês', true);
+
+  begin
+    insert into public.finance_entries (kind, amount_cents, occurred_on) values ('entrada', 0, '2026-11-04');
+    insert into resultados(teste, ok) values ('banco recusa valor zerado', false);
+  exception when check_violation then
+    insert into resultados(teste, ok) values ('banco recusa valor zerado', true);
+  end;
+  begin
+    insert into public.finance_entries (kind, amount_cents, occurred_on, fixed_expense_id, competence)
+    values ('entrada', 100, '2026-10-05', fixa, '2026-10-01');
+    insert into resultados(teste, ok) values ('pagamento de despesa fixa não pode ser entrada', false);
+  exception when check_violation then
+    insert into resultados(teste, ok) values ('pagamento de despesa fixa não pode ser entrada', true);
+  end;
+  begin
+    insert into public.finance_entries (kind, amount_cents, occurred_on, fixed_expense_id, competence)
+    values ('saida', 100, '2026-10-05', fixa, '2026-10-15');
+    insert into resultados(teste, ok) values ('mês de referência é sempre o dia 1', false);
+  exception when check_violation then
+    insert into resultados(teste, ok) values ('mês de referência é sempre o dia 1', true);
+  end;
+
+  select entradas = 15990 and saidas = 124500 into strict r from public.financeiro_resumo('2026-11-01', '2026-11-30');
+  insert into resultados(teste, ok) values ('resumo do mês soma entradas e saídas no banco', r);
+
+  -- Apagar a despesa fixa preserva o dinheiro já lançado.
+  delete from public.finance_fixed_expenses where id = fixa;
+  select count(*) into n from public.finance_entries where occurred_on in ('2026-11-05', '2026-12-05');
+  insert into resultados(teste, ok, detalhe) values ('apagar despesa fixa mantém os lançamentos pagos', n = 2, n || ' lançamentos');
+end $$;
+reset role;
+
+-- Cliente logado (não admin): não vê nem grava nada do financeiro.
+set local role authenticated;
+select set_config('request.jwt.claims', '{"role":"authenticated","sub":"22222222-2222-2222-2222-222222222222"}', true);
+do $$
+declare n int;
+begin
+  select count(*) into n from public.finance_entries;
+  insert into resultados(teste, ok, detalhe) values ('cliente não vê lançamentos', n = 0, n || ' linhas');
+  select count(*) into n from public.finance_fixed_expenses;
+  insert into resultados(teste, ok, detalhe) values ('cliente não vê despesas fixas', n = 0, n || ' linhas');
+  begin
+    insert into public.finance_entries (kind, amount_cents, occurred_on) values ('entrada', 100, '2026-11-04');
+    insert into resultados(teste, ok) values ('cliente não lança entrada', false);
+  exception when insufficient_privilege then
+    insert into resultados(teste, ok) values ('cliente não lança entrada', true);
+  end;
+  delete from public.finance_entries;
+  get diagnostics n = row_count;
+  insert into resultados(teste, ok) values ('cliente não apaga lançamentos', n = 0);
+  select entradas + saidas into n from public.financeiro_resumo('2026-01-01', '2026-12-31');
+  insert into resultados(teste, ok, detalhe) values ('cliente não enxerga valores pelo resumo', n = 0, n || ' centavos');
+end $$;
+reset role;
+
+-- Visitante anônimo: sem acesso.
+set local role anon;
+select set_config('request.jwt.claims', '{"role":"anon"}', true);
+do $$
+begin
+  begin
+    perform 1 from public.finance_entries;
+    insert into resultados(teste, ok) values ('visitante não lê lançamentos', false);
+  exception when insufficient_privilege then
+    insert into resultados(teste, ok) values ('visitante não lê lançamentos', true);
+  end;
+  begin
+    perform 1 from public.finance_fixed_expenses;
+    insert into resultados(teste, ok) values ('visitante não lê despesas fixas', false);
+  exception when insufficient_privilege then
+    insert into resultados(teste, ok) values ('visitante não lê despesas fixas', true);
+  end;
+end $$;
+reset role;
+
 select n, teste, ok, detalhe from resultados order by n;
 rollback;
