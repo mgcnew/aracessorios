@@ -7,7 +7,9 @@ import { confirmar } from './confirmar';
 import { enviarVideo } from './enviar-video';
 import { useAcao } from './Produtos';
 import type { CatalogoPainel, ProdutoPainel } from './produtos';
-import { DURACAO_MAX_S, mb, suportaVideo } from './video';
+import { DICA_VIDEO_PRODUTO } from './dicas-imagem';
+import { useSuportaVideo } from './useSuportaVideo';
+import { DURACAO_MAX_S, mb } from './video';
 
 /** Vídeo curto do produto: um por produto, sem som, comprimido no navegador antes do envio. */
 export function Video({ p, aoMudar }: { p: ProdutoPainel; aoMudar: (c: CatalogoPainel) => void }) {
@@ -16,6 +18,7 @@ export function Video({ p, aoMudar }: { p: ProdutoPainel; aoMudar: (c: CatalogoP
   const [erro, setErro] = useState<string | null>(null);
   const [resultado, setResultado] = useState<string | null>(null);
   const acao = useAcao();
+  const suporta = useSuportaVideo();
   const ocupado = progresso !== null || acao.pendente;
   const v = p.video;
 
@@ -55,8 +58,9 @@ export function Video({ p, aoMudar }: { p: ProdutoPainel; aoMudar: (c: CatalogoP
       </div>
       <p className="note" style={{ marginBottom: 10 }}>
         Até {DURACAO_MAX_S} segundos, um por produto. O vídeo é comprimido aqui antes do envio e fica sem som, para ser leve. Na loja ele aparece por último na galeria e toca sozinho quando a pessoa chega nele.
-        {!suportaVideo() && ' Este navegador não consegue preparar vídeos: use o Chrome, Edge ou Safari atualizados.'}
+        {!suporta && ' Este navegador não consegue preparar vídeos: use o Chrome, Edge ou Safari atualizados.'}
       </p>
+      <p className="dica-tam">{DICA_VIDEO_PRODUTO}</p>
       {erro && (
         <p className="auth-err" role="alert">
           {erro}
