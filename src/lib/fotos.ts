@@ -11,3 +11,11 @@ export function urlFoto(caminho: string, tamanho: 'g' | 'p' = 'g'): string {
   const c = tamanho === 'p' ? caminhoPequeno(caminho) : caminho;
   return `${base}/storage/v1/object/public/${BUCKET_FOTOS}/${c.split('/').map(encodeURIComponent).join('/')}`;
 }
+
+// Vídeos curtos dos produtos (bucket "videos-produtos", leitura pública): o MP4 e a capa tirada dele.
+export const BUCKET_VIDEOS = 'videos-produtos';
+
+export function urlVideo(caminho: string): string {
+  const base = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  return `${base}/storage/v1/object/public/${BUCKET_VIDEOS}/${caminho.split('/').map(encodeURIComponent).join('/')}`;
+}

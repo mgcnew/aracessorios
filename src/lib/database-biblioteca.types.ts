@@ -16,6 +16,8 @@ export type LancamentoRow = {
   id: string; kind: 'entrada' | 'saida'; amount_cents: number; occurred_on: string; category: string; description: string;
   fixed_expense_id: string | null; competence: string | null; created_at: string;
 };
+// Vídeo do produto (migração 20261105100000_video_produto.sql).
+export type VideoRow = { product_id: string; storage_path: string; poster_path: string; duration_ms: number; size_bytes: number; created_at: string };
 export type DatabaseComBiblioteca = Omit<Database, 'public'> & {
   public: Omit<Database['public'], 'Tables' | 'Functions'> & {
     Tables: Database['public']['Tables'] & {
@@ -41,6 +43,12 @@ export type DatabaseComBiblioteca = Omit<Database, 'public'> & {
         Row: LancamentoRow;
         Insert: Pick<LancamentoRow, 'kind' | 'amount_cents' | 'occurred_on'> & Partial<Omit<LancamentoRow, 'kind' | 'amount_cents' | 'occurred_on'>>;
         Update: Partial<LancamentoRow>;
+        Relationships: [];
+      };
+      product_videos: {
+        Row: VideoRow;
+        Insert: Omit<VideoRow, 'created_at'> & Partial<Pick<VideoRow, 'created_at'>>;
+        Update: Partial<VideoRow>;
         Relationships: [];
       };
       media_assets: {

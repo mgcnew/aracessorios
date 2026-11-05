@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useRef, useState, type PointerEvent } from 'react';
 import { Art } from '../components/Art';
 import { Midia } from '../components/Midia';
+import { VideoSlide } from '../components/VideoSlide';
 import { HeartIcon } from '../components/Icons';
 import { ProductGrid } from '../components/ProductCard';
 import { SectionHead, Stepper } from '../components/ui';
@@ -49,7 +50,10 @@ export function ProductPage({ productId }: { productId: string }) {
   const unitWord = p.unit;
   const art = artOf(p, cur);
   const fotos = p.photos ?? [];
-  const total = fotos.length > 0 ? fotos.length : GALLERY.length;
+  const temVideo = !!p.video;
+  const nFotos = fotos.length > 0 ? fotos.length : GALLERY.length;
+  // O vídeo, quando existe, é a última imagem da galeria.
+  const total = nFotos + (temVideo ? 1 : 0);
   const faixa = useRef<HTMLDivElement>(null);
 
   const irPara = (i: number) => {
@@ -142,6 +146,11 @@ export function ProductPage({ productId }: { productId: string }) {
                     <Art {...art} bg={g.bg} rot={g.rot} ratio="1 / 1.05" />
                   </div>
                 ))}
+            {p.video && (
+              <div className="gal-slide" role="group" aria-roledescription="imagem" aria-label={`${total} de ${total}`}>
+                <VideoSlide video={p.video} nome={p.name} ativo={gal === nFotos} />
+              </div>
+            )}
           </div>
           {total > 1 && (
             <>
@@ -157,6 +166,18 @@ export function ProductPage({ productId }: { productId: string }) {
                     {'src' in item ? <Midia foto={{ ...item, alt: '' }} art={art} /> : <Art {...art} bg={item.bg} rot={item.rot} />}
                   </button>
                 ))}
+                {p.video && (
+                  <button
+                    className={`gal-video${gal === nFotos ? ' on' : ''}`}
+                    onClick={() => irPara(nFotos)}
+                    aria-label={`Ver vídeo, imagem ${total} de ${total}`}
+                    aria-pressed={gal === nFotos}
+                  >
+                    {/* eslint-disable-next-line @next/next/no-img-element -- capa do próprio vídeo, já pequena */}
+                    <img src={p.video.poster} alt="" loading="lazy" decoding="async" />
+                    <span className="gal-play" aria-hidden="true" />
+                  </button>
+                )}
               </div>
               <div className="gal-pontos" aria-hidden="true">
                 {Array.from({ length: total }, (_, i) => (

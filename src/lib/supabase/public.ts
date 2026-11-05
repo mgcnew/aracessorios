@@ -1,5 +1,5 @@
 import { createClient } from '@supabase/supabase-js';
-import type { Database } from '../database.types';
+import type { DatabaseComBiblioteca } from '../database-biblioteca.types';
 import { supabaseEnv } from './env';
 
 /**
@@ -8,5 +8,5 @@ import { supabaseEnv } from './env';
  */
 export function supabasePublico() {
   const { url, key } = supabaseEnv();
-  return createClient<Database>(url, key, { auth: { persistSession: false, autoRefreshToken: false } });
+  return createClient<DatabaseComBiblioteca>(url, key, { auth: { persistSession: false, autoRefreshToken: false } });
 }

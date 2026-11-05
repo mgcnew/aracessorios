@@ -17,6 +17,7 @@ import { avisar, confirmar } from './confirmar';
 import { ExternoIcon, SetaIcon } from '../components/Icons';
 import { Selecao } from '../components/Selecao';
 import { Fotos } from './Fotos';
+import { Video } from './Video';
 import { useAcao } from './Produtos';
 import {
   ATRIBUTOS,
@@ -98,6 +99,7 @@ export function ProdutoEditor({
         <Dados p={p} aoMudar={aoMudar} />
         <Categorias p={p} categorias={categorias} aoMudar={aoMudar} />
         <Fotos p={p} aoMudar={aoMudar} />
+        <Video p={p} aoMudar={aoMudar} />
         <Variacoes
           p={p}
           abrir={(v) => {

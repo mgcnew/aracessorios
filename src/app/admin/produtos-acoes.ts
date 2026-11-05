@@ -48,12 +48,15 @@ async function montarProdutos(db: Db, linhas: unknown[]): Promise<Resultado<Prod
   const variantes = prods.flatMap((p) => p.product_variants.map((v) => v.id));
   if (!ids.length) return { ok: true, dados: [] };
   // Estoque mínimo não é lido direto da tabela; vem pela função do painel, filtrada.
-  const [pecas, estoque] = await Promise.all([
+  const [pecas, estoque, videos] = await Promise.all([
     variantes.length ? db.from('kit_components').select('kit_variant_id, component_variant_id, quantity').in('kit_variant_id', variantes) : null,
     db.rpc('painel_estoque').in('product_id', ids).select('variant_id, min_stock'),
+    db.from('product_videos').select('product_id, storage_path, poster_path, duration_ms, size_bytes').in('product_id', ids),
   ]);
   if (pecas?.error) return falha(mensagemDoBanco(pecas.error));
   if (estoque.error) return falha(mensagemDoBanco(estoque.error));
+  // Sem a migração do vídeo a tabela não existe: o painel segue sem vídeo em vez de quebrar.
+  const videoDe = new Map((videos.error ? [] : (videos.data ?? [])).map((v) => [v.product_id, v]));
 
   const minimo = new Map((estoque.data ?? []).map((l) => [l.variant_id, l.min_stock]));
   const pecasDe = new Map<string, PecaKit[]>();
@@ -93,6 +96,7 @@ async function montarProdutos(db: Db, linhas: unknown[]): Promise<Resultado<Prod
       }))
       .sort((a, b) => a.position - b.position || a.sku.localeCompare(b.sku)),
     fotos: [...p.product_images].sort((a, b) => Number(b.is_cover) - Number(a.is_cover) || a.position - b.position),
+    video: videoDe.get(p.id) ?? null,
   }));
   return { ok: true, dados };
 }

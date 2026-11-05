@@ -389,3 +389,7 @@ html.dark .adm .btn-perigo-cheio{background:#E8907E!important;border-color:#E890
 /* Ações da variação no fim da janela do estoque (ocultar/apagar): em linha, sem grudar no rodapé como o "Registrar". */
 .adm .acoes-fim{display:flex;flex-wrap:wrap;gap:10px}
 .adm .acoes-fim .btn{flex:1 1 190px;justify-content:center}
+/* Vídeo do produto (editor) */
+.adm .video-i{display:flex;flex-direction:column;gap:10px;max-width:320px}
+.adm .video-i video{width:100%;max-height:420px;border-radius:14px;background:var(--field);border:1px solid var(--line);object-fit:contain}
+.adm .video-meta{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
