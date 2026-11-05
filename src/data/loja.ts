@@ -4,7 +4,7 @@
 import { unstable_cache } from 'next/cache';
 import { cache } from 'react';
 import { TAG_CATALOGO } from '../lib/cache';
-import { urlFoto } from '../lib/fotos';
+import { urlFoto, urlVideo } from '../lib/fotos';
 import { supabasePublico } from '../lib/supabase/public';
 import type { Database } from '../lib/database.types';
 import { toneOf, type Category, type Foto, type KitComponent, type Product, type ProductKind, type Variant, type VariantGroup } from './catalog';
@@ -46,7 +46,7 @@ function falha(etapa: string, erro: { message: string } | null): never {
 async function lerCatalogo(): Promise<Catalogo> {
   const db = supabasePublico();
 
-  const [cats, prods, kits] = await Promise.all([
+  const [cats, prods, kits, videos] = await Promise.all([
     db.from('categories').select('slug, name').order('position'),
     db
       .from('products')
@@ -58,10 +58,13 @@ async function lerCatalogo(): Promise<Catalogo> {
       )
       .order('name'),
     db.from('kit_components').select('kit_variant_id, component_variant_id, quantity'),
+    db.from('product_videos').select('product_id, storage_path, poster_path'),
   ]);
   if (cats.error) falha('as categorias', cats.error);
   if (prods.error) falha('os produtos', prods.error);
   if (kits.error) falha('os kits', kits.error);
+  // Sem a migração do vídeo a tabela não existe: a vitrine segue só com fotos.
+  const videoDe = new Map((videos.error ? [] : (videos.data ?? [])).map((v) => [v.product_id, { src: urlVideo(v.storage_path), poster: urlVideo(v.poster_path) }]));
 
   const variantIds = prods.data.flatMap((p) => p.product_variants.map((v) => v.id));
   const disp = await db.rpc('disponibilidade', { p_variant_ids: variantIds });
@@ -135,6 +138,7 @@ async function lerCatalogo(): Promise<Catalogo> {
       bg: i % 4,
       comps,
       photos,
+      video: videoDe.get(p.id),
     });
   });
 

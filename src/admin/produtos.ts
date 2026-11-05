@@ -33,6 +33,13 @@ export interface VariacaoPainel {
   pecas: PecaKit[];
 }
 
+export interface VideoPainel {
+  storage_path: string;
+  poster_path: string;
+  duration_ms: number;
+  size_bytes: number;
+}
+
 export interface FotoPainel {
   id: string;
   storage_path: string;
@@ -58,6 +65,8 @@ export interface ProdutoPainel {
   variacoes: VariacaoPainel[];
   /** Capa primeiro, depois a ordem cadastrada. */
   fotos: FotoPainel[];
+  /** Vídeo curto (no máximo um por produto), já comprimido e sem som. */
+  video: VideoPainel | null;
 }
 
 /**

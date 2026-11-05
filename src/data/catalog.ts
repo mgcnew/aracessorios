@@ -51,6 +51,12 @@ export interface Foto {
   alt: string;
 }
 
+/** Vídeo curto do produto: MP4 sem som e a capa tirada dele. */
+export interface VideoProduto {
+  src: string;
+  poster: string;
+}
+
 export interface Product {
   id: string;
   /** Endereço amigável da página do produto (/produto/<slug>). */
@@ -77,6 +83,8 @@ export interface Product {
   comps: KitComponent[] | null;
   /** Fotos na ordem de exibição, capa primeiro. Vazio: mostra a ilustração. */
   photos?: Foto[];
+  /** Vídeo curto; aparece por último na galeria da página do produto. */
+  video?: VideoProduto;
 }
 
 export interface ArtProps {

@@ -580,5 +580,85 @@ begin
 end $$;
 reset role;
 
+-- Vídeo do produto (VID-DEC-001) --------------------------------------------------------------
+-- Admin: um vídeo por produto, caminho no padrão, até 30 s; a vitrine só vê o vídeo de produto publicado.
+set local role authenticated;
+select set_config('request.jwt.claims', '{"role":"authenticated","sub":"11111111-1111-1111-1111-111111111111"}', true);
+do $$
+declare rascunho uuid; ativo uuid; n int;
+begin
+  insert into public.products (slug, name, status) values ('rascunho-do-video', 'Rascunho do vídeo', 'rascunho') returning id into rascunho;
+  select id into ativo from public.products where status = 'ativo' order by slug limit 1;
+  insert into public.product_videos (product_id, storage_path, poster_path, duration_ms, size_bytes)
+  values (rascunho, gen_random_uuid() || '/' || gen_random_uuid() || '.mp4', gen_random_uuid() || '/' || gen_random_uuid() || '.webp', 12000, 2500000),
+         (ativo, gen_random_uuid() || '/' || gen_random_uuid() || '.mp4', gen_random_uuid() || '/' || gen_random_uuid() || '.webp', 8000, 1800000);
+  select count(*) into n from public.product_videos;
+  insert into resultados(teste, ok, detalhe) values ('admin cadastra vídeo do produto', n = 2, n || ' vídeos');
+
+  begin
+    insert into public.product_videos (product_id, storage_path, poster_path, duration_ms, size_bytes)
+    values (ativo, gen_random_uuid() || '/' || gen_random_uuid() || '.mp4', gen_random_uuid() || '/' || gen_random_uuid() || '.webp', 8000, 1800000);
+    insert into resultados(teste, ok) values ('banco impede segundo vídeo no mesmo produto', false);
+  exception when unique_violation then
+    insert into resultados(teste, ok) values ('banco impede segundo vídeo no mesmo produto', true);
+  end;
+  begin
+    update public.product_videos set storage_path = '../fora.mp4' where product_id = ativo;
+    insert into resultados(teste, ok) values ('banco recusa caminho de vídeo fora do padrão', false);
+  exception when check_violation then
+    insert into resultados(teste, ok) values ('banco recusa caminho de vídeo fora do padrão', true);
+  end;
+  begin
+    update public.product_videos set duration_ms = 45000 where product_id = ativo;
+    insert into resultados(teste, ok) values ('banco recusa vídeo com mais de 30 segundos', false);
+  exception when check_violation then
+    insert into resultados(teste, ok) values ('banco recusa vídeo com mais de 30 segundos', true);
+  end;
+  begin
+    update public.product_videos set size_bytes = 20000000 where product_id = ativo;
+    insert into resultados(teste, ok) values ('banco recusa vídeo acima de 15 MB', false);
+  exception when check_violation then
+    insert into resultados(teste, ok) values ('banco recusa vídeo acima de 15 MB', true);
+  end;
+end $$;
+reset role;
+
+set local role anon;
+select set_config('request.jwt.claims', '{"role":"anon"}', true);
+do $$
+declare n int;
+begin
+  select count(*) into n from public.product_videos;
+  insert into resultados(teste, ok, detalhe) values ('visitante vê só o vídeo de produto publicado', n = 1, n || ' vídeos');
+  begin
+    insert into public.product_videos (product_id, storage_path, poster_path, duration_ms, size_bytes)
+    values ((select id from public.products limit 1), gen_random_uuid() || '/' || gen_random_uuid() || '.mp4', gen_random_uuid() || '/' || gen_random_uuid() || '.webp', 8000, 1000);
+    insert into resultados(teste, ok) values ('visitante não cadastra vídeo', false);
+  exception when insufficient_privilege then
+    insert into resultados(teste, ok) values ('visitante não cadastra vídeo', true);
+  end;
+end $$;
+reset role;
+
+set local role authenticated;
+select set_config('request.jwt.claims', '{"role":"authenticated","sub":"22222222-2222-2222-2222-222222222222"}', true);
+do $$
+declare n int;
+begin
+  select count(*) into n from public.product_videos;
+  insert into resultados(teste, ok, detalhe) values ('cliente logado vê só o vídeo de produto publicado', n = 1, n || ' vídeos');
+  begin
+    insert into public.product_videos (product_id, storage_path, poster_path, duration_ms, size_bytes)
+    values ((select id from public.products order by slug limit 1), gen_random_uuid() || '/' || gen_random_uuid() || '.mp4', gen_random_uuid() || '/' || gen_random_uuid() || '.webp', 8000, 1000);
+    insert into resultados(teste, ok) values ('cliente não cadastra vídeo', false);
+  exception when insufficient_privilege then
+    insert into resultados(teste, ok) values ('cliente não cadastra vídeo', true);
+  end;
+  delete from public.product_videos;
+  get diagnostics n = row_count;
+  insert into resultados(teste, ok) values ('cliente não apaga vídeo', n = 0);
+end $$;
+reset role;
+
 select n, teste, ok, detalhe from resultados order by n;
 rollback;
