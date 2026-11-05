@@ -587,7 +587,7 @@ select set_config('request.jwt.claims', '{"role":"authenticated","sub":"11111111
 do $$
 declare rascunho uuid; ativo uuid; n int;
 begin
-  select id into rascunho from public.products where slug = 'rascunho-de-teste';
+  insert into public.products (slug, name, status) values ('rascunho-do-video', 'Rascunho do vídeo', 'rascunho') returning id into rascunho;
   select id into ativo from public.products where status = 'ativo' order by slug limit 1;
   insert into public.product_videos (product_id, storage_path, poster_path, duration_ms, size_bytes)
   values (rascunho, gen_random_uuid() || '/' || gen_random_uuid() || '.mp4', gen_random_uuid() || '/' || gen_random_uuid() || '.webp', 12000, 2500000),
