@@ -2,70 +2,116 @@
 
 import { useEffect, useRef, useState } from 'react';
 
+/** Duração da fusão entre o fim de uma volta e o começo da próxima, em segundos (igual a `.entra` no CSS). */
+const FUSAO_S = 1.2;
+
 /**
  * Vídeo decorativo da vitrine (destaque, kits, embalagem, sobre): mudo, em repetição, toca sozinho assim que carrega.
- * A repetição é feita aqui (sem o `loop` do navegador): nos últimos instantes o vídeo esmaece até a capa e volta suave do começo,
- * em vez de saltar do último quadro para o primeiro.
+ * A repetição não usa o `loop` do navegador (que salta do último quadro para o primeiro): são dois vídeos iguais empilhados.
+ * Perto do fim, o segundo começa do início e se dissolve por cima do primeiro; quando está opaco, o primeiro volta ao começo
+ * e espera a vez. O arquivo é o mesmo e baixa uma vez só.
  * Com economia de dados ou movimento reduzido ligados, fica só a capa (e um botão de play). Pausa quando sai da tela.
  */
-/** Duração do esmaecer, em segundos (igual à transição de `.vfundo video` no CSS). */
-const FADE_S = 0.7;
-
 export function VideoFundo({ src, poster, alt }: { src: string; poster: string; alt: string }) {
-  const ref = useRef<HTMLVideoElement>(null);
+  const refA = useRef<HTMLVideoElement>(null);
+  const refB = useRef<HTMLVideoElement>(null);
   const [parado, setParado] = useState(false);
-  const [saindo, setSaindo] = useState(false);
 
   useEffect(() => {
-    const v = ref.current;
-    if (!v) return;
+    const a = refA.current;
+    const b = refB.current;
+    if (!a || !b) return;
     const conexao = (navigator as Navigator & { connection?: { saveData?: boolean } }).connection;
     const poupar = conexao?.saveData || window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     if (poupar) {
       setParado(true);
       return;
     }
-    // Confere o tempo a cada quadro: o evento timeupdate é lento demais para começar o esmaecer na hora certa.
+
+    let atual = a; // o que está à vista
+    let proximo = b; // o que espera, parado no primeiro quadro
+    let fundindo = false;
+    let visivel = false;
     let quadro = 0;
+    let fim = 0;
+
     const vigiar = () => {
-      if (v.duration > 2 && v.duration - v.currentTime <= FADE_S) setSaindo(true);
+      const d = atual.duration;
+      if (!fundindo && d > FUSAO_S * 3 && d - atual.currentTime <= FUSAO_S) fundir();
       quadro = requestAnimationFrame(vigiar);
     };
-    const comecou = () => {
-      cancelAnimationFrame(quadro);
+    const parar = () => cancelAnimationFrame(quadro);
+
+    function fundir() {
+      fundindo = true;
+      const entra = proximo;
+      const sai = atual;
+      entra.style.zIndex = '2';
+      sai.style.zIndex = '1';
+      entra.classList.add('entra');
+      entra.classList.add('on');
+      entra.currentTime = 0;
+      entra.play().catch(() => setParado(true));
+      // Só some o que saiu quando o que entrou já cobre tudo (assim a imagem nunca fica translúcida).
+      fim = window.setTimeout(() => {
+        sai.pause();
+        sai.classList.remove('entra', 'on');
+        sai.currentTime = 0;
+        atual = entra;
+        proximo = sai;
+        fundindo = false;
+      }, FUSAO_S * 1000 + 80);
+    }
+
+    // Sem fusão possível (vídeo muito curto ou aba em segundo plano): volta ao início como o `loop` comum.
+    const terminou = (ev: Event) => {
+      if (ev.target !== atual || fundindo) return;
+      atual.currentTime = 0;
+      atual.play().catch(() => setParado(true));
+    };
+    const tocando = () => {
+      parar();
       quadro = requestAnimationFrame(vigiar);
+      // O segundo só começa a baixar quando o primeiro já está tocando.
+      b.preload = 'auto';
     };
-    const parou = () => cancelAnimationFrame(quadro);
-    const terminou = () => {
-      parou();
-      v.currentTime = 0;
-      v.play().catch(() => setParado(true));
-    };
-    const voltou = () => setSaindo(false);
-    v.addEventListener('playing', comecou);
-    v.addEventListener('pause', parou);
-    v.addEventListener('ended', terminou);
-    v.addEventListener('seeked', voltou);
-    const io = new IntersectionObserver(([e]) => {
-      if (e.isIntersecting) v.play().catch(() => setParado(true));
-      else v.pause();
-    }, { threshold: 0.25 });
-    io.observe(v);
+    a.addEventListener('playing', tocando);
+    b.addEventListener('playing', tocando);
+    a.addEventListener('ended', terminou);
+    b.addEventListener('ended', terminou);
+
+    const io = new IntersectionObserver(
+      ([e]) => {
+        visivel = e.isIntersecting;
+        if (visivel) {
+          atual.play().catch(() => setParado(true));
+          if (fundindo) proximo.play().catch(() => undefined);
+        } else {
+          a.pause();
+          b.pause();
+          parar();
+        }
+      },
+      { threshold: 0.25 },
+    );
+    io.observe(a);
     return () => {
       io.disconnect();
-      parou();
-      v.removeEventListener('playing', comecou);
-      v.removeEventListener('pause', parou);
-      v.removeEventListener('ended', terminou);
-      v.removeEventListener('seeked', voltou);
+      parar();
+      window.clearTimeout(fim);
+      a.removeEventListener('playing', tocando);
+      b.removeEventListener('playing', tocando);
+      a.removeEventListener('ended', terminou);
+      b.removeEventListener('ended', terminou);
     };
   }, []);
 
   return (
     <div className="vfundo" style={{ backgroundImage: `url("${poster}")` }}>
-      <video ref={ref} className={saindo ? 'saindo' : undefined} src={src} poster={poster} muted playsInline preload="metadata" aria-label={alt} onPlaying={() => setParado(false)} />
+      <video ref={refA} className="on" src={src} poster={poster} muted playsInline preload="metadata" aria-label={alt} onPlaying={() => setParado(false)} />
+      <video ref={refB} src={src} poster={poster} muted playsInline preload="none" aria-hidden="true" tabIndex={-1} />
       {parado && (
-        <button className="vslide-play" onClick={() => void ref.current?.play()} aria-label="Tocar vídeo">
+        <button className="vslide-play" onClick={() => void refA.current?.play()} aria-label="Tocar vídeo">
           <span aria-hidden="true" />
         </button>
       )}
